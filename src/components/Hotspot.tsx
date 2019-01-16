@@ -37,34 +37,81 @@ const defaultProps = {
 
 }
 
+function prepareUrl(url: string): string {
+  if (!url.match(/^https?:\/\//i)) {
+    url = 'http://' + url;
+  }
+  return url;
+}
+
 export default class Hotspot extends Component<Props, State> {
-	static defaultProps = defaultProps;
+  static defaultProps = defaultProps;
 
-	render() {
-		const { hotspot } = this.props;
-		const { layout, label } = hotspot;
+  handleClick = () => {
+    const { hotspot } = this.props;
 
-		if (!this.props.visible) { return null; }
+    if (!hotspot.onClick) {
+      return;
+    }
 
-		const containerStyles = {
+    switch (hotspot.onClick.type) {
+      case 'openUrl': {
+        if (!hotspot.onClick.url) {
+          return;
+        }
+        const url = prepareUrl(hotspot.onClick.url);
+        window.open(url, '_top');
+      }
+        break;
+      case 'openUrlInNewTab': {
+        if (!hotspot.onClick.url) {
+          return;
+        }
+
+        this.props.pauseVideo();
+
+        const url = prepareUrl(hotspot.onClick.url);
+        try {
+          window.open(url, '_blank');
+        } catch(e) {
+          window.open(url, '_top');
+        }
+      }
+        break;
+      default:
+        break;
+    }
+  }
+
+
+  render() {
+    const { hotspot } = this.props;
+    const { layout, label } = hotspot;
+
+    if (!this.props.visible) {
+      return null;
+    }
+
+    const containerStyles = {
       ...defaultContainerStyles,
       top: layout.y,
       left: layout.x,
       height: layout.height,
       width: layout.width,
-		};
+    };
 
-		const buttonStyles = {
-			...defaultButtonsStyles,
-			...hotspot.styles,
-		};
+    const buttonStyles = {
+      ...defaultButtonsStyles,
+      ...hotspot.styles,
+	    cursor: hotspot.onClick ? 'pointer' : 'default'
+    };
 
-		return (
-			<div style={containerStyles}>
-				<div style={buttonStyles}>
+    return (
+      <div onClick={this.handleClick} style={containerStyles}>
+        <div style={buttonStyles}>
           {label}
-				</div>
-			</div>
-		);
-	}
+        </div>
+      </div>
+    );
+  }
 }

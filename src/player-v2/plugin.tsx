@@ -82,7 +82,8 @@ mw.kalturaPluginWrapper(function(){
 									endTime: cuePoint.endTime,
 									label: cuePoint.text,
 									layout: partnerData.layout,
-                  styles: partnerData.styles
+                  styles: partnerData.styles,
+									onClick: partnerData.onClick
 								});
 							} else  if (error) {
 								// TODO should handle error
