@@ -1,28 +1,27 @@
 import { h, Component } from "preact";
-import { HotspotData } from '../utils/hotspotData';
+import { HotspotData } from '../utils/hotspot-data';
 
-
-
-const WRAPPER_STYLE = {
+const defaultContainerStyles = {
 	position: 'absolute',
 	boxSizing: 'border-box',
+  outline: 'none'
 };
 
-const DEFAULT_STYLE = {
+const defaultButtonsStyles = {
+	position: 'relative',
 	width: '100%',
 	height: '100%',
-	boxSizing: 'border-box',
-
 	appearance: 'none',
 	border: 'none',
+	textAlign: 'center',
 	cursor: 'pointer',
-	fontFamily: 'sans-serif',
+  wordBreak: 'break-all'
 };
 
 type Props = {
 	visible: boolean;
 	hotspot: HotspotData;
-	stylesheet?: { [key:string]: any}
+	styles?: { [key:string]: any}
 }
 
 type State =  {
@@ -30,7 +29,7 @@ type State =  {
 }
 
 const defaultProps = {
-	stylesheet: {}
+  styles: {}
 
 }
 
@@ -38,26 +37,29 @@ export default class Hotspot extends Component<Props, State> {
 	static defaultProps = defaultProps;
 
 	render() {
-		const { hotspot, stylesheet } = this.props;
+		const { hotspot } = this.props;
 		const { layout, label } = hotspot;
 
 		if (!this.props.visible) { return null; }
 
-		const wrapperStyle = {
-			...WRAPPER_STYLE,
-			top: layout.y,
-			left: layout.x,
-			height: layout.height,
-			width: layout.width
+		const containerStyles = {
+      ...defaultContainerStyles,
+      top: layout.y,
+      left: layout.x,
+      height: layout.height,
+      width: layout.width,
+		};
+
+		const buttonStyles = {
+			...defaultButtonsStyles,
+			...hotspot.styles,
 		};
 
 		return (
-			<div style={wrapperStyle}>
-				<button
-					style={DEFAULT_STYLE}
-				>
-					{label}
-				</button>
+			<div style={containerStyles}>
+				<div style={buttonStyles}>
+          {label}
+				</div>
 			</div>
 		);
 	}

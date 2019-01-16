@@ -1,5 +1,5 @@
 import { h, Component } from "preact";
-import { HotspotData } from '../utils/hotspotData';
+import { HotspotData } from '../utils/hotspot-data';
 import Hotspot from './Hotspot';
 import { calculateOverlayTransform } from '../utils/sizeUtils';
 import { HotspotsEngine } from "../utils/hotspots-engine";

@@ -3,5 +3,6 @@ export interface HotspotData {
 	startTime: number,
 	endTime?: number,
 	label: string,
-	layout: { x: number, y: number, width: number, height: number }
+	layout: { x: number, y: number, width: number, height: number },
+	styles: { [key: string] : string}
 }

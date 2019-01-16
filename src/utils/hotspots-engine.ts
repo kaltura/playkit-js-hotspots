@@ -1,7 +1,6 @@
 
 import { log } from './logger';
-import { HotspotData } from "./hotspotData";
-import { isNumber } from "util";
+import { HotspotData } from "./hotspot-data";
 
 enum ChangeTypes {
     Show = 'show',

@@ -1,7 +1,7 @@
 //let poly = require("preact-cli/lib/lib/webpack/polyfills");
 import { h, render } from "preact";
 import Stage, { LoadCallback, NotifyEventTypes } from "../components/Stage";
-import {HotspotData} from '../utils/HotspotData';
+import {HotspotData} from '../utils/hotspot-data';
 
 
 // TODO move to util function
@@ -77,7 +77,8 @@ mw.kalturaPluginWrapper(function(){
 									startTime: cuePoint.startTime,
 									endTime: cuePoint.endTime,
 									label: cuePoint.text,
-									layout: partnerData.layout
+									layout: partnerData.layout,
+                  styles: partnerData.styles
 								});
 							} else  if (error) {
 								// TODO should handle error
