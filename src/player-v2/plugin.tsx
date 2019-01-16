@@ -45,6 +45,10 @@ mw.kalturaPluginWrapper(function(){
 			// this.targetEntryId = null;
 		},
 
+    pauseVideo: function() {
+      this.getPlayer().pause();
+    },
+
 		getCuePoints: function(){
 			return this.cuePoints;
 		},
@@ -113,7 +117,8 @@ mw.kalturaPluginWrapper(function(){
 				const props = {
           getCurrentTime: _this._getCurrentTime.bind(_this),
 					loadCuePoints: _this.loadCuePoints.bind(_this),
-					initialPlayerSize: _this.getPlayerSize()
+					initialPlayerSize: _this.getPlayerSize(),
+          pauseVideo: _this.pauseVideo.bind(_this)
 				}
 
 				render(<Stage {...props} ref={(ref) => _this.stage = ref} ></Stage>, jQuery('[id="hotspotsOverlay"]')[0]);

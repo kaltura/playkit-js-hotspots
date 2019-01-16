@@ -21,7 +21,8 @@ const defaultButtonsStyles = {
 type Props = {
 	visible: boolean;
 	hotspot: HotspotData;
-	styles?: { [key:string]: any}
+	styles?: { [key:string]: any},
+  pauseVideo(): void
 }
 
 type State =  {

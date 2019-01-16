@@ -32,7 +32,9 @@ type NotifyEvents = ChangeMediaEvent | SeekedEvent | MonitorEvent;
 interface Props{
 	initialPlayerSize: PlayerSize,
 	loadCuePoints(callback: LoadCallback): void,
-	getCurrentTime() : number
+	getCurrentTime() : number,
+  pauseVideo(): void
+
 }
 
 interface State {
@@ -165,7 +167,10 @@ export default class Stage extends Component<Props, State> {
 			return null;
 		}
 
-		return hotspotsData.map(hotspotData => (<Hotspot key={hotspotData.id} visible={true} hotspot={hotspotData}/>
+    const { pauseVideo } = this.props;
+
+
+    return hotspotsData.map(hotspotData => (<Hotspot pauseVideo={pauseVideo} key={hotspotData.id} visible={true} hotspot={hotspotData}/>
 		));
 	}
 
