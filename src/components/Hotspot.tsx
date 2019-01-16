@@ -3,6 +3,7 @@ import { HotspotData } from '../utils/hotspot-data';
 
 const defaultContainerStyles = {
 	position: 'absolute',
+	display: 'table',
 	boxSizing: 'border-box',
   outline: 'none'
 };
@@ -13,6 +14,8 @@ const defaultButtonsStyles = {
 	height: '100%',
 	appearance: 'none',
 	border: 'none',
+  display: 'table-cell',
+	verticalAlign: 'middle',
 	textAlign: 'center',
 	cursor: 'pointer',
   wordBreak: 'break-all'
