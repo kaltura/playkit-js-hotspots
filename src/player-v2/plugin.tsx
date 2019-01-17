@@ -20,14 +20,15 @@ function toObject(jsonAsString: string, defaultValue: { [key: string]: any } = {
 
 mw.kalturaPluginWrapper(function(){
 
-	var AbortError = function() {};
-
 	mw.PluginManager.add( 'hotspots', mw.KBaseComponent.extend( {
 
 		stage: null,
 		defaultConfig: {
 			parent: 'videoHolder',
-			order: 6
+			order: 1
+		},
+
+    initialize: function() {
 		},
 
 		setup: function(){
@@ -35,23 +36,14 @@ mw.kalturaPluginWrapper(function(){
 			this.addBindings();
 		},
 
-		initialize: function() {
-			// this.setConfig('status', 'disabled', true);
-			//
-			// this.setConfig('projectId', undefined, true);
-			// this.setConfig('info', undefined, true);
-			//
-			// this.pendingEntryId = null;
-			// this.targetEntryId = null;
-		},
-
-    pauseVideo: function() {
+		pauseVideo: function() {
       this.getPlayer().pause();
     },
 
 		getCuePoints: function(){
 			return this.cuePoints;
 		},
+
 		loadCuePoints: function( callback: LoadCallback ){
 			var _this = this;
 			// do the api request

@@ -1,4 +1,5 @@
-let isEnabled = true; // TODO should be false
+let isEnabled = false;
+
 export function enable() {
   isEnabled = true;
 }
