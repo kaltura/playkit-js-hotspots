@@ -175,7 +175,7 @@ export default class Stage extends Component<Props, State> {
 	}
 
 	render() {
-		const { isLoading, visibleHotspots, hasError, playerSize } = this.state;
+		const { visibleHotspots, playerSize } = this.state;
 		const hotspotsElements = this.renderHotspots(visibleHotspots);
 
 		const transform = calculateOverlayTransform(
@@ -193,9 +193,6 @@ export default class Stage extends Component<Props, State> {
 
 	return (
 			<div style={style}>
-				{ hasError && <div>ERROR</div>}
-				{ isLoading && <div>Loading</div>}
-				{ visibleHotspots && <div>got {visibleHotspots.length} hotspots</div>}
 				{ hotspotsElements }
 			</div>
 		);
