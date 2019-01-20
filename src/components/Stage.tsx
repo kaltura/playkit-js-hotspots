@@ -100,9 +100,6 @@ export default class Stage extends Component<Props, State> {
 		this.reset();
 	}
 
-	componentWillUnmount() {
-	}
-
 	private syncVisibleHotspots() {
     const { getCurrentTime } = this.props;
 

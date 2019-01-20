@@ -23,6 +23,7 @@ mw.kalturaPluginWrapper(function(){
 
 	mw.PluginManager.add( 'hotspots', mw.KBaseComponent.extend( {
 
+		_root: null,
     _firstPlayed: false,
 		stage: null,
 		defaultConfig: {
@@ -126,7 +127,7 @@ mw.kalturaPluginWrapper(function(){
           pauseVideo: _this.pauseVideo.bind(_this)
 				}
 
-				render(<Stage {...props} ref={(ref) => _this.stage = ref} ></Stage>, jQuery('[id="hotspotsOverlay"]')[0]);
+        _this._root = render(<Stage {...props} ref={(ref) => _this.stage = ref} ></Stage>, jQuery('[id="hotspotsOverlay"]')[0]);
 			});
 
 			this.bind('updateLayout', function(){
@@ -143,8 +144,10 @@ mw.kalturaPluginWrapper(function(){
 
 			this.bind('onChangeMedia', function() {
 				_this._firstPlayed = false;
-				_this.stage.reset();
-			});
+        // @ts-ignore
+        render(h(null), jQuery('[id="hotspotsOverlay"]')[0], _this._root);
+
+      });
 
       this.bind('monitorEvent', function(){
         _this.stage.notify({ type: NotifyEventTypes.Monitor });
