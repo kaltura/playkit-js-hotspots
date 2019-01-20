@@ -1,6 +1,6 @@
 let isEnabled = false;
 
-export function enable() {
+export function enableLog() {
   isEnabled = true;
 }
 export function log(level: 'debug' | 'log' | 'warn' | 'error', context: string, message: string, ...optionalParams: any[]) {

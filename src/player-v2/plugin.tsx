@@ -2,6 +2,7 @@
 import { h, render } from "preact";
 import Stage, { LoadCallback, NotifyEventTypes } from "../components/Stage";
 import {HotspotData} from '../utils/hotspot-data';
+import { enableLog } from "../utils/logger";
 
 
 // TODO move to util function
@@ -28,11 +29,20 @@ mw.kalturaPluginWrapper(function(){
 			order: 1
 		},
 
-    initialize: function() {
+		shouldEnableLogs() {
+			try
+			{
+        if ( document.URL.indexOf( 'debugKalturaPlayer' ) !== -1 ) {
+         enableLog();
+        }
+			}catch(e) {
+				// do nothing
+			}
 		},
 
+
 		setup: function(){
-			this.initialize();
+      this.shouldEnableLogs();
 			this.addBindings();
 		},
 
