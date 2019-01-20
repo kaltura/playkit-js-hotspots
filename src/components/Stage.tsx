@@ -9,8 +9,7 @@ export type LoadCallback = (result: { error?: {message: string}, hotspots?: Hots
 
 export enum NotifyEventTypes {
 	Monitor = 'monitor',
-	Seeked = 'seeked',
-  ShowHotspots = 'showHotspots'
+	Seeked = 'seeked'
 }
 
 interface SeekedEvent {
@@ -155,7 +154,7 @@ export default class Stage extends Component<Props, State> {
 		})
 	}
 
-	reset = () => {
+	private reset = () => {
 		this.engine = null;
 
 		this.setState({
