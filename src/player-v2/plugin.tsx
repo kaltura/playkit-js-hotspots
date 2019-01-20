@@ -50,7 +50,7 @@ mw.kalturaPluginWrapper(function(){
 		},
 
 		pauseVideo: function() {
-      this.getPlayer().pause();
+      this.getPlayer().sendNotification('doPause');
     },
 
 		getCuePoints: function(){
