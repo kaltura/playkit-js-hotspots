@@ -23,6 +23,7 @@ mw.kalturaPluginWrapper(function(){
 
 	mw.PluginManager.add( 'hotspots', mw.KBaseComponent.extend( {
 
+    _firstPlayed: false,
 		stage: null,
 		defaultConfig: {
 			parent: 'videoHolder',
@@ -43,6 +44,7 @@ mw.kalturaPluginWrapper(function(){
 
 		setup: function(){
       this.shouldEnableLogs();
+
 			this.addBindings();
 		},
 
@@ -131,7 +133,16 @@ mw.kalturaPluginWrapper(function(){
 				_this.resizeEngine();
 			});
 
+
+      this.bind('firstPlay seeked', function(){
+        if (!_this._firstPlayed) {
+        	_this.stage.showHotspots();
+          _this._firstPlayed = true;
+        }
+      });
+
 			this.bind('onChangeMedia', function() {
+				_this._firstPlayed = false;
 				_this.stage.reset();
 			});
 

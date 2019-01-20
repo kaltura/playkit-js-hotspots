@@ -8,15 +8,10 @@ export type PlayerSize = { width: number, height: number};
 export type LoadCallback = (result: { error?: {message: string}, hotspots?: HotspotData[]}) => void;
 
 export enum NotifyEventTypes {
-	ChangeMedia = 'changeMedia',
 	Monitor = 'monitor',
-	Seeked = 'seeked'
+	Seeked = 'seeked',
+  ShowHotspots = 'showHotspots'
 }
-
-interface ChangeMediaEvent {
-	type: NotifyEventTypes.ChangeMedia
-}
-
 
 interface SeekedEvent {
   type: NotifyEventTypes.Seeked
@@ -26,7 +21,7 @@ interface MonitorEvent {
   type: NotifyEventTypes.Monitor
 }
 
-type NotifyEvents = ChangeMediaEvent | SeekedEvent | MonitorEvent;
+type NotifyEvents = SeekedEvent | MonitorEvent;
 
 
 interface Props{
@@ -41,7 +36,8 @@ interface State {
 	isLoading: boolean,
 	playerSize: PlayerSize,
 	visibleHotspots: HotspotData[],
-	hasError: boolean
+	hasError: boolean,
+  showHotspots: boolean
 }
 
 const PlayerUpdateEvent = "updatePlayHeadPercent:hotspots";
@@ -49,12 +45,23 @@ const PlayerUpdateEvent = "updatePlayHeadPercent:hotspots";
 export default class Stage extends Component<Props, State> {
 	engine: HotspotsEngine | null = null;
 
+	initialState = {
+    isLoading: false,
+    playerSize: this.props.initialPlayerSize,
+    visibleHotspots: [],
+    showHotspots: false,
+    hasError: false
+	};
+
 	state: State = {
-		isLoading: false,
-		playerSize: this.props.initialPlayerSize,
-		visibleHotspots: [],
-		hasError: false
-	}
+		...this.initialState
+	};
+
+  showHotspots = () => {
+    this.setState({
+      showHotspots: true
+    });
+  }
 
   notify = (event: NotifyEvents) => {
 		switch (event.type) {
@@ -155,8 +162,7 @@ export default class Stage extends Component<Props, State> {
 		this.engine = null;
 
 		this.setState({
-			isLoading: true,
-			visibleHotspots: []
+			...this.initialState,
 		}, () => {
 			this.props.loadCuePoints(this._handleCuepoints)
 		});
@@ -175,8 +181,8 @@ export default class Stage extends Component<Props, State> {
 	}
 
 	render() {
-		const { visibleHotspots, playerSize } = this.state;
-		const hotspotsElements = this.renderHotspots(visibleHotspots);
+		const { visibleHotspots, playerSize, showHotspots } = this.state;
+		const hotspotsElements = showHotspots ? this.renderHotspots(visibleHotspots) : null;
 
 		const transform = calculateOverlayTransform(
 			playerSize,
