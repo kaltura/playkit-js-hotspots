@@ -2,6 +2,7 @@
 import { h, render } from "preact";
 import Stage, { LoadCallback, NotifyEventTypes } from "../components/Stage";
 import {HotspotData} from '../utils/hotspot-data';
+import { enableLog } from "../utils/logger";
 
 
 // TODO move to util function
@@ -22,22 +23,34 @@ mw.kalturaPluginWrapper(function(){
 
 	mw.PluginManager.add( 'hotspots', mw.KBaseComponent.extend( {
 
+		_root: null,
+    _firstPlayed: false,
 		stage: null,
 		defaultConfig: {
 			parent: 'videoHolder',
 			order: 1
 		},
 
-    initialize: function() {
+		shouldEnableLogs() {
+			try
+			{
+        if ( document.URL.indexOf( 'debugKalturaPlayer' ) !== -1 ) {
+         enableLog();
+        }
+			}catch(e) {
+				// do nothing
+			}
 		},
 
+
 		setup: function(){
-			this.initialize();
+      this.shouldEnableLogs();
+
 			this.addBindings();
 		},
 
 		pauseVideo: function() {
-      this.getPlayer().pause();
+      this.getPlayer().sendNotification('doPause');
     },
 
 		getCuePoints: function(){
@@ -114,16 +127,27 @@ mw.kalturaPluginWrapper(function(){
           pauseVideo: _this.pauseVideo.bind(_this)
 				}
 
-				render(<Stage {...props} ref={(ref) => _this.stage = ref} ></Stage>, jQuery('[id="hotspotsOverlay"]')[0]);
+        _this._root = render(<Stage {...props} ref={(ref) => _this.stage = ref} ></Stage>, jQuery('[id="hotspotsOverlay"]')[0]);
 			});
 
 			this.bind('updateLayout', function(){
 				_this.resizeEngine();
 			});
 
+
+      this.bind('firstPlay seeked', function(){
+        if (!_this._firstPlayed) {
+        	_this.stage.showHotspots();
+          _this._firstPlayed = true;
+        }
+      });
+
 			this.bind('onChangeMedia', function() {
-				_this.stage.reset();
-			});
+				_this._firstPlayed = false;
+        // @ts-ignore
+        render(h(null), jQuery('[id="hotspotsOverlay"]')[0], _this._root);
+
+      });
 
       this.bind('monitorEvent', function(){
         _this.stage.notify({ type: NotifyEventTypes.Monitor });

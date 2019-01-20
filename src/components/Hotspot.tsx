@@ -29,7 +29,8 @@ type Props = {
 }
 
 type State =  {
-
+  disableClick: boolean,
+  isReady: boolean
 }
 
 const defaultProps = {
@@ -47,10 +48,36 @@ function prepareUrl(url: string): string {
 export default class Hotspot extends Component<Props, State> {
   static defaultProps = defaultProps;
 
-  handleClick = () => {
+  state = {
+    disableClick: true,
+    isReady: false
+  }
+
+  componentDidMount() {
     const { hotspot } = this.props;
 
-    if (!hotspot.onClick) {
+    if (!hotspot || !hotspot.onClick) {
+      this.setState({
+        isReady: true
+      });
+      return;
+    }
+
+    const { type, url } = hotspot.onClick;
+
+    const disableClick = (! type || ! url || type.length == 0 || url.length === 0);
+
+    this.setState({
+      isReady: true,
+      disableClick
+    });
+  }
+
+  handleClick = () => {
+    const { hotspot } = this.props;
+    const { disableClick } = this.state;
+
+    if (!hotspot.onClick || disableClick) {
       return;
     }
 
@@ -87,8 +114,9 @@ export default class Hotspot extends Component<Props, State> {
   render() {
     const { hotspot } = this.props;
     const { layout, label } = hotspot;
+    const { isReady, disableClick } = this.state;
 
-    if (!this.props.visible) {
+    if (!isReady || !this.props.visible) {
       return null;
     }
 
@@ -103,7 +131,7 @@ export default class Hotspot extends Component<Props, State> {
     const buttonStyles = {
       ...defaultButtonsStyles,
       ...hotspot.styles,
-	    cursor: hotspot.onClick ? 'pointer' : 'default'
+	    cursor: disableClick ? 'default' : 'pointer'
     };
 
     return (
