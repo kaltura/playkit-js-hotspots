@@ -1,5 +1,5 @@
 import { h, Component } from "preact";
-import { HotspotData } from '../utils/hotspot-data';
+import { Hotspot as HotspotData, VisualHotspot } from "../utils/hotspot";
 
 const defaultContainerStyles = {
 	position: 'absolute',
@@ -23,7 +23,7 @@ const defaultButtonsStyles = {
 
 type Props = {
 	visible: boolean;
-	hotspot: HotspotData;
+	hotspot: VisualHotspot;
 	styles?: { [key:string]: any},
   pauseVideo(): void
 }

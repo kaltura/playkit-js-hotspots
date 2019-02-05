@@ -54,3 +54,5 @@ export function calculateOverlayTransform(
 
   return `translate(${xOffset.toFixed(1)}px, ${yOffset.toFixed(1)}px) scale(${scale.toFixed(4)})`;
 }
+
+// TODO check if this file is needed
