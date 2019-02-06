@@ -5,7 +5,7 @@ import { enableLog } from "../utils/logger";
 import { Hotspot } from "../utils/hotspot";
 
 
-// TODO move to util function
+// TODO ERAN move to util function
 function toObject(jsonAsString: string, defaultValue: { [key: string]: any } = {}): { error?: Error, result?: { [key: string]: any }} {
 	if (!jsonAsString) {
 		return defaultValue;
@@ -63,13 +63,13 @@ mw.kalturaPluginWrapper(function(){
 
 			this.addBindings();
 
-			// TODO check where should register (to make sure the video already exists
+			// TODO OREN check where should register (to make sure the video already exists
 			try {
-        // TODO check if in flash
+        // TODO OREN check if in flash
         const videoElement = this.getPlayer().getVideoHolder().find('video')[0];
         jQuery(videoElement).on( "loadedmetadata", this.handleVideoSizeChange.bind(this));
       }catch (e) {
-				// TODO decide what to do here
+				// TODO LIOR decide what to do here
 			}
 		},
 
@@ -187,14 +187,13 @@ mw.kalturaPluginWrapper(function(){
 
 			this.bind('onChangeMedia', function() {
 				// DEVELOPER NOTICE: this is the destruction function.
-				// TODO check if the internal flags also reset like first play
+				// TODO ERAN check if the internal flags also reset like first play
 
         try {
-          // TODO check if in flash
           const videoElement = _this.getPlayer().getVideoHolder().find('video')[0];
           jQuery(videoElement).off( "loadedmetadata");
         }catch (e) {
-          // TODO decide what to do here
+          // nothing to do about it :/
         }
 
         // @ts-ignore

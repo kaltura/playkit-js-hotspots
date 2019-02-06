@@ -161,8 +161,7 @@ export default class Stage extends Component<Props, State> {
       if (this.engine) {
 
 
-        const bla = this.engine.updateLayout(this.state.playerSize, this.state.videoSize);
-        console.log('[hotspots]', bla);
+        this.engine.updateLayout(this.state.playerSize, this.state.videoSize);
         this.syncVisibleHotspots(true);
       }
 		});
