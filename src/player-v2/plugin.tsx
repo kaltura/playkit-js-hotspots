@@ -56,20 +56,8 @@ mw.kalturaPluginWrapper(function(){
 
 
     setup: function(){
-      if (!this._wasPlayed) {
-        this.shouldEnableLogs();
-      }
-
-      try {
-        const videoElement = this.getPlayer().getVideoHolder().find('video')[0];
-        jQuery(videoElement).on("loadeddata", this.handleVideoSizeChange.bind(this));
-
-      } catch (e) {
-        log('error', 'plugin.setup', 'failed to register to video element loaded metadata', { error: e.message});
-      }
-
+      this.shouldEnableLogs();
 			this.addBindings();
-
 
 		},
 
@@ -162,9 +150,15 @@ mw.kalturaPluginWrapper(function(){
 
 			this.bind( 'playerReady', function(){
 
+        try {
+          const videoElement = _this.getPlayer().getVideoHolder().find('video')[0];
+          jQuery(videoElement).on("loadeddata", _this.handleVideoSizeChange.bind(_this));
 
+        } catch (e) {
+          log('error', 'plugin.setup', 'failed to register to video element loaded metadata', { error: e.message});
+        }
 
-				const props = {
+        const props = {
           getCurrentTime: _this._getCurrentTime.bind(_this),
 					loadCuePoints: _this.loadCuePoints.bind(_this),
 					getPlayerSize: _this.getPlayerSize.bind(_this),
