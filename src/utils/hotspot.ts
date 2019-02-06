@@ -21,7 +21,7 @@ export interface Hotspot {
 	endTime?: number,
 	onClick?: OnClickAction,
 	label?: string,
-	originalLayout: { relativeX: number, relativeY: number, relativeWidth: number, relativeHeight: number, stageWidth: number, stageHeight: number }
+	rawLayout: { relativeX: number, relativeY: number, relativeWidth: number, relativeHeight: number, stageWidth: number, stageHeight: number }
 	styles: { [key: string] : string}
 }
 

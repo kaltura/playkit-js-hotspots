@@ -2,6 +2,7 @@ import { h, Component } from "preact";
 import { Hotspot as HotspotData, VisualHotspot } from "../utils/hotspot";
 import Hotspot from './Hotspot';
 import { HotspotsEngine } from "../utils/hotspots-engine";
+import { log } from "../utils/logger";
 
 export type PlayerSize = { width: number, height: number};
 export type VideoSize = { width: number, height: number};
@@ -80,6 +81,7 @@ export default class Stage extends Component<Props, State> {
 		const {hotspots, error} = result;
 
 		if (error || !hotspots) {
+      log('error', '_handleCuepoints', 'failed to load cuepoints', { error: error ? error.message : 'missing hotspots array'});
 			this.setState({
 				isLoading: false,
 				hasError: true,

@@ -87,12 +87,12 @@ export class HotspotsEngine {
     }
 
     private _calculateLayout(hotspot: Hotspot, scaleCalculation: ScaleCalculation): Layout {
-      const { originalLayout } = hotspot;
+      const { rawLayout } = hotspot;
       return {
-        x: scaleCalculation.left + originalLayout.relativeX * scaleCalculation.width,
-        y: scaleCalculation.top + originalLayout.relativeY * scaleCalculation.height,
-        width: originalLayout.relativeWidth * scaleCalculation.width,
-        height: originalLayout.relativeHeight * scaleCalculation.height
+        x: scaleCalculation.left + rawLayout.relativeX * scaleCalculation.width,
+        y: scaleCalculation.top + rawLayout.relativeY * scaleCalculation.height,
+        width: rawLayout.relativeWidth * scaleCalculation.width,
+        height: rawLayout.relativeHeight * scaleCalculation.height
       }
     }
 

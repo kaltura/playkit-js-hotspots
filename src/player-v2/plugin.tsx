@@ -1,11 +1,9 @@
 //let poly = require("preact-cli/lib/lib/webpack/polyfills");
 import { h, render } from "preact";
 import Stage, { LoadCallback, NotifyEventTypes } from "../components/Stage";
-import { enableLog } from "../utils/logger";
+import { log, enableLog } from "../utils/logger";
 import { Hotspot } from "../utils/hotspot";
 
-
-// TODO ERAN move to util function
 function toObject(jsonAsString: string, defaultValue: { [key: string]: any } = {}): { error?: Error, result?: { [key: string]: any }} {
 	if (!jsonAsString) {
 		return defaultValue;
@@ -59,18 +57,21 @@ mw.kalturaPluginWrapper(function(){
 
 
     setup: function(){
-      this.shouldEnableLogs();
+      if (!this._firstPlayed) {
+        this.shouldEnableLogs();
+      }
+
+      try {
+        const videoElement = this.getPlayer().getVideoHolder().find('video')[0];
+        jQuery(videoElement).on("loadeddata", this.handleVideoSizeChange.bind(this));
+
+      } catch (e) {
+        log('error', 'plugin.setup', 'failed to register to video element loaded metadata', { error: e.message});
+      }
 
 			this.addBindings();
 
-			// TODO OREN check where should register (to make sure the video already exists
-			try {
-        // TODO OREN check if in flash
-        const videoElement = this.getPlayer().getVideoHolder().find('video')[0];
-        jQuery(videoElement).on( "loadedmetadata", this.handleVideoSizeChange.bind(this));
-      }catch (e) {
-				// TODO LIOR decide what to do here
-			}
+
 		},
 
 		pauseVideo: function() {
@@ -109,7 +110,7 @@ mw.kalturaPluginWrapper(function(){
                 return acc;
               }
 
-              const originalLayout = {
+              const rawLayout = {
 	              ...partnerData.layout
               };
 
@@ -120,7 +121,7 @@ mw.kalturaPluginWrapper(function(){
                 label: cuePoint.text,
                 styles: partnerData.styles,
                 onClick: partnerData.onClick,
-                originalLayout
+                rawLayout: rawLayout
               });
 
               return acc;
@@ -162,6 +163,10 @@ mw.kalturaPluginWrapper(function(){
 			var _this = this;
 
 			this.bind( 'playerReady', function(){
+
+        // DEVELOPER NOTICE: this is the initialization place
+				_this._firstPlayed = false;
+
 				const props = {
           getCurrentTime: _this._getCurrentTime.bind(_this),
 					loadCuePoints: _this.loadCuePoints.bind(_this),
@@ -186,9 +191,7 @@ mw.kalturaPluginWrapper(function(){
       });
 
 			this.bind('onChangeMedia', function() {
-				// DEVELOPER NOTICE: this is the destruction function.
-				// TODO ERAN check if the internal flags also reset like first play
-
+				// DEVELOPER NOTICE: this is the destruction place.
         try {
           const videoElement = _this.getPlayer().getVideoHolder().find('video')[0];
           jQuery(videoElement).off( "loadedmetadata");
@@ -198,6 +201,8 @@ mw.kalturaPluginWrapper(function(){
 
         // @ts-ignore
         render(h(null), jQuery('[id="hotspotsOverlay"]')[0], _this._root);
+        _this._root = null;
+        _this.stage = null;
 
       });
 
