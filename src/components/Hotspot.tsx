@@ -18,7 +18,8 @@ const defaultButtonsStyles = {
 	verticalAlign: 'middle',
 	textAlign: 'center',
 	cursor: 'pointer',
-  wordBreak: 'break-all'
+  wordBreak: 'break-all',
+  'textRendering': 'geometricPrecision'
 };
 
 type Props = {
