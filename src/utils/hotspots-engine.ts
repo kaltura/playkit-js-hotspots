@@ -12,6 +12,55 @@ type ChangeData = { time: number, type: ChangeTypes, cuePoint: VisualHotspot}
 
 const reasonableSeekThreshold = 2000;
 
+interface ScaleCalculation {
+  width: number,
+    height: number,
+    left: number,
+    top: number,
+    scaleToTargetWidth: boolean
+}
+
+function scaleVideo(videoWidth: number, videoHeight: number, playerWidth: number, playerHeight: number, fLetterBox: boolean) : ScaleCalculation {
+
+  var result: ScaleCalculation = { width: 0, height: 0, left: 0, top: 0, scaleToTargetWidth: true };
+
+  if ((videoWidth <= 0) || (videoHeight <= 0) || (playerWidth <= 0) || (playerHeight <= 0)) {
+    return result;
+  }
+
+  // scale to the target width
+  var scaleX1 = playerWidth;
+  var scaleY1 = (videoHeight * playerWidth) / videoWidth;
+
+  // scale to the target height
+  var scaleX2 = (videoWidth * playerHeight) / videoHeight;
+  var scaleY2 = playerHeight;
+
+  // now figure out which one we should use
+  var fScaleOnWidth = (scaleX2 > playerWidth);
+  if (fScaleOnWidth) {
+    fScaleOnWidth = fLetterBox;
+  }
+  else {
+    fScaleOnWidth = !fLetterBox;
+  }
+
+  if (fScaleOnWidth) {
+    result.width = Math.abs(scaleX1);
+    result.height = Math.abs(scaleY1);
+    result.scaleToTargetWidth = true;
+  }
+  else {
+    result.width = Math.abs(scaleX2);
+    result.height = Math.abs(scaleY2);
+    result.scaleToTargetWidth = false;
+  }
+  result.left = Math.abs((playerWidth - result.width) / 2);
+  result.top = Math.abs((playerHeight - result.height) / 2);
+
+  return result;
+}
+
 export class HotspotsEngine {
     private isFirstTime = true;
     private hotspotsLayoutReady = false;
@@ -37,13 +86,13 @@ export class HotspotsEngine {
       return this.lastHandledTimeIndex ? this.createHotspotsSnapshot(this.lastHandledTimeIndex) : [];
     }
 
-    private _calculateLayout(hotspot: Hotspot, playedVideoSize: { xOffset: number, yOffset: number, width: number, height: number}): Layout {
+    private _calculateLayout(hotspot: Hotspot, scaleCalculation: ScaleCalculation): Layout {
       const { originalLayout } = hotspot;
       return {
-        x: playedVideoSize.xOffset + originalLayout.relativeX * playedVideoSize.width,
-        y: playedVideoSize.yOffset + originalLayout.relativeY * playedVideoSize.height,
-        width: originalLayout.relativeWidth * playedVideoSize.width,
-        height: originalLayout.relativeHeight * playedVideoSize.height
+        x: scaleCalculation.left + originalLayout.relativeX * scaleCalculation.width,
+        y: scaleCalculation.top + originalLayout.relativeY * scaleCalculation.height,
+        width: originalLayout.relativeWidth * scaleCalculation.width,
+        height: originalLayout.relativeHeight * scaleCalculation.height
       }
     }
 
@@ -66,24 +115,12 @@ export class HotspotsEngine {
         return;
       }
 
-      // Check for intrinsic width and maintain aspect ratio
-      // TODO rename ratio
-      var ratio = videoWidth / videoHeight * playerHeight;
-      const fillWidth = ratio > playerWidth;
-      const xOffset = fillWidth ? 0 : Math.abs(playerWidth - videoWidth) / 2 ;
-      const yOffset = fillWidth ? Math.abs(playerHeight - videoHeight) / 2 : 0;
+      const scaleCalculation = scaleVideo(videoWidth, videoHeight, playerWidth, playerHeight, true);
 
-      const playedVideoSize = {
-        xOffset,
-        yOffset,
-        width: fillWidth ? playerWidth : (playerWidth - xOffset * 2),
-        height: fillWidth ? (playerHeight - yOffset * 2) : playerHeight,
-      };
-
-      log('debug', 'recalculateHotspotsLayout', `recalculate hotspots layout based on new sizes`, { ...playedVideoSize, ratio, fillWidth });
+      log('debug', 'recalculateHotspotsLayout', `recalculate hotspots layout based on new sizes`, scaleCalculation);
 
       (this.hotspots || []).forEach(hotspot => {
-        hotspot.layout = this._calculateLayout(hotspot, playedVideoSize);
+        hotspot.layout = this._calculateLayout(hotspot, scaleCalculation);
       });
 
       this.hotspotsLayoutReady = true;
