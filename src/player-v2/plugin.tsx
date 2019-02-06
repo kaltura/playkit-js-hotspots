@@ -23,7 +23,7 @@ mw.kalturaPluginWrapper(function(){
 
 		_root: null,
 		_videoSize: null,
-    _firstPlayed: false,
+    _wasPlayed: false,
 		stage: null,
 		defaultConfig: {
 			parent: 'videoHolder',
@@ -47,17 +47,16 @@ mw.kalturaPluginWrapper(function(){
 
 			if (!width || !height) {
 				this._videoSize = null;
-        this.stage.handleResize();
-				return;
+			} else {
+        this._videoSize = { width: e.target.videoWidth, height: e.target.videoHeight };
 			}
 
-      this._videoSize = { width: e.target.videoWidth, height: e.target.videoHeight };
       this.stage.handleResize();
     },
 
 
     setup: function(){
-      if (!this._firstPlayed) {
+      if (!this._wasPlayed) {
         this.shouldEnableLogs();
       }
 
@@ -101,12 +100,11 @@ mw.kalturaPluginWrapper(function(){
             callback({ error: { message: data.code || 'failure' } });
           } else {
 
-          	const playerSize = _this.getPlayerSize();
             const hotspots: Hotspot[] = [];
             (data.objects || []).reduce((acc: Hotspot[], cuePoint: any) => {
               const { result: partnerData, error } = toObject(cuePoint.partnerData);
               if (!partnerData || !partnerData.schemaVersion) {
-                console.warn(`annotation '${cuePoint.partnerData.id}' has no schema version, skip annotation`);
+              	log('warn', 'loadCuePoints', `annotation '${cuePoint.partnerData.id}' has no schema version, skip annotation`);
                 return acc;
               }
 
@@ -164,8 +162,7 @@ mw.kalturaPluginWrapper(function(){
 
 			this.bind( 'playerReady', function(){
 
-        // DEVELOPER NOTICE: this is the initialization place
-				_this._firstPlayed = false;
+
 
 				const props = {
           getCurrentTime: _this._getCurrentTime.bind(_this),
@@ -184,17 +181,20 @@ mw.kalturaPluginWrapper(function(){
 
 
       this.bind('firstPlay seeked', function(){
-        if (!_this._firstPlayed) {
+        if (!_this._wasPlayed) {
         	_this.stage.showHotspots();
-          _this._firstPlayed = true;
+          _this._wasPlayed = true;
         }
       });
 
 			this.bind('onChangeMedia', function() {
 				// DEVELOPER NOTICE: this is the destruction place.
+        _this._wasPlayed = false;
+        _this._videoSize = null;
+
         try {
           const videoElement = _this.getPlayer().getVideoHolder().find('video')[0];
-          jQuery(videoElement).off( "loadedmetadata");
+          jQuery(videoElement).off( "loadeddata");
         }catch (e) {
           // nothing to do about it :/
         }
