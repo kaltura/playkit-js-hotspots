@@ -1,11 +1,9 @@
 //let poly = require("preact-cli/lib/lib/webpack/polyfills");
 import { h, render } from "preact";
 import Stage, { LoadCallback, NotifyEventTypes } from "../components/Stage";
-import {HotspotData} from '../utils/hotspot-data';
-import { enableLog } from "../utils/logger";
+import { log, enableLog } from "../utils/logger";
+import { Hotspot } from "../utils/hotspot";
 
-
-// TODO move to util function
 function toObject(jsonAsString: string, defaultValue: { [key: string]: any } = {}): { error?: Error, result?: { [key: string]: any }} {
 	if (!jsonAsString) {
 		return defaultValue;
@@ -24,7 +22,8 @@ mw.kalturaPluginWrapper(function(){
 	mw.PluginManager.add( 'hotspots', mw.KBaseComponent.extend( {
 
 		_root: null,
-    _firstPlayed: false,
+		_videoSize: null,
+    _wasPlayed: false,
 		stage: null,
 		defaultConfig: {
 			parent: 'videoHolder',
@@ -35,18 +34,43 @@ mw.kalturaPluginWrapper(function(){
 			try
 			{
         if ( document.URL.indexOf( 'debugKalturaPlayer' ) !== -1 ) {
-         enableLog();
+         enableLog('hotspots');
         }
 			}catch(e) {
 				// do nothing
 			}
 		},
 
+		handleVideoSizeChange:  function(e: any) {
+			const width = e.target.videoWidth;
+			const height = e.target.videoHeight;
 
-		setup: function(){
-      this.shouldEnableLogs();
+			if (!width || !height) {
+				this._videoSize = null;
+			} else {
+        this._videoSize = { width: e.target.videoWidth, height: e.target.videoHeight };
+			}
+
+      this.stage.handleResize();
+    },
+
+
+    setup: function(){
+      if (!this._wasPlayed) {
+        this.shouldEnableLogs();
+      }
+
+      try {
+        const videoElement = this.getPlayer().getVideoHolder().find('video')[0];
+        jQuery(videoElement).on("loadeddata", this.handleVideoSizeChange.bind(this));
+
+      } catch (e) {
+        log('error', 'plugin.setup', 'failed to register to video element loaded metadata', { error: e.message});
+      }
 
 			this.addBindings();
+
+
 		},
 
 		pauseVideo: function() {
@@ -68,62 +92,83 @@ mw.kalturaPluginWrapper(function(){
 					'filter:cuePointTypeEqual':	'annotation.Annotation',
 					'filter:tagsLike' : 'hotspots'
 				},
-				function( data: any ){
-					// if an error pop out:
-					const hasError = !data || data.code;
+				function( data: any ) {
+          // if an error pop out:
+          const hasError = !data || data.code;
 
-					if (hasError) {
-						callback({ error: {message: data.code || 'failure'}});
-					} else {
+          if (hasError) {
+            callback({ error: { message: data.code || 'failure' } });
+          } else {
 
-						const hotspots: HotspotData[] = [];
-						(data.objects || []).reduce((acc: HotspotData[], cuePoint: any) => {
-							const { result:partnerData, error } = toObject(cuePoint.partnerData);
+            const hotspots: Hotspot[] = [];
+            (data.objects || []).reduce((acc: Hotspot[], cuePoint: any) => {
+              const { result: partnerData, error } = toObject(cuePoint.partnerData);
+              if (!partnerData || !partnerData.schemaVersion) {
+              	log('warn', 'loadCuePoints', `annotation '${cuePoint.partnerData.id}' has no schema version, skip annotation`);
+                return acc;
+              }
 
-							if (partnerData) {
-								acc.push({
-									id: cuePoint.id,
-									startTime: cuePoint.startTime,
-									endTime: cuePoint.endTime,
-									label: cuePoint.text,
-									layout: partnerData.layout,
-                  styles: partnerData.styles,
-									onClick: partnerData.onClick
-								});
-							} else  if (error) {
-								// TODO should handle error
-								console.error(`failed to parse hotspot`, error);
-							}
+              const rawLayout = {
+	              ...partnerData.layout
+              };
 
-							return acc;
-						}, hotspots);
+              acc.push({
+                id: cuePoint.id,
+                startTime: cuePoint.startTime,
+                endTime: cuePoint.endTime,
+                label: cuePoint.text,
+                styles: partnerData.styles,
+                onClick: partnerData.onClick,
+                rawLayout: rawLayout
+              });
 
-						callback({ hotspots })
-					}
-				}
+              return acc;
+            }, hotspots);
+
+            callback({ hotspots })
+          }
+        }
 			);
 		},
 
 		getPlayerSize: function() {
+			const videoHolder = this.getPlayer().getVideoHolder();
+			if (!videoHolder) {
+				return null;
+			}
+
+			const width = videoHolder.width();
+			const height = videoHolder.height();
+
 			return {
-				width: this.getPlayer().getVideoHolder().width(),
-				height: this.getPlayer().getVideoHolder().height()
+				width,
+				height
 			}
 		},
 
-		resizeEngine: function() {
-			var _this = this;
-			_this.stage.resize(this.getPlayerSize());
+		getVideoSize: function() {
+
+			if (!this._videoSize) {
+				return null
+			};
+
+			return {
+				...this._videoSize
+			}
 		},
 
 		addBindings: function() {
 			var _this = this;
 
 			this.bind( 'playerReady', function(){
+
+
+
 				const props = {
           getCurrentTime: _this._getCurrentTime.bind(_this),
 					loadCuePoints: _this.loadCuePoints.bind(_this),
-					initialPlayerSize: _this.getPlayerSize(),
+					getPlayerSize: _this.getPlayerSize.bind(_this),
+					getVideoSize: _this.getVideoSize.bind(_this),
           pauseVideo: _this.pauseVideo.bind(_this)
 				}
 
@@ -131,21 +176,33 @@ mw.kalturaPluginWrapper(function(){
 			});
 
 			this.bind('updateLayout', function(){
-				_this.resizeEngine();
+        _this.stage.handleResize();
 			});
 
 
       this.bind('firstPlay seeked', function(){
-        if (!_this._firstPlayed) {
+        if (!_this._wasPlayed) {
         	_this.stage.showHotspots();
-          _this._firstPlayed = true;
+          _this._wasPlayed = true;
         }
       });
 
 			this.bind('onChangeMedia', function() {
-				_this._firstPlayed = false;
+				// DEVELOPER NOTICE: this is the destruction place.
+        _this._wasPlayed = false;
+        _this._videoSize = null;
+
+        try {
+          const videoElement = _this.getPlayer().getVideoHolder().find('video')[0];
+          jQuery(videoElement).off( "loadeddata");
+        }catch (e) {
+          // nothing to do about it :/
+        }
+
         // @ts-ignore
         render(h(null), jQuery('[id="hotspotsOverlay"]')[0], _this._root);
+        _this._root = null;
+        _this.stage = null;
 
       });
 

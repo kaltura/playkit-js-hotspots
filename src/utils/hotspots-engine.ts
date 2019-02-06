@@ -1,35 +1,139 @@
 
 import { log } from './logger';
-import { HotspotData } from "./hotspot-data";
+import { Hotspot, Layout, VisualHotspot } from "./hotspot";
 
 enum ChangeTypes {
     Show = 'show',
     Hide = 'hide'
 }
-
-type ChangeData = { time: number, type: ChangeTypes, cuePoint: HotspotData}
+export type PlayerSize = { width: number, height: number};
+export type VideoSize = { width: number, height: number};
+type ChangeData = { time: number, type: ChangeTypes, cuePoint: VisualHotspot}
 
 const reasonableSeekThreshold = 2000;
 
+interface ScaleCalculation {
+  width: number,
+    height: number,
+    left: number,
+    top: number,
+    scaleToTargetWidth: boolean
+}
+
+function scaleVideo(videoWidth: number, videoHeight: number, playerWidth: number, playerHeight: number, fLetterBox: boolean) : ScaleCalculation {
+
+  var result: ScaleCalculation = { width: 0, height: 0, left: 0, top: 0, scaleToTargetWidth: true };
+
+  if ((videoWidth <= 0) || (videoHeight <= 0) || (playerWidth <= 0) || (playerHeight <= 0)) {
+    return result;
+  }
+
+  // scale to the target width
+  var scaleX1 = playerWidth;
+  var scaleY1 = (videoHeight * playerWidth) / videoWidth;
+
+  // scale to the target height
+  var scaleX2 = (videoWidth * playerHeight) / videoHeight;
+  var scaleY2 = playerHeight;
+
+  // now figure out which one we should use
+  var fScaleOnWidth = (scaleX2 > playerWidth);
+  if (fScaleOnWidth) {
+    fScaleOnWidth = fLetterBox;
+  }
+  else {
+    fScaleOnWidth = !fLetterBox;
+  }
+
+  if (fScaleOnWidth) {
+    result.width = Math.abs(scaleX1);
+    result.height = Math.abs(scaleY1);
+    result.scaleToTargetWidth = true;
+  }
+  else {
+    result.width = Math.abs(scaleX2);
+    result.height = Math.abs(scaleY2);
+    result.scaleToTargetWidth = false;
+  }
+  result.left = Math.abs((playerWidth - result.width) / 2);
+  result.top = Math.abs((playerHeight - result.height) / 2);
+
+  return result;
+}
+
 export class HotspotsEngine {
     private isFirstTime = true;
+    private hotspotsLayoutReady = false;
     private lastHandledTime: number | null = null;
     private lastHandledTimeIndex: number | null = null;
     private nextTimeToHandle: number | null = null;
     private hotspotsChanges: ChangeData[] = [];
+    private playerSize: PlayerSize | null = null;
+    private videoSize: VideoSize | null = null;
+    hotspots: VisualHotspot[];
 
-        constructor(private hotspots: HotspotData[]) {
+    constructor(hotspots: Hotspot[]) {
         log('debug', 'ctor', 'executed');
+        this.hotspots = hotspots as VisualHotspot[]; // NOTICE: it is the responsability of this engine not to return hotspot without layout
         this.prepareHotspots();
     }
 
-    public getSnapshot(time: number) : HotspotData[] {
+    public updateLayout(playerSize: PlayerSize | null, videoSize: VideoSize | null) {
+      this.videoSize = videoSize;
+      this.playerSize = playerSize;
+
+      this.recalculateHotspotsLayout();
+      return this.lastHandledTimeIndex ? this.createHotspotsSnapshot(this.lastHandledTimeIndex) : [];
+    }
+
+    private _calculateLayout(hotspot: Hotspot, scaleCalculation: ScaleCalculation): Layout {
+      const { rawLayout } = hotspot;
+      return {
+        x: scaleCalculation.left + rawLayout.relativeX * scaleCalculation.width,
+        y: scaleCalculation.top + rawLayout.relativeY * scaleCalculation.height,
+        width: rawLayout.relativeWidth * scaleCalculation.width,
+        height: rawLayout.relativeHeight * scaleCalculation.height
+      }
+    }
+
+    private recalculateHotspotsLayout(): void {
+      log('debug', 'recalculateHotspotsLayout', `calculating hotspots layout based on video/player sizes`);
+
+      if (!this.playerSize || !this.videoSize) {
+        log('debug', 'recalculateHotspotsLayout', `missing video/player sizes, hide all hotspots`);
+        this.hotspotsLayoutReady = false;
+        return;
+      }
+
+      const { width: playerWidth, height: playerHeight } = this.playerSize;
+      const { width: videoWidth, height: videoHeight } = this.videoSize;
+      const canCalcaulateLayout = playerWidth && playerHeight && videoWidth && videoHeight;
+
+      if (!canCalcaulateLayout) {
+        log('debug', 'recalculateHotspotsLayout', `missing video/player sizes, hide all hotspots`);
+        this.hotspotsLayoutReady = false;
+        return;
+      }
+
+      const scaleCalculation = scaleVideo(videoWidth, videoHeight, playerWidth, playerHeight, true);
+
+      log('debug', 'recalculateHotspotsLayout', `recalculate hotspots layout based on new sizes`, scaleCalculation);
+
+      (this.hotspots || []).forEach(hotspot => {
+        hotspot.layout = this._calculateLayout(hotspot, scaleCalculation);
+      });
+
+      this.hotspotsLayoutReady = true;
+
+    }
+
+    public getSnapshot(time: number) : Hotspot[] {
         const timeIndex = this.findClosestLastIndexByTime(time);
         log('debug', 'getSnapshot', `create snapshot based on time ${time}`, {timeIndex});
         return this.createHotspotsSnapshot(timeIndex);
     }
 
-    public updateTime(currentTime: number, forceSnapshot = false): { snapshot?: HotspotData[], delta?: {show: HotspotData[], hide: HotspotData[]}} {
+    public updateTime(currentTime: number, forceSnapshot = false): { snapshot?: Hotspot[], delta?: {show: VisualHotspot[], hide: VisualHotspot[]}} {
         const { isFirstTime, lastHandledTime, nextTimeToHandle } = this;
 
         if (this.hotspotsChanges.length === 0) {
@@ -74,13 +178,18 @@ export class HotspotsEngine {
         return { delta };
     }
 
-    private createHotspotsSnapshot(targetIndex: number) : HotspotData[] {
-        if (targetIndex < 0 || !this.hotspotsChanges || this.hotspotsChanges.length === 0) {
-            log('log', 'createHotspotsSnapshot', `resulted with empty snapshot`);
-            return [];
+    private createHotspotsSnapshot(targetIndex: number) : VisualHotspot[] {
+        if (!this.hotspotsLayoutReady || targetIndex < 0 || !this.hotspotsChanges || this.hotspotsChanges.length === 0) {
+          log('log', 'createHotspotsSnapshot', `resulted with empty snapshot`,
+            {
+              targetIndex,
+              hotspotsLayoutReady: this.hotspotsLayoutReady,
+              hotspotsCount: (this.hotspotsChanges || []).length
+            });
+          return [];
         }
 
-        const snapshot: HotspotData[] = [];
+        const snapshot: VisualHotspot[] = [];
 
         for (let index = 0; index <= targetIndex; index++) {
             const item = this.hotspotsChanges[index];
@@ -100,9 +209,13 @@ export class HotspotsEngine {
         return snapshot;
     }
 
-    private createHotspotsDelta(targetIndex: number) {
-        if (!this.hotspotsChanges || this.hotspotsChanges.length === 0) {
-            log('log', 'createHotspotsDelta', `resulted with empty delta`);
+    private createHotspotsDelta(targetIndex: number): { show: VisualHotspot[], hide: VisualHotspot[]} {
+        if (!this.hotspotsLayoutReady || !this.hotspotsChanges || this.hotspotsChanges.length === 0) {
+          log('log', 'createHotspotsDelta', `resulted with empty delta`,
+            {
+              hotspotsLayoutReady: this.hotspotsLayoutReady,
+              hotspotsCount: (this.hotspotsChanges || []).length
+            });
             return this.createEmptyDelta();
         }
 
@@ -113,8 +226,8 @@ export class HotspotsEngine {
           return this.createEmptyDelta();
         }
 
-        const newHotspots: HotspotData[] = [];
-        const removedHotspots: HotspotData[] = [];
+        const newHotspots: VisualHotspot[] = [];
+        const removedHotspots: VisualHotspot[] = [];
 
         log('log', 'createHotspotsDelta', `find hotspots that were added or removed`);
         for (let index = lastHandledTimeIndex+1; index <= targetIndex; index++) {
@@ -164,7 +277,7 @@ export class HotspotsEngine {
             });
     }
 
-    private createEmptyDelta(): {show: HotspotData[], hide: HotspotData[]} {
+    private createEmptyDelta(): {show: VisualHotspot[], hide: VisualHotspot[]} {
         return {show: [], hide: []};
     }
 
@@ -227,7 +340,7 @@ export class HotspotsEngine {
               {
                 time: hotspot.startTime,
                 type: ChangeTypes.Show,
-                cuePoint: hotspot
+                cuePoint: hotspot as VisualHotspot // NOTICE: it is the responsability of this engine not to return hotspot without layout
               }
             )
           }
@@ -237,7 +350,7 @@ export class HotspotsEngine {
                     {
                         time: hotspot.endTime,
                         type: ChangeTypes.Hide,
-                        cuePoint: hotspot
+                        cuePoint: hotspot as VisualHotspot // NOTICE: it is the responsability of this engine not to return hotspot without layout
                     }
                 )
             }

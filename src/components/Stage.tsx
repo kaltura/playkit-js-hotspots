@@ -1,10 +1,11 @@
 import { h, Component } from "preact";
-import { HotspotData } from '../utils/hotspot-data';
+import { Hotspot as HotspotData, VisualHotspot } from "../utils/hotspot";
 import Hotspot from './Hotspot';
-import { calculateOverlayTransform } from '../utils/sizeUtils';
 import { HotspotsEngine } from "../utils/hotspots-engine";
+import { log } from "../utils/logger";
 
 export type PlayerSize = { width: number, height: number};
+export type VideoSize = { width: number, height: number};
 export type LoadCallback = (result: { error?: {message: string}, hotspots?: HotspotData[]}) => void;
 
 export enum NotifyEventTypes {
@@ -24,9 +25,10 @@ type NotifyEvents = SeekedEvent | MonitorEvent;
 
 
 interface Props{
-	initialPlayerSize: PlayerSize,
 	loadCuePoints(callback: LoadCallback): void,
 	getCurrentTime() : number,
+	getPlayerSize(): PlayerSize,
+	getVideoSize(): VideoSize,
   pauseVideo(): void
 
 }
@@ -34,7 +36,8 @@ interface Props{
 interface State {
 	isLoading: boolean,
 	playerSize: PlayerSize,
-	visibleHotspots: HotspotData[],
+	videoSize: VideoSize,
+	visibleHotspots: VisualHotspot[],
 	hasError: boolean,
   showHotspots: boolean
 }
@@ -46,7 +49,8 @@ export default class Stage extends Component<Props, State> {
 
 	initialState = {
     isLoading: false,
-    playerSize: this.props.initialPlayerSize,
+    playerSize: this.props.getPlayerSize(),
+		videoSize: this.props.getVideoSize(),
     visibleHotspots: [],
     showHotspots: false,
     hasError: false
@@ -77,6 +81,7 @@ export default class Stage extends Component<Props, State> {
 		const {hotspots, error} = result;
 
 		if (error || !hotspots) {
+      log('error', '_handleCuepoints', 'failed to load cuepoints', { error: error ? error.message : 'missing hotspots array'});
 			this.setState({
 				isLoading: false,
 				hasError: true,
@@ -85,6 +90,7 @@ export default class Stage extends Component<Props, State> {
 		}
 
 		this.engine = new HotspotsEngine(hotspots);
+    this.engine.updateLayout(this.state.playerSize, this.state.videoSize);
 
 		this.setState({
 			isLoading: false,
@@ -99,7 +105,7 @@ export default class Stage extends Component<Props, State> {
 		this.reset();
 	}
 
-	private syncVisibleHotspots() {
+	private syncVisibleHotspots(forceSnapshot = false) {
     const { getCurrentTime } = this.props;
 
     this.setState((state : State) => {
@@ -109,8 +115,7 @@ export default class Stage extends Component<Props, State> {
         };
       }
 
-      const hotspotsUpdate = this.engine.updateTime(getCurrentTime());
-
+      const hotspotsUpdate = this.engine.updateTime(getCurrentTime(), forceSnapshot);
       if (hotspotsUpdate.snapshot) {
         return {
           visibleHotspots: hotspotsUpdate.snapshot
@@ -126,7 +131,7 @@ export default class Stage extends Component<Props, State> {
       const { show, hide } = hotspotsUpdate.delta;
 
       if (show.length !== 0 || hide.length !== 0) {
-        let visibleHotspots: HotspotData[] = state.visibleHotspots;
+        let visibleHotspots: VisualHotspot[] = state.visibleHotspots;
         show.forEach(hotspot => {
           const index = visibleHotspots.indexOf(hotspot);
           if (index === -1) {
@@ -148,10 +153,20 @@ export default class Stage extends Component<Props, State> {
     });
   }
 
-	resize = (size: PlayerSize): void => {
+	handleResize = (): void => {
+  	const { getPlayerSize, getVideoSize } = this.props;
+
 		this.setState({
-			playerSize: size
-		})
+			playerSize: getPlayerSize(),
+			videoSize: getVideoSize()
+		},() => {
+      if (this.engine) {
+
+
+        this.engine.updateLayout(this.state.playerSize, this.state.videoSize);
+        this.syncVisibleHotspots(true);
+      }
+		});
 	}
 
 	private reset = () => {
@@ -164,33 +179,27 @@ export default class Stage extends Component<Props, State> {
 		});
 	}
 
-	private renderHotspots = (hotspotsData: HotspotData[]) => {
-		if (!hotspotsData) {
+	private renderHotspots = (visualHotspot: VisualHotspot[]) => {
+		if (!visualHotspot) {
 			return null;
 		}
 
     const { pauseVideo } = this.props;
 
 
-    return hotspotsData.map(hotspotData => (<Hotspot pauseVideo={pauseVideo} key={hotspotData.id} visible={true} hotspot={hotspotData}/>
+    return visualHotspot.map(hotspotData => (<Hotspot pauseVideo={pauseVideo} key={hotspotData.id} visible={true} hotspot={hotspotData}/>
 		));
 	}
 
 	render() {
-		const { visibleHotspots, playerSize, showHotspots } = this.state;
+		const { visibleHotspots, showHotspots } = this.state;
 		const hotspotsElements = showHotspots ? this.renderHotspots(visibleHotspots) : null;
-
-		const transform = calculateOverlayTransform(
-			playerSize,
-			{ width: 500, height: 245 }, // this.props.videoSize,
-			{ width: 720, height: 405 },// this.props.stageSize,
-		);
 
 		const style =
 			{
 				position: 'absolute',
-				transformOrigin: 'top left',
-				transform
+				display: 'block'
+
 			};
 
 	return (
