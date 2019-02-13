@@ -148,15 +148,30 @@ mw.kalturaPluginWrapper(function(){
 		addBindings: function() {
 			var _this = this;
 
+			this.bind('onToggleFullscreen', function() {
+        if (!mw.isIphone()) {
+          return;
+        }
+
+        log('log', 'plugin.addBindings[onToggleFullscreen]', 'handle fullscreen toggle manually');
+        const manager = _this.getPlayer().layoutBuilder.fullScreenManager;
+
+        if (!manager.inFullScreen) {
+        	manager.doContextTargetFullscreen();
+        	manager.inFullScreen = true;
+        	return;
+        }
+
+        manager.restoreContextPlayer();
+        manager.inFullScreen = false;
+			});
+
 			this.bind( 'playerReady', function(){
 
-        try {
-          const videoElement = _this.getPlayer().getVideoHolder().find('video')[0];
-          jQuery(videoElement).on("loadeddata", _this.handleVideoSizeChange.bind(_this));
-
-        } catch (e) {
-          log('error', 'plugin.setup', 'failed to register to video element loaded metadata', { error: e.message});
-        }
+				if (mw.isIphone()) {
+            log('log', 'plugin.addBindings[playerReady]', 'iphone detected, prevent native full screen and handle it manually');
+						mw.setConfig('EmbedPlayer.ExternalFullScreenControl', true);
+				}
 
         const props = {
           getCurrentTime: _this._getCurrentTime.bind(_this),
@@ -175,6 +190,7 @@ mw.kalturaPluginWrapper(function(){
 
 
       this.bind('firstPlay seeked', function(){
+
         if (!_this._wasPlayed) {
         	_this.stage.showHotspots();
           _this._wasPlayed = true;
