@@ -27,7 +27,7 @@ mw.kalturaPluginWrapper(function(){
 		stage: null,
 		defaultConfig: {
 			parent: 'videoHolder',
-			iphoneFullscreenSupport: true,
+			iphoneFullscreenSupport: false,
 			order: 1
 		},
 
@@ -144,7 +144,6 @@ mw.kalturaPluginWrapper(function(){
 		},
 
 		getVideoSize: function() {
-
 			if (!this._videoSize) {
 				return null
 			};
@@ -159,8 +158,6 @@ mw.kalturaPluginWrapper(function(){
 		},
 
     enterFullscreenInIphone: function() {
-			return;
-
       if (!this.enableIphoneFullscreen()) {
         return;
       }
