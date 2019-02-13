@@ -27,6 +27,7 @@ mw.kalturaPluginWrapper(function(){
 		stage: null,
 		defaultConfig: {
 			parent: 'videoHolder',
+			iphoneFullscreenSupport: true,
 			order: 1
 		},
 
@@ -56,6 +57,14 @@ mw.kalturaPluginWrapper(function(){
 
 
     setup: function(){
+
+      if (this.enableIphoneFullscreen()) {
+        log('log', 'plugin.addBindings[playerReady]', 'iphone detected, prevent native fullscreen and use inline player');
+        mw.setConfig('EmbedPlayer.ExternalFullScreenControl', true);
+        this.getPlayer().inline = true; // prevent auto full screen when start playing
+	      //this.getPlayer().useNativePlayerControls = function() { return false;};
+      }
+
       this.shouldEnableLogs();
 			this.addBindings();
 
@@ -145,34 +154,38 @@ mw.kalturaPluginWrapper(function(){
 			}
 		},
 
+		enableIphoneFullscreen: function() {
+			return mw.isIphone() && this.getConfig('iphoneFullscreenSupport');
+		},
+
+    enterFullscreenInIphone: function() {
+			return;
+
+      if (!this.enableIphoneFullscreen()) {
+        return;
+      }
+
+      log('log', 'plugin.addBindings[onToggleFullscreen]', 'handle fullscreen toggle manually');
+      const manager = this.getPlayer().layoutBuilder.fullScreenManager;
+
+      if (!manager.inFullScreen) {
+        manager.doContextTargetFullscreen();
+        manager.inFullScreen = true;
+        return;
+      }
+
+      manager.restoreContextPlayer();
+      manager.inFullScreen = false;
+    },
+
 		addBindings: function() {
 			var _this = this;
 
 			this.bind('onToggleFullscreen', function() {
-        if (!mw.isIphone()) {
-          return;
-        }
-
-        log('log', 'plugin.addBindings[onToggleFullscreen]', 'handle fullscreen toggle manually');
-        const manager = _this.getPlayer().layoutBuilder.fullScreenManager;
-
-        if (!manager.inFullScreen) {
-        	manager.doContextTargetFullscreen();
-        	manager.inFullScreen = true;
-        	return;
-        }
-
-        manager.restoreContextPlayer();
-        manager.inFullScreen = false;
+				_this.enterFullscreenInIphone();
 			});
 
 			this.bind( 'playerReady', function(){
-
-				if (mw.isIphone()) {
-            log('log', 'plugin.addBindings[playerReady]', 'iphone detected, prevent native full screen and handle it manually');
-						mw.setConfig('EmbedPlayer.ExternalFullScreenControl', true);
-				}
-
         const props = {
           getCurrentTime: _this._getCurrentTime.bind(_this),
 					loadCuePoints: _this.loadCuePoints.bind(_this),
@@ -188,8 +201,18 @@ mw.kalturaPluginWrapper(function(){
         _this.stage.handleResize();
 			});
 
+      this.bind('firstPlay', function(){
 
-      this.bind('firstPlay seeked', function(){
+        if (!_this._wasPlayed) {
+          _this.stage.showHotspots();
+          _this._wasPlayed = true;
+        }
+
+        _this.enterFullscreenInIphone();
+
+      });
+
+      this.bind('seeked', function(){
 
         if (!_this._wasPlayed) {
         	_this.stage.showHotspots();
