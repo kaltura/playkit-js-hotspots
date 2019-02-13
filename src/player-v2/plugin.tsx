@@ -42,13 +42,13 @@ mw.kalturaPluginWrapper(function(){
 		},
 
 		handleVideoSizeChange:  function(e: any) {
-			const width = e.target.videoWidth;
-			const height = e.target.videoHeight;
+      const { width, height } = this.getPlayer().evaluate("{mediaProxy.entry}");
+      log('debug', 'plugin.handleVideoSizeChange', 'use entry size provided by player to calculate actual stage size', {width, height});
 
 			if (!width || !height) {
 				this._videoSize = null;
 			} else {
-        this._videoSize = { width: e.target.videoWidth, height: e.target.videoHeight };
+        this._videoSize = { width, height };
 			}
 
       this.stage.handleResize();
@@ -186,13 +186,6 @@ mw.kalturaPluginWrapper(function(){
         _this._wasPlayed = false;
         _this._videoSize = null;
 
-        try {
-          const videoElement = _this.getPlayer().getVideoHolder().find('video')[0];
-          jQuery(videoElement).off( "loadeddata");
-        }catch (e) {
-          // nothing to do about it :/
-        }
-
         // @ts-ignore
         render(h(null), jQuery('[id="hotspotsOverlay"]')[0], _this._root);
         _this._root = null;
@@ -202,6 +195,10 @@ mw.kalturaPluginWrapper(function(){
 
       this.bind('monitorEvent', function(){
         _this.stage.notify({ type: NotifyEventTypes.Monitor });
+      });
+
+      this.bind('mediaLoaded', function(){
+        _this.handleVideoSizeChange();
       });
 
       this.bind('seeked', function(){
