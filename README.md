@@ -19,7 +19,8 @@ Hotspots plugin is deployed to production as part of [mwEmbed repo](https://gith
 
 	* if needed you can enable debug logs in console by using a query string `?debugKalturaPlayer` and filtering messages with `[hotspots]` in the console.
 5. once satisfied commit and push changes **in this branch**.
-6. tag this version and update `modules/hotspots/readme.md` in [mwEmbed repo](https://github.com/kaltura/mwEmbed).
+1. update library version in `package.json` and modify `CHANGELOG.md` file. commit your changes and create a release in github.
+6. update `modules/hotspots/readme.md` in [mwEmbed repo](https://github.com/kaltura/mwEmbed).
 7. commit and push changes in [mwEmbed repo](https://github.com/kaltura/mwEmbed).
 8. go grab a coffee.
 
