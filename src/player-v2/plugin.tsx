@@ -249,7 +249,7 @@ mw.kalturaPluginWrapper(function(){
 		getComponent: function () {
 
 			if ( ! this.$el) {
-				this.$el = jQuery( "<div></div>" ).attr( 'id', 'hotspotsOverlay' ).css({ position: 'absolute', height: '100%', width: '100%'});
+				this.$el = jQuery( "<div></div>" ).attr( 'id', 'hotspotsOverlay' ).css({ position: 'absolute', height: '100%', width: '100%', top: 0, left: 0});
 			}
 
 			return this.$el;
