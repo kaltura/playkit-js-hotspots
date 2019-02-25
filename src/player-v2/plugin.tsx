@@ -40,14 +40,14 @@ function isIphone() {
 }
 
 function shouldEnableIphoneMode(
-    iphoneFullscreenSupport: boolean | undefined
+    pluginSupportEnabled: boolean | undefined
 ): boolean {
-    const iphoneFullscreenSupportDefined =
-        typeof iphoneFullscreenSupport !== "undefined";
+    const pluginSupportEnabledDefined =
+        typeof pluginSupportEnabled !== "undefined";
 
     if (
         !isIphone() ||
-        (iphoneFullscreenSupportDefined && !iphoneFullscreenSupport)
+        (pluginSupportEnabledDefined && !pluginSupportEnabled)
     ) {
         return false;
     }
@@ -60,7 +60,7 @@ function shouldEnableIphoneMode(
         // @ts-ignore
         const playerConfig = window.kalturaIframePackageData.playerConfig;
         const inlineMode = playerConfig.vars[WEBKIT_PLAYS_INLINE_KEY];
-        const iphoneFullscreenSupport =
+        const pluginSupportEnabled =
             playerConfig.plugins.hotspots.iphoneFullscreenSupport;
         const inlineModeDefined = typeof inlineMode !== "undefined";
 
@@ -71,14 +71,14 @@ function shouldEnableIphoneMode(
             {
                 inlineMode,
                 inlineModeDefined,
-                iphoneFullscreenSupport,
+                pluginSupportEnabled,
                 isIphone: isIphone()
             }
         );
 
         if (
             inlineModeDefined ||
-            !shouldEnableIphoneMode(iphoneFullscreenSupport)
+            !shouldEnableIphoneMode(pluginSupportEnabled)
         ) {
             log(
                 "log",
@@ -251,10 +251,18 @@ mw.kalturaPluginWrapper(function() {
             },
 
             enableIphoneFullscreen: function() {
-                const iphoneFullscreenSupport = this.getConfig(
+                const pluginSupportEnabled = this.getConfig(
                     "iphoneFullscreenSupport"
                 );
-                return shouldEnableIphoneMode(iphoneFullscreenSupport);
+
+              const inlineMode = this.embedPlayer.getKalturaConfig('', WEBKIT_PLAYS_INLINE_KEY);
+              const inlineModeDefined = typeof inlineMode !== 'undefined';
+
+              const result = shouldEnableIphoneMode(pluginSupportEnabled) && (!inlineModeDefined || inlineMode);
+
+              log('debug', 'plugin.enableIphoneFullscreen', `check if iphone fullscreen is enabled resulted with ${result}`, {inlineMode, inlineModeDefined, pluginSupportEnabled});
+
+              return result;
             },
 
             enterFullscreenInIphone: function() {
@@ -327,8 +335,9 @@ mw.kalturaPluginWrapper(function() {
                     _this._wasPlayed = false;
                     _this._videoSize = null;
 
-                    // @ts-ignore
+
                     render(
+                        // @ts-ignore
                         h(null),
                         jQuery('[id="hotspotsOverlay"]')[0],
                         _this._root
