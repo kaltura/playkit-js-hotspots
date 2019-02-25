@@ -4,218 +4,252 @@ import Stage, { LoadCallback, NotifyEventTypes } from "../components/Stage";
 import { log, enableLog } from "../utils/logger";
 import { Hotspot } from "../utils/hotspot";
 
-function toObject(jsonAsString: string, defaultValue: { [key: string]: any } = {}): { error?: Error, result?: { [key: string]: any }} {
-	if (!jsonAsString) {
-		return defaultValue;
-	}
+function toObject(
+    jsonAsString: string,
+    defaultValue: { [key: string]: any } = {}
+): { error?: Error; result?: { [key: string]: any } } {
+    if (!jsonAsString) {
+        return defaultValue;
+    }
 
-	try {
-		return {result: JSON.parse(jsonAsString)};
-	} catch (e) {
-		return {error: e};
-	}
+    try {
+        return { result: JSON.parse(jsonAsString) };
+    } catch (e) {
+        return { error: e };
+    }
 }
 
+mw.kalturaPluginWrapper(function() {
+    mw.PluginManager.add(
+        "hotspots",
+        mw.KBaseComponent.extend({
+            _root: null,
+            _videoSize: null,
+            _wasPlayed: false,
+            stage: null,
+            defaultConfig: {
+                parent: "videoHolder",
+                order: 1
+            },
 
-mw.kalturaPluginWrapper(function(){
+            shouldEnableLogs() {
+                try {
+                    if (document.URL.indexOf("debugKalturaPlayer") !== -1) {
+                        enableLog("hotspots");
+                    }
+                } catch (e) {
+                    // do nothing
+                }
+            },
 
-	mw.PluginManager.add( 'hotspots', mw.KBaseComponent.extend( {
+            handleVideoSizeChange: function(e: any) {
+                const { width, height } = this.getPlayer().evaluate(
+                    "{mediaProxy.entry}"
+                );
+                log(
+                    "debug",
+                    "plugin.handleVideoSizeChange",
+                    "use entry size provided by player to calculate actual stage size",
+                    { width, height }
+                );
 
-		_root: null,
-		_videoSize: null,
-    _wasPlayed: false,
-		stage: null,
-		defaultConfig: {
-			parent: 'videoHolder',
-			order: 1
-		},
+                if (!width || !height) {
+                    this._videoSize = null;
+                } else {
+                    this._videoSize = { width, height };
+                }
 
-		shouldEnableLogs() {
-			try
-			{
-        if ( document.URL.indexOf( 'debugKalturaPlayer' ) !== -1 ) {
-         enableLog('hotspots');
-        }
-			}catch(e) {
-				// do nothing
-			}
-		},
+                this.stage.handleResize();
+            },
 
-		handleVideoSizeChange:  function(e: any) {
-      const { width, height } = this.getPlayer().evaluate("{mediaProxy.entry}");
-      log('debug', 'plugin.handleVideoSizeChange', 'use entry size provided by player to calculate actual stage size', {width, height});
+            setup: function() {
+                this.shouldEnableLogs();
+                this.addBindings();
+            },
 
-			if (!width || !height) {
-				this._videoSize = null;
-			} else {
-        this._videoSize = { width, height };
-			}
+            pauseVideo: function() {
+                this.getPlayer().sendNotification("doPause");
+            },
 
-      this.stage.handleResize();
-    },
+            getCuePoints: function() {
+                return this.cuePoints;
+            },
 
+            loadCuePoints: function(callback: LoadCallback) {
+                var _this = this;
+                // do the api request
+                this.getKalturaClient().doRequest(
+                    {
+                        service: "cuepoint_cuepoint",
+                        action: "list",
+                        "filter:entryIdEqual": this.getPlayer().kentryid,
+                        "filter:objectType": "KalturaCuePointFilter",
+                        "filter:cuePointTypeEqual": "annotation.Annotation",
+                        "filter:tagsLike": "hotspots"
+                    },
+                    function(data: any) {
+                        // if an error pop out:
+                        const hasError = !data || data.code;
 
-    setup: function(){
-      this.shouldEnableLogs();
-			this.addBindings();
+                        if (hasError) {
+                            callback({
+                                error: { message: data.code || "failure" }
+                            });
+                        } else {
+                            const hotspots: Hotspot[] = [];
+                            (data.objects || []).reduce(
+                                (acc: Hotspot[], cuePoint: any) => {
+                                    const {
+                                        result: partnerData,
+                                        error
+                                    } = toObject(cuePoint.partnerData);
+                                    if (
+                                        !partnerData ||
+                                        !partnerData.schemaVersion
+                                    ) {
+                                        log(
+                                            "warn",
+                                            "loadCuePoints",
+                                            `annotation '${
+                                                cuePoint.partnerData.id
+                                            }' has no schema version, skip annotation`
+                                        );
+                                        return acc;
+                                    }
 
-		},
+                                    const rawLayout = {
+                                        ...partnerData.layout
+                                    };
 
-		pauseVideo: function() {
-      this.getPlayer().sendNotification('doPause');
-    },
+                                    acc.push({
+                                        id: cuePoint.id,
+                                        startTime: cuePoint.startTime,
+                                        endTime: cuePoint.endTime,
+                                        label: cuePoint.text,
+                                        styles: partnerData.styles,
+                                        onClick: partnerData.onClick,
+                                        rawLayout: rawLayout
+                                    });
 
-		getCuePoints: function(){
-			return this.cuePoints;
-		},
+                                    return acc;
+                                },
+                                hotspots
+                            );
 
-		loadCuePoints: function( callback: LoadCallback ){
-			var _this = this;
-			// do the api request
-			this.getKalturaClient().doRequest({
-					'service': 'cuepoint_cuepoint',
-					'action': 'list',
-					'filter:entryIdEqual': this.getPlayer().kentryid,
-					'filter:objectType':'KalturaCuePointFilter',
-					'filter:cuePointTypeEqual':	'annotation.Annotation',
-					'filter:tagsLike' : 'hotspots'
-				},
-				function( data: any ) {
-          // if an error pop out:
-          const hasError = !data || data.code;
+                            callback({ hotspots });
+                        }
+                    }
+                );
+            },
 
-          if (hasError) {
-            callback({ error: { message: data.code || 'failure' } });
-          } else {
+            getPlayerSize: function() {
+                const videoHolder = this.getPlayer().getVideoHolder();
+                if (!videoHolder) {
+                    return null;
+                }
 
-            const hotspots: Hotspot[] = [];
-            (data.objects || []).reduce((acc: Hotspot[], cuePoint: any) => {
-              const { result: partnerData, error } = toObject(cuePoint.partnerData);
-              if (!partnerData || !partnerData.schemaVersion) {
-              	log('warn', 'loadCuePoints', `annotation '${cuePoint.partnerData.id}' has no schema version, skip annotation`);
-                return acc;
-              }
+                const width = videoHolder.width();
+                const height = videoHolder.height();
 
-              const rawLayout = {
-	              ...partnerData.layout
-              };
+                return {
+                    width,
+                    height
+                };
+            },
 
-              acc.push({
-                id: cuePoint.id,
-                startTime: cuePoint.startTime,
-                endTime: cuePoint.endTime,
-                label: cuePoint.text,
-                styles: partnerData.styles,
-                onClick: partnerData.onClick,
-                rawLayout: rawLayout
-              });
+            getVideoSize: function() {
+                if (!this._videoSize) {
+                    return null;
+                }
 
-              return acc;
-            }, hotspots);
+                return {
+                    ...this._videoSize
+                };
+            },
 
-            callback({ hotspots })
-          }
-        }
-			);
-		},
+            addBindings: function() {
+                var _this = this;
 
-		getPlayerSize: function() {
-			const videoHolder = this.getPlayer().getVideoHolder();
-			if (!videoHolder) {
-				return null;
-			}
+                this.bind("playerReady", function() {
+                    const props = {
+                        getCurrentTime: _this._getCurrentTime.bind(_this),
+                        loadCuePoints: _this.loadCuePoints.bind(_this),
+                        getPlayerSize: _this.getPlayerSize.bind(_this),
+                        getVideoSize: _this.getVideoSize.bind(_this),
+                        pauseVideo: _this.pauseVideo.bind(_this)
+                    };
 
-			const width = videoHolder.width();
-			const height = videoHolder.height();
+                    _this._root = render(
+                        <Stage {...props} ref={ref => (_this.stage = ref)} />,
+                        jQuery('[id="hotspotsOverlay"]')[0]
+                    );
+                });
 
-			return {
-				width,
-				height
-			}
-		},
+                this.bind("updateLayout", function() {
+                    _this.stage.handleResize();
+                });
 
-		getVideoSize: function() {
-			if (!this._videoSize) {
-				return null
-			};
+                this.bind("firstPlay", function() {
+                    if (!_this._wasPlayed) {
+                        _this.stage.showHotspots();
+                        _this._wasPlayed = true;
+                    }
+                });
 
-			return {
-				...this._videoSize
-			}
-		},
+                this.bind("seeked", function() {
+                    if (!_this._wasPlayed) {
+                        _this.stage.showHotspots();
+                        _this._wasPlayed = true;
+                    }
+                });
 
-		addBindings: function() {
-			var _this = this;
+                this.bind("onChangeMedia", function() {
+                    // DEVELOPER NOTICE: this is the destruction place.
+                    _this._wasPlayed = false;
+                    _this._videoSize = null;
 
-			this.bind( 'playerReady', function(){
-        const props = {
-          getCurrentTime: _this._getCurrentTime.bind(_this),
-					loadCuePoints: _this.loadCuePoints.bind(_this),
-					getPlayerSize: _this.getPlayerSize.bind(_this),
-					getVideoSize: _this.getVideoSize.bind(_this),
-          pauseVideo: _this.pauseVideo.bind(_this)
-				}
+                    // @ts-ignore
+                    render(
+                        h(null),
+                        jQuery('[id="hotspotsOverlay"]')[0],
+                        _this._root
+                    );
+                    _this._root = null;
+                    _this.stage = null;
+                });
 
-        _this._root = render(<Stage {...props} ref={(ref) => _this.stage = ref} ></Stage>, jQuery('[id="hotspotsOverlay"]')[0]);
-			});
+                this.bind("monitorEvent", function() {
+                    _this.stage.notify({ type: NotifyEventTypes.Monitor });
+                });
 
-			this.bind('updateLayout', function(){
-        _this.stage.handleResize();
-			});
+                this.bind("mediaLoaded", function() {
+                    _this.handleVideoSizeChange();
+                });
 
-      this.bind('firstPlay', function(){
+                this.bind("seeked", function() {
+                    _this.stage.notify({ type: NotifyEventTypes.Seeked });
+                });
+            },
 
-        if (!_this._wasPlayed) {
-          _this.stage.showHotspots();
-          _this._wasPlayed = true;
-        }
-      });
+            _getCurrentTime() {
+                return this.getPlayer().currentTime * 1000;
+            },
 
-      this.bind('seeked', function(){
+            getComponent: function() {
+                if (!this.$el) {
+                    this.$el = jQuery("<div></div>")
+                        .attr("id", "hotspotsOverlay")
+                        .css({
+                            position: "absolute",
+                            height: "100%",
+                            width: "100%",
+                            top: 0,
+                            left: 0
+                        });
+                }
 
-        if (!_this._wasPlayed) {
-        	_this.stage.showHotspots();
-          _this._wasPlayed = true;
-        }
-      });
-
-			this.bind('onChangeMedia', function() {
-				// DEVELOPER NOTICE: this is the destruction place.
-        _this._wasPlayed = false;
-        _this._videoSize = null;
-
-        // @ts-ignore
-        render(h(null), jQuery('[id="hotspotsOverlay"]')[0], _this._root);
-        _this._root = null;
-        _this.stage = null;
-
-      });
-
-      this.bind('monitorEvent', function(){
-        _this.stage.notify({ type: NotifyEventTypes.Monitor });
-      });
-
-      this.bind('mediaLoaded', function(){
-        _this.handleVideoSizeChange();
-      });
-
-      this.bind('seeked', function(){
-            _this.stage.notify({ type: NotifyEventTypes.Seeked });
-      });
-		},
-
-    _getCurrentTime() {
-			return this.getPlayer().currentTime * 1000;
-    },
-
-		getComponent: function () {
-
-			if ( ! this.$el) {
-				this.$el = jQuery( "<div></div>" ).attr( 'id', 'hotspotsOverlay' ).css({ position: 'absolute', height: '100%', width: '100%', top: 0, left: 0});
-			}
-
-			return this.$el;
-		},
-
-	} ) );
-})
+                return this.$el;
+            }
+        })
+    );
+});
