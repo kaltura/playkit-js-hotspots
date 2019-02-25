@@ -15,6 +15,18 @@ function toObject(jsonAsString: string, defaultValue: { [key: string]: any } = {
     return {error: e};
   }
 }
+
+(function shouldEnableLogs() {
+  try
+  {
+    if ( document.URL.indexOf( 'debugKalturaPlayer' ) !== -1 ) {
+      enableLog('hotspots');
+    }
+  }catch(e) {
+    // do nothing
+  }
+}());
+
 const WEBKIT_PLAYS_INLINE_KEY = 'EmbedPlayer.WebKitPlaysInline';
 
 function isIpad(){
@@ -72,17 +84,6 @@ mw.kalturaPluginWrapper(function(){
       iphoneFullscreenSupport: undefined, //important don't set it explicitly here to either false or true
       order: 1
     },
-
-		shouldEnableLogs() {
-			try
-			{
-        if ( document.URL.indexOf( 'debugKalturaPlayer' ) !== -1 ) {
-         enableLog('hotspots');
-        }
-			}catch(e) {
-				// do nothing
-			}
-		},
 
     handleVideoSizeChange:  function(e: any) {
       const { width, height } = this.getPlayer().evaluate("{mediaProxy.entry}");
