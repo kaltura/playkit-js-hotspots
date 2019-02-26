@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## 0.3.0 (2019-02-26)
+
+### Features
+
+* PATH-141: player-v2, show hotspots in iphone devices
+
+
 ## 0.2.1 (2019-02-15)
 
 ### Fix
