@@ -1,5 +1,6 @@
 import { h, Component } from "preact";
 import { Hotspot as HotspotData, VisualHotspot } from "../utils/hotspot";
+import { AnalyticsEvents } from "../utils/analyticsEvents";
 
 const defaultContainerStyles = {
 	position: 'absolute',
@@ -22,11 +23,13 @@ const defaultButtonsStyles = {
   'textRendering': 'geometricPrecision'
 };
 
+
 type Props = {
 	visible: boolean;
 	hotspot: VisualHotspot;
 	styles?: { [key:string]: any},
-  pauseVideo(): void
+  pauseVideo(): void,
+  sendAnalytics(event: AnalyticsEvents): void,
 }
 
 type State =  {
@@ -89,6 +92,7 @@ export default class Hotspot extends Component<Props, State> {
         }
         const url = prepareUrl(hotspot.onClick.url);
         window.open(url, '_top');
+        this.props.sendAnalytics({ eventNumber: 47, target: url, hotspotId: hotspot.id});
       }
         break;
       case 'openUrlInNewTab': {
@@ -101,6 +105,7 @@ export default class Hotspot extends Component<Props, State> {
         const url = prepareUrl(hotspot.onClick.url);
         try {
           window.open(url, '_blank');
+          this.props.sendAnalytics({ eventNumber: 47, target: url, hotspotId: hotspot.id});
         } catch(e) {
           window.open(url, '_top');
         }

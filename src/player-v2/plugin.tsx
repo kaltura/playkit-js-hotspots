@@ -3,6 +3,7 @@ import { h, render } from "preact";
 import Stage, { LoadCallback, NotifyEventTypes } from "../components/Stage";
 import { log, enableLog } from "../utils/logger";
 import { Hotspot } from "../utils/hotspot";
+import { AnalyticsEvents } from "../utils/analyticsEvents";
 
 function toObject(
     jsonAsString: string,
@@ -240,6 +241,31 @@ mw.kalturaPluginWrapper(function() {
                 };
             },
 
+          sendAnalytics: function(event: AnalyticsEvents) {
+              try {
+                const kanalonyPlugin = this.getPlayer().plugins.kAnalony;
+                if (!kanalonyPlugin) {
+                  log(
+                    "warn",
+                    "sendAnalytics",
+                    `cannot send analytics event, missing kAnalony plugin`,
+                    event
+                  );
+                  return;
+                }
+                const { eventNumber, ...rest } = event;
+
+                kanalonyPlugin.sendAnalytics(eventNumber, rest);
+              } catch (e) {
+                log(
+                  "error",
+                  "sendAnalytics",
+                  `cannot send analytics event with error '${e.message}'`,
+                  event
+                );
+              }
+          },
+
             getVideoSize: function() {
                 if (!this._videoSize) {
                     return null;
@@ -301,7 +327,8 @@ mw.kalturaPluginWrapper(function() {
                         loadCuePoints: _this.loadCuePoints.bind(_this),
                         getPlayerSize: _this.getPlayerSize.bind(_this),
                         getVideoSize: _this.getVideoSize.bind(_this),
-                        pauseVideo: _this.pauseVideo.bind(_this)
+                        pauseVideo: _this.pauseVideo.bind(_this),
+                      sendAnalytics: _this.sendAnalytics.bind(_this)
                     };
 
                     _this._root = render(

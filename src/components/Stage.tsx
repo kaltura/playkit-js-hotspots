@@ -3,6 +3,7 @@ import { Hotspot as HotspotData, VisualHotspot } from "../utils/hotspot";
 import Hotspot from './Hotspot';
 import { HotspotsEngine } from "../utils/hotspots-engine";
 import { log } from "../utils/logger";
+import { AnalyticsEvents } from "../utils/analyticsEvents";
 
 export type PlayerSize = { width: number, height: number};
 export type VideoSize = { width: number, height: number};
@@ -29,8 +30,8 @@ interface Props{
 	getCurrentTime() : number,
 	getPlayerSize(): PlayerSize,
 	getVideoSize(): VideoSize,
-  pauseVideo(): void
-
+  pauseVideo(): void,
+  sendAnalytics(event: AnalyticsEvents): void
 }
 
 interface State {
@@ -184,10 +185,10 @@ export default class Stage extends Component<Props, State> {
 			return null;
 		}
 
-    const { pauseVideo } = this.props;
+    const { pauseVideo, sendAnalytics } = this.props;
 
 
-    return visualHotspot.map(hotspotData => (<Hotspot pauseVideo={pauseVideo} key={hotspotData.id} visible={true} hotspot={hotspotData}/>
+    return visualHotspot.map(hotspotData => (<Hotspot pauseVideo={pauseVideo} key={hotspotData.id} visible={true} hotspot={hotspotData} sendAnalytics={sendAnalytics}/>
 		));
 	}
 
