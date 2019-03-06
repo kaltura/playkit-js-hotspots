@@ -8,6 +8,10 @@ All notable changes to this project will be documented in this file. See [standa
 
 * v2: collect analytics on hotspot click (PATH-142)
 
+### Fix
+* improve iphone setup mode recognition (PATH-141)
+
+
 ## 0.3.0 (2019-02-26)
 
 ### Features
