@@ -96,7 +96,7 @@ function shouldInitializeInlineMode(playerConfig: any) {
     log(
       "log",
       "setupIphoneEnvironment",
-      "setup iphone environment to handle use custom fullscreen handling"
+      "modify window.kalturaIframePackageData.playerConfig to use inline fullscreen"
     );
     playerConfig.vars[WEBKIT_PLAYS_INLINE_KEY] = true;
 
@@ -111,24 +111,41 @@ function shouldInitializeInlineMode(playerConfig: any) {
 
 $( mw ).bind( 'EmbedPlayerNewPlayer', function(event: any, embedPlayer: any){
   try {
-    if (!shouldInitializeInlineMode(embedPlayer.playerConfig)) {
+    if (embedPlayer.playerConfig) {
+
+      if (!shouldInitializeInlineMode(embedPlayer.playerConfig)) {
+        log(
+          "log",
+          "mw.bind('EmbedPlayerNewPlayer')",
+          "setup iphone environment is aborted by configuration (either iphone not detected, inline flag is already set or explicitly configured not to handle iphone fullscreen by plugin configuration)"
+        );
+        return;
+      }
+
       log(
         "log",
         "mw.bind('EmbedPlayerNewPlayer')",
-        "setup iphone environment is aborted by configuration (either iphone not detected, inline flag is already set or explicitly configured not to handle iphone fullscreen by plugin configuration)"
+        "modify embedPlayer.playerConfig to use inline fullscreen"
       );
-      return;
-    }
-
-    log(
-      "log",
-      "mw.bind('EmbedPlayerNewPlayer')",
-      "setup iphone environment to handle use custom fullscreen handling"
-    );
-    if (embedPlayer.playerConfig) {
       embedPlayer.playerConfig.vars[WEBKIT_PLAYS_INLINE_KEY] = true;
     } else if( mw.getConfig( 'KalturaSupport.PlayerConfig' ) ) {
-      mw.getConfig('KalturaSupport.PlayerConfig').vars[WEBKIT_PLAYS_INLINE_KEY] = true;
+      const supportPlayerConfig = mw.getConfig('KalturaSupport.PlayerConfig');
+      if (!shouldInitializeInlineMode(supportPlayerConfig)) {
+        log(
+          "log",
+          "mw.bind('EmbedPlayerNewPlayer')",
+          "setup iphone environment is aborted by configuration (either iphone not detected, inline flag is already set or explicitly configured not to handle iphone fullscreen by plugin configuration)"
+        );
+        return;
+      }
+
+      log(
+        "log",
+        "mw.bind('EmbedPlayerNewPlayer')",
+        "modify mw.getConfig('KalturaSupport.PlayerConfig') to use inline fullscreen"
+      );
+
+      supportPlayerConfig.vars[WEBKIT_PLAYS_INLINE_KEY] = true;
     }
 
   } catch (e) {
