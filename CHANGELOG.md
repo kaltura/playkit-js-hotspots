@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+
+## 0.4.0 (2019-03-07)
+
+### Fix
+
+* v2:  adjust plugin to production kaltura bundler
+
+
 ## 0.4.0 (2019-03-06)
 
 ### Features
