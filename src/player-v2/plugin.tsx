@@ -5,6 +5,8 @@ import { log, enableLog } from "../utils/logger";
 import { Hotspot } from "../utils/hotspot";
 import { AnalyticsEvents } from "../utils/analyticsEvents";
 
+(function (mw, $) {
+
 function toObject(
     jsonAsString: string,
     defaultValue: { [key: string]: any } = {}
@@ -461,3 +463,4 @@ mw.kalturaPluginWrapper(function() {
         })
     );
 });
+})((window as any).mw, (window as any).jQuery);
