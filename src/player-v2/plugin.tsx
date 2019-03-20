@@ -2,7 +2,7 @@
 import { h, render } from "preact";
 import Stage, { LoadCallback, NotifyEventTypes } from "../components/Stage";
 import { log, enableLog } from "../utils/logger";
-import { Hotspot } from "../utils/hotspot";
+import { RawLayoutHotspot } from "../utils/hotspot";
 import { AnalyticsEvents } from "../utils/analyticsEvents";
 
 (function (mw, $) {
@@ -235,9 +235,9 @@ mw.kalturaPluginWrapper(function() {
                                 error: { message: data.code || "failure" }
                             });
                         } else {
-                            const hotspots: Hotspot[] = [];
+                            const hotspots: RawLayoutHotspot[] = [];
                             (data.objects || []).reduce(
-                                (acc: Hotspot[], cuePoint: any) => {
+                                (acc: RawLayoutHotspot[], cuePoint: any) => {
                                     const {
                                         result: partnerData,
                                         error

@@ -1,13 +1,13 @@
 import { h, Component } from "preact";
-import { Hotspot as HotspotData, VisualHotspot } from "../utils/hotspot";
+import { RawLayoutHotspot, LayoutHotspot } from "../utils/hotspot";
 import Hotspot from './Hotspot';
-import { HotspotsEngine } from "../utils/hotspots-engine";
+import { CuepointLayoutEngine, RawLayoutCuepoint } from 'playkit-js-ovp/cuepointLayoutEngine';
 import { log } from "../utils/logger";
 import { AnalyticsEvents } from "../utils/analyticsEvents";
 
 export type PlayerSize = { width: number, height: number};
 export type VideoSize = { width: number, height: number};
-export type LoadCallback = (result: { error?: {message: string}, hotspots?: HotspotData[]}) => void;
+export type LoadCallback = (result: { error?: {message: string}, hotspots?: RawLayoutHotspot[]}) => void;
 
 export enum NotifyEventTypes {
 	Monitor = 'monitor',
@@ -38,7 +38,7 @@ interface State {
 	isLoading: boolean,
 	playerSize: PlayerSize,
 	videoSize: VideoSize,
-	visibleHotspots: VisualHotspot[],
+	visibleHotspots: LayoutHotspot[],
 	hasError: boolean,
   showHotspots: boolean
 }
@@ -46,7 +46,7 @@ interface State {
 const PlayerUpdateEvent = "updatePlayHeadPercent:hotspots";
 
 export default class Stage extends Component<Props, State> {
-	engine: HotspotsEngine | null = null;
+	engine: CuepointLayoutEngine<RawLayoutCuepoint, LayoutHotspot> | null = null;
 
 	initialState = {
     isLoading: false,
@@ -78,7 +78,7 @@ export default class Stage extends Component<Props, State> {
     }
   }
 
-	private _handleCuepoints = (result: { error?: {message: string}, hotspots?: any[]}) => {
+	private _handleCuepoints = (result: { error?: {message: string}, hotspots?: RawLayoutHotspot[]}) => {
 		const {hotspots, error} = result;
 
 		if (error || !hotspots) {
@@ -90,7 +90,7 @@ export default class Stage extends Component<Props, State> {
 			return;
 		}
 
-		this.engine = new HotspotsEngine(hotspots);
+		this.engine = new CuepointLayoutEngine<RawLayoutCuepoint, LayoutHotspot>(hotspots);
     this.engine.updateLayout(this.state.playerSize, this.state.videoSize);
 
 		this.setState({
@@ -132,7 +132,7 @@ export default class Stage extends Component<Props, State> {
       const { show, hide } = hotspotsUpdate.delta;
 
       if (show.length !== 0 || hide.length !== 0) {
-        let visibleHotspots: VisualHotspot[] = state.visibleHotspots;
+        let visibleHotspots: LayoutHotspot[] = state.visibleHotspots;
         show.forEach(hotspot => {
           const index = visibleHotspots.indexOf(hotspot);
           if (index === -1) {
@@ -180,7 +180,7 @@ export default class Stage extends Component<Props, State> {
 		});
 	}
 
-	private renderHotspots = (visualHotspot: VisualHotspot[]) => {
+	private renderHotspots = (visualHotspot: LayoutHotspot[]) => {
 		if (!visualHotspot) {
 			return null;
 		}

@@ -1,3 +1,4 @@
+import { RawLayoutCuepoint, LayoutCuepoint} from 'playkit-js-ovp/cuepointLayoutEngine'
 export interface OpenUrl {
 	type: 'openUrl',
 	url: string
@@ -8,24 +9,13 @@ export interface OpenUrlInNewTab {
   url: string
 }
 
-
 type OnClickAction = OpenUrl | OpenUrlInNewTab;
 
-export interface Layout {
-  x: number, y: number, width: number, height: number
-}
-
-export interface Hotspot {
-	id: string,
-	startTime: number,
-	endTime?: number,
+export type RawLayoutHotspot =  RawLayoutCuepoint & {
 	onClick?: OnClickAction,
 	label?: string,
-	rawLayout: { relativeX: number, relativeY: number, relativeWidth: number, relativeHeight: number, stageWidth: number, stageHeight: number }
 	styles: { [key: string] : string}
 }
 
-export interface VisualHotspot extends Hotspot {
-  layout: Layout
-}
 
+export type LayoutHotspot = RawLayoutHotspot & LayoutCuepoint;
