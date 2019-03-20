@@ -1,7 +1,7 @@
 //let poly = require("preact-cli/lib/lib/webpack/polyfills");
 import { h, render } from "preact";
 import Stage, { LoadCallback, NotifyEventTypes } from "../components/Stage";
-import { log, enableLog } from "../utils/logger";
+import { log, enableLog } from "playkit-js-ovp/logger";
 import { RawLayoutHotspot } from "../utils/hotspot";
 import { AnalyticsEvents } from "../utils/analyticsEvents";
 

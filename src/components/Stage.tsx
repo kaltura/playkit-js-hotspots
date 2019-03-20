@@ -2,7 +2,7 @@ import { h, Component } from "preact";
 import { RawLayoutHotspot, LayoutHotspot } from "../utils/hotspot";
 import Hotspot from './Hotspot';
 import { CuepointLayoutEngine, RawLayoutCuepoint } from 'playkit-js-ovp/cuepointLayoutEngine';
-import { log } from "../utils/logger";
+import { log } from "playkit-js-ovp/logger";
 import { AnalyticsEvents } from "../utils/analyticsEvents";
 
 export type PlayerSize = { width: number, height: number};
