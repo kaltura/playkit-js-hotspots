@@ -9,7 +9,7 @@ export default (config, env, helpers) => {
 
   config.module.loaders.push({
       test: /\.[tj]sx?$/,
-      loader: "ts-loader"
+      loader: "ts-loader",
   });
 
   if (env.production) {
@@ -18,5 +18,6 @@ export default (config, env, helpers) => {
 
   const entrypoint = env.template.replace(/ejs$/, "js");
   config.resolve.alias['preact-cli-entrypoint'] = path.resolve(__dirname, entrypoint);
+  config.resolve.symlinks = false;
 
 };
