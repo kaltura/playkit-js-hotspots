@@ -3,7 +3,13 @@
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
 
-## 0.4.0 (2019-03-07)
+## 0.5.0 (2019-03-21)
+
+### Feat
+
+* v2:  remove support for hotspot in iphone (should be added to kms go in the future)
+
+## 0.4.1 (2019-03-07)
 
 ### Fix
 
