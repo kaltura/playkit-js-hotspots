@@ -42,123 +42,6 @@ function isIphone() {
     return navigator.userAgent.indexOf("iPhone") != -1 && !isIpad();
 }
 
-function shouldEnableIphoneMode(
-    pluginSupportEnabled: boolean | undefined
-): boolean {
-    const pluginSupportEnabledDefined =
-        typeof pluginSupportEnabled !== "undefined";
-
-    if (
-        !isIphone() ||
-        (pluginSupportEnabledDefined && !pluginSupportEnabled)
-    ) {
-        return false;
-    }
-
-    return true;
-}
-
-function shouldInitializeInlineMode(playerConfig: any) {
-    // @ts-ignore
-    const inlineMode = playerConfig && playerConfig.vars ? playerConfig.vars[WEBKIT_PLAYS_INLINE_KEY] : undefined;
-    const pluginSupportEnabled = playerConfig && playerConfig.plugins && playerConfig.plugins.hotspots ? playerConfig.plugins.hotspots.iphoneFullscreenSupport : undefined;
-    const inlineModeDefined = typeof inlineMode !== "undefined";
-
-    const result = !inlineModeDefined && shouldEnableIphoneMode(pluginSupportEnabled);
-    log(
-      "debug",
-      "shouldInitializeInlineMode",
-      "check conditions needed to setup environment",
-      {
-        inlineMode,
-        inlineModeDefined,
-        pluginSupportEnabled,
-        isIphone: isIphone(),
-        result
-      }
-    );
-
-    return result;
-}
-
-(function setupIphoneEnvironment() {
-  try {
-    // @ts-ignore
-    const playerConfig = window.kalturaIframePackageData.playerConfig;
-
-    if (!shouldInitializeInlineMode(playerConfig)) {
-      log(
-        "log",
-        "setupIphoneEnvironment",
-        "setup iphone environment is aborted by configuration (either iphone not detected, inline flag is already set or explicitly configured not to handle iphone fullscreen by plugin configuration)"
-      );
-      return;
-    }
-
-    log(
-      "log",
-      "setupIphoneEnvironment",
-      "modify window.kalturaIframePackageData.playerConfig to use inline fullscreen"
-    );
-    playerConfig.vars[WEBKIT_PLAYS_INLINE_KEY] = true;
-
-  } catch (e) {
-    log(
-      "error",
-      "setupIphoneEnvironment",
-      `failed to setup iphone environment with error ${e.message}`
-    );
-  }
-})();
-
-$( mw ).bind( 'EmbedPlayerNewPlayer', function(event: any, embedPlayer: any){
-  try {
-    if (embedPlayer.playerConfig) {
-
-      if (!shouldInitializeInlineMode(embedPlayer.playerConfig)) {
-        log(
-          "log",
-          "mw.bind('EmbedPlayerNewPlayer')",
-          "setup iphone environment is aborted by configuration (either iphone not detected, inline flag is already set or explicitly configured not to handle iphone fullscreen by plugin configuration)"
-        );
-        return;
-      }
-
-      log(
-        "log",
-        "mw.bind('EmbedPlayerNewPlayer')",
-        "modify embedPlayer.playerConfig to use inline fullscreen"
-      );
-      embedPlayer.playerConfig.vars[WEBKIT_PLAYS_INLINE_KEY] = true;
-    } else if( mw.getConfig( 'KalturaSupport.PlayerConfig' ) ) {
-      const supportPlayerConfig = mw.getConfig('KalturaSupport.PlayerConfig');
-      if (!shouldInitializeInlineMode(supportPlayerConfig)) {
-        log(
-          "log",
-          "mw.bind('EmbedPlayerNewPlayer')",
-          "setup iphone environment is aborted by configuration (either iphone not detected, inline flag is already set or explicitly configured not to handle iphone fullscreen by plugin configuration)"
-        );
-        return;
-      }
-
-      log(
-        "log",
-        "mw.bind('EmbedPlayerNewPlayer')",
-        "modify mw.getConfig('KalturaSupport.PlayerConfig') to use inline fullscreen"
-      );
-
-      supportPlayerConfig.vars[WEBKIT_PLAYS_INLINE_KEY] = true;
-    }
-
-  } catch (e) {
-    log(
-      "error",
-      "mw.bind('EmbedPlayerNewPlayer')",
-      `failed to setup iphone environment with error ${e.message}`
-    );
-  }
-});
-
 mw.kalturaPluginWrapper(function() {
     mw.PluginManager.add(
         "hotspots",
@@ -169,7 +52,6 @@ mw.kalturaPluginWrapper(function() {
             stage: null,
             defaultConfig: {
                 parent: "videoHolder",
-                iphoneFullscreenSupport: undefined, //important don't set it explicitly here to either false or true
                 order: 1
             },
 
@@ -194,13 +76,13 @@ mw.kalturaPluginWrapper(function() {
             },
 
             setup: function() {
-                if (this.enableIphoneFullscreen()) {
+                if (isIphone()) {
                     log(
                         "log",
                         "setup",
-                        "iphone detected, prevent native fullscreen and use inline player"
+                        "iphone detected, disable plugin"
                     );
-                    mw.setConfig("EmbedPlayer.ExternalFullScreenControl", true);
+                    return;
                 }
 
                 this.addBindings();
@@ -331,50 +213,8 @@ mw.kalturaPluginWrapper(function() {
                 };
             },
 
-            enableIphoneFullscreen: function() {
-                const pluginSupportEnabled = this.getConfig(
-                    "iphoneFullscreenSupport"
-                );
-
-              const inlineMode = this.embedPlayer.getKalturaConfig('', WEBKIT_PLAYS_INLINE_KEY);
-              const inlineModeDefined = typeof inlineMode !== 'undefined';
-
-              const result = shouldEnableIphoneMode(pluginSupportEnabled) && (!inlineModeDefined || inlineMode);
-
-              log('debug', 'plugin.enableIphoneFullscreen', `check if iphone fullscreen is enabled resulted with ${result}`, {inlineMode, inlineModeDefined, pluginSupportEnabled});
-
-              return result;
-            },
-
-            enterFullscreenInIphone: function() {
-                if (!this.enableIphoneFullscreen()) {
-                    return;
-                }
-
-                log(
-                    "log",
-                    "plugin.addBindings[onToggleFullscreen]",
-                    "handle iphone fullscreen toggle manually"
-                );
-                const manager = this.getPlayer().layoutBuilder
-                    .fullScreenManager;
-
-                if (!manager.inFullScreen) {
-                    manager.doContextTargetFullscreen();
-                    manager.inFullScreen = true;
-                    return;
-                }
-
-                manager.restoreContextPlayer();
-                manager.inFullScreen = false;
-            },
-
             addBindings: function() {
                 var _this = this;
-
-                this.bind("onToggleFullscreen", function() {
-                    _this.enterFullscreenInIphone();
-                });
 
                 this.bind("playerReady", function() {
                     const props = {
@@ -402,7 +242,6 @@ mw.kalturaPluginWrapper(function() {
                         _this._wasPlayed = true;
                     }
 
-                    _this.enterFullscreenInIphone();
                 });
 
                 this.bind("seeked", function() {
