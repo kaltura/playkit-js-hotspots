@@ -25,7 +25,7 @@ interface MonitorEvent {
 type NotifyEvents = SeekedEvent | MonitorEvent;
 
 
-interface Props{
+export interface Props{
 	loadCuePoints(callback: LoadCallback): void,
 	getCurrentTime() : number,
 	getPlayerSize(): PlayerSize,

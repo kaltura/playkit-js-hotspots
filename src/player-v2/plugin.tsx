@@ -1,26 +1,14 @@
 //let poly = require("preact-cli/lib/lib/webpack/polyfills");
 import { h, render } from "preact";
-import Stage, { LoadCallback, NotifyEventTypes } from "../components/Stage";
+import Stage, { LoadCallback, NotifyEventTypes, Props as StageProps } from "../components/Stage";
 import { log, enableLog } from "../utils/logger";
 import { Hotspot } from "../utils/hotspot";
 import { AnalyticsEvents } from "../utils/analyticsEvents";
+import { convertToHotspots } from "../utils/cuepoints";
 
 (function (mw, $) {
 
-function toObject(
-    jsonAsString: string,
-    defaultValue: { [key: string]: any } = {}
-): { error?: Error; result?: { [key: string]: any } } {
-    if (!jsonAsString) {
-        return defaultValue;
-    }
 
-    try {
-        return { result: JSON.parse(jsonAsString) };
-    } catch (e) {
-        return { error: e };
-    }
-}
 
 (function shouldEnableLogs() {
     try {
@@ -117,46 +105,7 @@ mw.kalturaPluginWrapper(function() {
                                 error: { message: data.code || "failure" }
                             });
                         } else {
-                            const hotspots: Hotspot[] = [];
-                            (data.objects || []).reduce(
-                                (acc: Hotspot[], cuePoint: any) => {
-                                    const {
-                                        result: partnerData,
-                                        error
-                                    } = toObject(cuePoint.partnerData);
-                                    if (
-                                        !partnerData ||
-                                        !partnerData.schemaVersion
-                                    ) {
-                                        log(
-                                            "warn",
-                                            "loadCuePoints",
-                                            `annotation '${
-                                                cuePoint.partnerData.id
-                                            }' has no schema version, skip annotation`
-                                        );
-                                        return acc;
-                                    }
-
-                                    const rawLayout = {
-                                        ...partnerData.layout
-                                    };
-
-                                    acc.push({
-                                        id: cuePoint.id,
-                                        startTime: cuePoint.startTime,
-                                        endTime: cuePoint.endTime,
-                                        label: cuePoint.text,
-                                        styles: partnerData.styles,
-                                        onClick: partnerData.onClick,
-                                        rawLayout: rawLayout
-                                    });
-
-                                    return acc;
-                                },
-                                hotspots
-                            );
-
+                            const hotspots: Hotspot[] = convertToHotspots(data);
                             callback({ hotspots });
                         }
                     }
@@ -217,7 +166,7 @@ mw.kalturaPluginWrapper(function() {
                 var _this = this;
 
                 this.bind("playerReady", function() {
-                    const props = {
+                    const props: StageProps = {
                         getCurrentTime: _this._getCurrentTime.bind(_this),
                         loadCuePoints: _this.loadCuePoints.bind(_this),
                         getPlayerSize: _this.getPlayerSize.bind(_this),

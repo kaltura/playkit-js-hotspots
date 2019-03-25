@@ -19,4 +19,11 @@ export default (config, env, helpers) => {
   const entrypoint = env.template.replace(/ejs$/, "js");
   config.resolve.alias['preact-cli-entrypoint'] = path.resolve(__dirname, entrypoint);
 
+  config.externals = config.externals || {};
+  config.externals['@playkit-js/playkit-js'] = {
+    commonjs: '@playkit-js/playkit-js',
+      commonjs2: '@playkit-js/playkit-js',
+      amd: 'playkit-js',
+      root: ['KalturaPlayer', 'core']
+  };
 };

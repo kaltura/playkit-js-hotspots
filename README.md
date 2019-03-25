@@ -40,3 +40,4 @@ $wgMwEmbedVersion = '2.73_hotspots_0.2.0';
 git tag -a vX.X_hotspots_vZ.Z.Z -m "vX.X_hotspots_vZ.Z.Z"
 git push origin vX.X_hotspots_vZ.Z.Z
 ```
+

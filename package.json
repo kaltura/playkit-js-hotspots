@@ -43,6 +43,7 @@
     "typescript": "^3.2.1"
   },
   "dependencies": {
+    "kaltura-typescript-client": "file:libs/kaltura-typescript-client-7.0.0-v20190324-101134.tgz",
     "preact": "^8.2.5"
   }
 }
