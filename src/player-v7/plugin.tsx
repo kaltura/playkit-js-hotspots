@@ -10,7 +10,7 @@ import { convertToHotspots } from "../utils/cuepoints";
 import { enableLog } from "../utils/logger";
 import { KalturaAnnotation } from "kaltura-typescript-client/api/types/KalturaAnnotation";
 
-// TODO check how to detect this mode in v7 players
+// TODO check how to detect debug mode in v7 players
 (function shouldEnableLogs() {
 	try {
 		if (document.URL.indexOf("debugKalturaPlayer") !== -1) {
@@ -135,7 +135,13 @@ export class HotspotsPlugin extends KalturaPlayer.core.BasePlugin {
 		this._stage.showHotspots();
 	}
 
-	private createHotspotsOverlay(): void {
+	private _createHotspotsUI(): void {
+
+		if (this.player.isLive()) {
+			// TODO check what should happen in live
+			return;
+		}
+
 		// TODO check if it changes after media change
 		const playerViewId = this.player.getView().id;
 		const playerParentElement = this.player.getView(); //document.getElementById(`div#${playerViewId}`);
@@ -147,35 +153,27 @@ export class HotspotsPlugin extends KalturaPlayer.core.BasePlugin {
 		this._rootParent = document.createElement('div');
 		this._rootParent.setAttribute("id", "hotspots-overlay");
 		playerParentElement.append(this._rootParent);
+
+
+		const props: StageProps = {
+			getCurrentTime: this._getCurrentTime.bind(this),
+			loadCuePoints: this._loadCuePoints.bind(this),
+			getPlayerSize: this._getPlayerSize.bind(this),
+			getVideoSize: this._getVideoSize.bind(this),
+			pauseVideo: this._pauseVideo.bind(this),
+			sendAnalytics: this._sendAnalytics.bind(this)
+		};
+
+		this._root = render(
+			<Stage {...props} ref={(ref: any) => (this._stage = ref)} />,
+			this._rootParent
+		);
 	}
 
 	private _addBindings() {
 		this.eventManager.listenOnce(this.player, this.player.Event.FIRST_PLAY, this._showHotspots.bind(this));
 		this.eventManager.listen(this.player, this.player.Event.SEEKED, this._showHotspots.bind(this));
-		this.eventManager.listen(this.player, this.player.Event.MEDIA_LOADED, () => {
-
-			if (this.player.isLive()) {
-				// TODO check what should happen in live
-				return;
-			}
-
-			const props: StageProps = {
-				getCurrentTime: this._getCurrentTime.bind(this),
-				loadCuePoints: this._loadCuePoints.bind(this),
-				getPlayerSize: this._getPlayerSize.bind(this),
-				getVideoSize: this._getVideoSize.bind(this),
-				pauseVideo: this._pauseVideo.bind(this),
-				sendAnalytics: this._sendAnalytics.bind(this)
-			};
-
-			this.createHotspotsOverlay();
-
-			this._root = render(
-				<Stage {...props} ref={(ref: any) => (this._stage = ref)} />,
-				this._rootParent
-			);
-
-		});
+		this.eventManager.listen(this.player, this.player.Event.MEDIA_LOADED, this._createHotspotsUI.bind(this));
 	}
 }
 

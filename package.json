@@ -6,6 +6,7 @@
   "scripts": {
     "start-v7": "if-env NODE_ENV=production && npm run -s serve-v7 || npm run -s dev-v7",
     "build-v7": "preact build --no-prerender --clean --template src/player-v7/test.ejs --service-worker false",
+    "analyze-v7": "npm run build-v7 && npx source-map-explorer dist/bundle.js",
     "serve-v7": "npm run build-v7 && preact serve-v7",
     "dev-v7": "preact watch --template src/player-v7/test.ejs",
     "dist-v7": "rimraf ./dist && microbundle --entry src/player-v7/hotspots.tsx --external none",
