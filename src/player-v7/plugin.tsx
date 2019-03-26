@@ -5,9 +5,9 @@ import { KalturaClient } from "kaltura-typescript-client";
 import { CuePointListAction } from "kaltura-typescript-client/api/types/CuePointListAction";
 import { KalturaCuePointFilter } from "kaltura-typescript-client/api/types/KalturaCuePointFilter";
 import { KalturaCuePointType } from "kaltura-typescript-client/api/types/KalturaCuePointType";
-import { Hotspot } from "../utils/hotspot";
+import { RawLayoutHotspot } from "../utils/hotspot";
 import { convertToHotspots } from "../utils/cuepoints";
-import { enableLog } from "../utils/logger";
+import { enableLog } from "playkit-js-ovp/logger";
 import { KalturaAnnotation } from "kaltura-typescript-client/api/types/KalturaAnnotation";
 
 // TODO check how to detect debug mode in v7 players
@@ -95,7 +95,7 @@ export class HotspotsPlugin extends KalturaPlayer.core.BasePlugin {
 				return;
 			}
 
-			const hotspots: Hotspot[] = convertToHotspots(response);
+			const hotspots: RawLayoutHotspot[] = convertToHotspots(response);
 			callback({ hotspots });
 		}, (reason) => {
 			callback({

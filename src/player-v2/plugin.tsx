@@ -1,8 +1,8 @@
 //let poly = require("preact-cli/lib/lib/webpack/polyfills");
 import { h, render } from "preact";
 import Stage, { LoadCallback, NotifyEventTypes, Props as StageProps } from "../components/Stage";
-import { log, enableLog } from "../utils/logger";
-import { Hotspot } from "../utils/hotspot";
+import { log, enableLog } from "playkit-js-ovp/logger";
+import { RawLayoutHotspot } from "../utils/hotspot";
 import { AnalyticsEvents } from "../utils/analyticsEvents";
 import { convertToHotspots } from "../utils/cuepoints";
 
@@ -105,7 +105,7 @@ mw.kalturaPluginWrapper(function() {
                                 error: { message: data.code || "failure" }
                             });
                         } else {
-                            const hotspots: Hotspot[] = convertToHotspots(data);
+                            const hotspots: RawLayoutHotspot[] = convertToHotspots(data);
                             callback({ hotspots });
                         }
                     }

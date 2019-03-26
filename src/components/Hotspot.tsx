@@ -1,5 +1,5 @@
 import { h, Component } from "preact";
-import { Hotspot as HotspotData, VisualHotspot } from "../utils/hotspot";
+import { LayoutHotspot } from "../utils/hotspot";
 import { AnalyticsEvents } from "../utils/analyticsEvents";
 
 const defaultContainerStyles = {
@@ -26,7 +26,7 @@ const defaultButtonsStyles = {
 
 type Props = {
 	visible: boolean;
-	hotspot: VisualHotspot;
+	hotspot: LayoutHotspot;
 	styles?: { [key:string]: any},
   pauseVideo(): void,
   sendAnalytics(event: AnalyticsEvents): void,
