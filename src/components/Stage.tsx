@@ -11,9 +11,13 @@ export type LoadCallback = (result: { error?: {message: string}, hotspots?: RawL
 
 export enum NotifyEventTypes {
 	Monitor = 'monitor',
-	Seeked = 'seeked'
+	Seeked = 'seeked',
+	TimeUpdated = 'timeUpdated'
 }
 
+interface TimeUpdatedEvent {
+	type: NotifyEventTypes.TimeUpdated
+}
 interface SeekedEvent {
   type: NotifyEventTypes.Seeked
 }
@@ -22,7 +26,7 @@ interface MonitorEvent {
   type: NotifyEventTypes.Monitor
 }
 
-type NotifyEvents = SeekedEvent | MonitorEvent;
+type NotifyEvents = SeekedEvent | MonitorEvent | TimeUpdatedEvent;
 
 
 export interface Props{
@@ -71,6 +75,7 @@ export default class Stage extends Component<Props, State> {
 		switch (event.type) {
 			case NotifyEventTypes.Monitor:
 			case NotifyEventTypes.Seeked:
+			case NotifyEventTypes.TimeUpdated:
 				this.syncVisibleHotspots();
 				break;
 			default:

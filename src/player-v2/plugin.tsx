@@ -249,7 +249,7 @@ mw.kalturaPluginWrapper(function() {
                         parentElement,
                         _this._root
                     );
-                  
+
                     _this._root = null;
                     _this.stage = null;
                 });

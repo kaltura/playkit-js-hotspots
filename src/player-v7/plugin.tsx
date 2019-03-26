@@ -1,5 +1,5 @@
 import { h, render } from "preact";
-import Stage, { LoadCallback, PlayerSize, Props as StageProps, VideoSize } from "../components/Stage";
+import Stage, { LoadCallback, NotifyEventTypes, PlayerSize, Props as StageProps, VideoSize } from "../components/Stage";
 import { AnalyticsEvents } from "../utils/analyticsEvents";
 import { KalturaClient } from "kaltura-typescript-client";
 import { CuePointListAction } from "kaltura-typescript-client/api/types/CuePointListAction";
@@ -173,6 +173,9 @@ export class HotspotsPlugin extends KalturaPlayer.core.BasePlugin {
 	private _addBindings() {
 		this.eventManager.listenOnce(this.player, this.player.Event.FIRST_PLAY, this._showHotspots.bind(this));
 		this.eventManager.listen(this.player, this.player.Event.SEEKED, this._showHotspots.bind(this));
+		this.eventManager.listen(this.player, this.player.Event.TIME_UPDATE, () => {
+			this._stage.notify({ type: NotifyEventTypes.TimeUpdated });
+		});
 		this.eventManager.listen(this.player, this.player.Event.MEDIA_LOADED, this._createHotspotsUI.bind(this));
 	}
 }
