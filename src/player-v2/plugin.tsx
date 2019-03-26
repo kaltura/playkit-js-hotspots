@@ -49,7 +49,7 @@ mw.kalturaPluginWrapper(function() {
                 );
                 log(
                     "debug",
-                    "plugin.handleVideoSizeChange",
+                    "plugin::handleVideoSizeChange",
                     "use entry size provided by player to calculate actual stage size",
                     { width, height }
                 );
@@ -67,7 +67,7 @@ mw.kalturaPluginWrapper(function() {
                 if (isIphone()) {
                     log(
                         "log",
-                        "setup",
+                        "plugin::setup",
                         "iphone detected, disable plugin"
                     );
                     return;
@@ -133,7 +133,7 @@ mw.kalturaPluginWrapper(function() {
                 if (!kanalonyPlugin) {
                   log(
                     "warn",
-                    "sendAnalytics",
+                    "plugin::sendAnalytics",
                     `cannot send analytics event, missing kAnalony plugin`,
                     event
                   );
@@ -145,7 +145,7 @@ mw.kalturaPluginWrapper(function() {
               } catch (e) {
                 log(
                   "error",
-                  "sendAnalytics",
+                  "plugin::sendAnalytics",
                   `cannot send analytics event with error '${e.message}'`,
                   event
                 );
@@ -175,17 +175,39 @@ mw.kalturaPluginWrapper(function() {
                       sendAnalytics: _this.sendAnalytics.bind(_this)
                     };
 
+                    const parentElement = jQuery('[id="hotspotsOverlay"]')[0];
                     _this._root = render(
                         <Stage {...props} ref={ref => (_this.stage = ref)} />,
-                        jQuery('[id="hotspotsOverlay"]')[0]
+                      parentElement
+                    );
+
+                    log(
+                      "debug",
+                      "plugin::bind(playerReady)",
+                      "created root component",
+                      {
+                        parentElement,
+                        root: _this._root
+                      }
                     );
                 });
 
                 this.bind("updateLayout", function() {
+                  log(
+                    "debug",
+                    "plugin::bind(updateLayout)",
+                    "invoked",
+                  );
                     _this.stage.handleResize();
                 });
 
                 this.bind("firstPlay", function() {
+                  log(
+                    "debug",
+                    "plugin::bind(firstPlay)",
+                    "invoked",
+                  );
+
                     if (!_this._wasPlayed) {
                         _this.stage.showHotspots();
                         _this._wasPlayed = true;
@@ -194,6 +216,12 @@ mw.kalturaPluginWrapper(function() {
                 });
 
                 this.bind("seeked", function() {
+                  log(
+                    "debug",
+                    "plugin::bind(seeked)",
+                    "invoked",
+                  );
+
                     if (!_this._wasPlayed) {
                         _this.stage.showHotspots();
                         _this._wasPlayed = true;
@@ -201,17 +229,27 @@ mw.kalturaPluginWrapper(function() {
                 });
 
                 this.bind("onChangeMedia", function() {
+
+                  log(
+                    "debug",
+                    "plugin::bind(onChangeMedia)",
+                    "invoked",
+                  );
+
                     // DEVELOPER NOTICE: this is the destruction place.
                     _this._wasPlayed = false;
                     _this._videoSize = null;
 
 
-                    render(
+                  const parentElement = jQuery('[id="hotspotsOverlay"]')[0];
+
+                  render(
                         // @ts-ignore
                         h(null),
-                        jQuery('[id="hotspotsOverlay"]')[0],
+                        parentElement,
                         _this._root
                     );
+                  
                     _this._root = null;
                     _this.stage = null;
                 });
