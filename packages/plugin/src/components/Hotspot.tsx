@@ -1,6 +1,6 @@
 import { h, Component } from "preact";
-import { LayoutHotspot } from "../utils/hotspot";
-import { AnalyticsEvents } from "../utils/analyticsEvents";
+import { LayoutHotspot } from "../hotspot";
+import { AnalyticsEvents } from "../analyticsEvents";
 
 const defaultContainerStyles = {
 	position: 'absolute',

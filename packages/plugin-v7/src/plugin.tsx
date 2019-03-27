@@ -1,13 +1,13 @@
 import { h, render } from "preact";
-import Stage, { LoadCallback, NotifyEventTypes, PlayerSize, Props as StageProps, VideoSize } from "../components/Stage";
-import { AnalyticsEvents } from "../utils/analyticsEvents";
+import Stage, { LoadCallback, NotifyEventTypes, PlayerSize, Props as StageProps, VideoSize } from "@plugin/core/components/Stage";
+import { AnalyticsEvents } from "@plugin/core/analyticsEvents";
 import { KalturaClient } from "kaltura-typescript-client";
 import { CuePointListAction } from "kaltura-typescript-client/api/types/CuePointListAction";
 import { KalturaCuePointFilter } from "kaltura-typescript-client/api/types/KalturaCuePointFilter";
 import { KalturaCuePointType } from "kaltura-typescript-client/api/types/KalturaCuePointType";
-import { RawLayoutHotspot } from "../utils/hotspot";
-import { convertToHotspots } from "../utils/cuepoints";
-import { enableLog } from "playkit-js-ovp/logger";
+import { RawLayoutHotspot } from "@plugin/core/hotspot";
+import { convertToHotspots } from "@plugin/core/cuepoints";
+import { enableLog } from "@playkit-js/playkit-js-ovp/logger";
 import { KalturaAnnotation } from "kaltura-typescript-client/api/types/KalturaAnnotation";
 
 // TODO check how to detect debug mode in v7 players

@@ -1,0 +1,40 @@
+{
+  "name": "playkit-js-hotspots",
+  "public": false,
+  "version": "0.5.0",
+  "description": "",
+  "scripts": {
+    "postinstall": "npm link ../plugin/dist",
+    "build": "preact build --no-prerender --clean --template src/test.ejs --service-worker false",
+    "serve:prod": "npm run build && preact serve -p 8002",
+    "serve": "preact watch --template src/test.ejs  -p 8002"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "AGPL-3.0",
+  "devDependencies": {
+    "awesome-typescript-loader": "^5.2.1",
+    "css-loader": "^2.0.0",
+    "eslint": "^4.5.0",
+    "identity-obj-proxy": "^3.0.0",
+    "if-env": "^1.0.0",
+    "node-sass": "^4.5.3",
+    "preact-cli": "^2.2.1",
+    "preact-compat": "^3.18.4",
+    "preact-render-to-string": "^3.7.0",
+    "preact-widget-scripts": "^0.6.0",
+    "prettier": "^1.15.3",
+    "rimraf": "^2.6.2",
+    "sass-loader": "^6.0.7",
+    "style-loader": "^0.23.1",
+    "ts-loader": "^3.5.0",
+    "tslint": "^5.11.0",
+    "tslint-config-prettier": "^1.17.0",
+    "tslint-consistent-codestyle": "^1.14.1",
+    "tslint-eslint-rules": "^5.4.0",
+    "tslint-react": "^3.6.0",
+    "typescript": "^3.2.1",
+    "preact": "^8.2.5"
+  },
+  "dependencies": {}
+}

@@ -1,0 +1,1 @@
+# Playkit hotspots plugin

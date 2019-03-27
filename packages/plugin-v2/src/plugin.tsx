@@ -1,15 +1,11 @@
-//let poly = require("preact-cli/lib/lib/webpack/polyfills");
 import { h, render } from "preact";
-import Stage, { LoadCallback, NotifyEventTypes, Props as StageProps } from "../components/Stage";
-import { log, enableLog } from "playkit-js-ovp/logger";
-import { RawLayoutHotspot } from "../utils/hotspot";
-import { AnalyticsEvents } from "../utils/analyticsEvents";
-import { convertToHotspots } from "../utils/cuepoints";
+import Stage, { LoadCallback, NotifyEventTypes, Props as StageProps } from "@plugin/core/components/Stage";
+import { log, enableLog } from "@playkit-js/playkit-js-ovp/logger";
+import { RawLayoutHotspot } from "@plugin/core/hotspot";
+import { AnalyticsEvents } from "@plugin/core/analyticsEvents";
+import { convertToHotspots } from "@plugin/core/cuepoints";
 
 (function (mw, $) {
-
-
-
 (function shouldEnableLogs() {
     try {
         if (document.URL.indexOf("debugKalturaPlayer") !== -1) {
@@ -176,6 +172,7 @@ mw.kalturaPluginWrapper(function() {
                     };
 
                     const parentElement = jQuery('[id="hotspotsOverlay"]')[0];
+
                     _this._root = render(
                         <Stage {...props} ref={ref => (_this.stage = ref)} />,
                       parentElement

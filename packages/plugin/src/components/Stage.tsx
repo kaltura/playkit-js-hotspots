@@ -1,9 +1,9 @@
 import { h, Component } from "preact";
-import { RawLayoutHotspot, LayoutHotspot } from "../utils/hotspot";
+import { RawLayoutHotspot, LayoutHotspot } from "../hotspot";
 import Hotspot from './Hotspot';
-import { CuepointLayoutEngine, RawLayoutCuepoint } from 'playkit-js-ovp/cuepointLayoutEngine';
-import { log } from "playkit-js-ovp/logger";
-import { AnalyticsEvents } from "../utils/analyticsEvents";
+import { CuepointLayoutEngine, RawLayoutCuepoint } from '@playkit-js/playkit-js-ovp/cuepointLayoutEngine';
+import { log } from "@playkit-js/playkit-js-ovp/logger";
+import { AnalyticsEvents } from "../analyticsEvents";
 
 export type PlayerSize = { width: number, height: number};
 export type VideoSize = { width: number, height: number};
@@ -138,14 +138,14 @@ export default class Stage extends Component<Props, State> {
 
       if (show.length !== 0 || hide.length !== 0) {
         let visibleHotspots: LayoutHotspot[] = state.visibleHotspots;
-        show.forEach(hotspot => {
+        show.forEach((hotspot: LayoutHotspot) => {
           const index = visibleHotspots.indexOf(hotspot);
           if (index === -1) {
             visibleHotspots.push(hotspot);
           }
         });
 
-        hide.forEach(hotspot => {
+        hide.forEach((hotspot: LayoutHotspot) => {
           const index = visibleHotspots.indexOf(hotspot);
           if (index !== -1) {
             visibleHotspots.splice(index, 1);

@@ -1,13 +1,9 @@
-# Playkit hotspots plugin
-
-
-## Player V2 support
-Although this plugin was developed to support playkit (player v7) it contains also an adapter to work with player v2. 
+# Hotspots plugin - Kaltura Player V2
 
 ### Test locally
-1. copy file `src/player-v2/test.template.ejs` to `src/player-v2/test.ejs`
+1. copy file `src/test.template.ejs` to `src/player-v2/test.ejs`
 2. optional, update the entry id, partner id and ks. You can keep the existing values to see an entry with hotspots defined.
-3. run `npm run start-v2`
+3. run `npm run start`
 
 ### Deploy plugin to production
 Hotspots plugin is deployed to production as part of [mwEmbed repo](https://github.com/kaltura/mwEmbed). To deploy it do the following:

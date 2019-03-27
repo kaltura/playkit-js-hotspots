@@ -1,7 +1,5 @@
 import { RawLayoutHotspot } from "./hotspot";
-import { log } from "playkit-js-ovp/logger";
-import { KalturaAnnotation } from "kaltura-typescript-client/api/types/KalturaAnnotation";
-import { KalturaCuePointListResponse } from "kaltura-typescript-client/api/types/KalturaCuePointListResponse";
+import { log } from "@playkit-js/playkit-js-ovp/logger";
 
 function toObject(
   jsonAsString: string,
@@ -18,13 +16,11 @@ function toObject(
   }
 }
 
-export function convertToHotspots(response: KalturaCuePointListResponse):  RawLayoutHotspot[] {
+export function convertToHotspots(response: any):  RawLayoutHotspot[] {
 
     const result: RawLayoutHotspot[] = [];
 
-  (response.objects || []).forEach((cuepoint) => {
-    const annotationCuepoint = cuepoint as KalturaAnnotation;
-
+  (response.objects || []).forEach((cuepoint: any) => {
     const {
       result: partnerData,
       error
@@ -51,8 +47,8 @@ export function convertToHotspots(response: KalturaCuePointListResponse):  RawLa
     result.push({
       id: cuepoint.id,
       startTime: cuepoint.startTime,
-      endTime: annotationCuepoint.endTime,
-      label: annotationCuepoint.text,
+      endTime: cuepoint.endTime,
+      label: cuepoint.text,
       styles: partnerData.styles,
       onClick: partnerData.onClick,
       rawLayout: rawLayout
