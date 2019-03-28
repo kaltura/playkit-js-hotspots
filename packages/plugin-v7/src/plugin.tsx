@@ -1,29 +1,22 @@
 import { h, render } from "preact";
 import Stage, { LoadCallback, NotifyEventTypes, PlayerSize, Props as StageProps, VideoSize } from "@plugin/core/components/Stage";
 import { AnalyticsEvents } from "@plugin/core/analyticsEvents";
+import { PlayerCompat } from "@playkit-js/playkit-js-ovp/playerCompat";
 import { KalturaClient } from "kaltura-typescript-client";
 import { CuePointListAction } from "kaltura-typescript-client/api/types/CuePointListAction";
 import { KalturaCuePointFilter } from "kaltura-typescript-client/api/types/KalturaCuePointFilter";
 import { KalturaCuePointType } from "kaltura-typescript-client/api/types/KalturaCuePointType";
 import { RawLayoutHotspot } from "@plugin/core/hotspot";
 import { convertToHotspots } from "@plugin/core/cuepoints";
-import { enableLog } from "@playkit-js/playkit-js-ovp/logger";
+import { enableLogIfNeeded } from "@playkit-js/playkit-js-ovp/logger";
 import { KalturaAnnotation } from "kaltura-typescript-client/api/types/KalturaAnnotation";
 
-// TODO check how to detect debug mode in v7 players
-(function shouldEnableLogs() {
-	try {
-		if (document.URL.indexOf("debugKalturaPlayer") !== -1) {
-			enableLog("hotspots");
-		}
-	} catch (e) {
-		// do nothing
-	}
-})();
+// TODO (oren) check how to detect debug mode in v7 players
+enableLogIfNeeded('hotspots');
 
 let kalturaServiceUrl = '';
 try {
-	// TODO find the proper api
+	// TODO (oren) find the proper api
 	// @ts-ignore
 	kalturaServiceUrl = __kalturaplayerdata.UIConf[Object.keys(__kalturaplayerdata.UIConf)[0]].provider.env.serviceUrl;
 }catch (e) {
@@ -33,6 +26,7 @@ try {
 export class HotspotsPlugin extends KalturaPlayer.core.BasePlugin {
 	static defaultConfig = {};
 
+	private playerCompat = new PlayerCompat(this.player);
 	private _root: any;
 	private _kalturaClient: KalturaClient;
 	private _stage: any;
@@ -48,7 +42,7 @@ export class HotspotsPlugin extends KalturaPlayer.core.BasePlugin {
 
 		this._kalturaClient = new KalturaClient({
 			clientTag: 'playkit-js-ovp-plugins',
-			endpointUrl: kalturaServiceUrl
+			endpointUrl: this.playerCompat.getServiceUrl() || ''
 		});
 	}
 
