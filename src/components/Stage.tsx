@@ -199,8 +199,12 @@ export default class Stage extends Component<Props, State> {
 		const style =
 			{
 				position: 'absolute',
-				display: 'block'
-
+				display: 'block',
+				overflow: 'visible',
+				top: 0,
+				left: 0,
+				width: 0,
+				height: 0
 			};
 
 	return (
