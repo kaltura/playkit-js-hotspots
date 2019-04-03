@@ -16,8 +16,6 @@ import { convertToHotspots } from "@plugin/core/cuepoints";
     }
 })();
 
-const WEBKIT_PLAYS_INLINE_KEY = "EmbedPlayer.WebKitPlaysInline";
-
 function isIpad() {
     return navigator.userAgent.indexOf("iPad") != -1;
 }

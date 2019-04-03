@@ -8,28 +8,16 @@ import { KalturaCuePointFilter } from "kaltura-typescript-client/api/types/Kaltu
 import { KalturaCuePointType } from "kaltura-typescript-client/api/types/KalturaCuePointType";
 import { RawLayoutHotspot } from "@plugin/core/hotspot";
 import { convertToHotspots } from "@plugin/core/cuepoints";
-import { enableLogIfNeeded } from "@playkit-js/playkit-js-ovp/logger";
 import { KalturaAnnotation } from "kaltura-typescript-client/api/types/KalturaAnnotation";
-
-// TODO (oren) check how to detect debug mode in v7 players
-enableLogIfNeeded('hotspots');
-
-let kalturaServiceUrl = '';
-try {
-	// TODO (oren) find the proper api
-	// @ts-ignore
-	kalturaServiceUrl = __kalturaplayerdata.UIConf[Object.keys(__kalturaplayerdata.UIConf)[0]].provider.env.serviceUrl;
-}catch (e) {
-	// do nothing
-}
+import { UIManager } from '@playkit-js/playkit-js-ovp/uiManager';
 
 export class HotspotsPlugin extends KalturaPlayer.core.BasePlugin {
 	static defaultConfig = {};
 
 	private playerCompat = new PlayerCompat(this.player);
 	private _root: any;
+	private _uiManager: UIManager;
 	private _kalturaClient: KalturaClient;
-	private _stage: any;
 
 	static isValid(player: any) {
 		return true;
@@ -37,12 +25,13 @@ export class HotspotsPlugin extends KalturaPlayer.core.BasePlugin {
 
 	constructor(name: any, player: any, config: any) {
 		super(name, player, config);
-		this.logger.debug('ctor');
 		this._addBindings();
+
+		this._uiManager = new UIManager(this, this._renderRoot);
 
 		this._kalturaClient = new KalturaClient({
 			clientTag: 'playkit-js-ovp-plugins',
-			endpointUrl: this.playerCompat.getServiceUrl() || ''
+			endpointUrl: this.player.config.provider.env.serviceUrl
 		});
 	}
 
@@ -121,34 +110,14 @@ export class HotspotsPlugin extends KalturaPlayer.core.BasePlugin {
 
 	private _sendAnalytics(event: AnalyticsEvents) {
 		// TBD
-		debugger;
 		throw new Error("tbd");
 	}
 
 	private _showHotspots() {
-		this._stage.showHotspots();
+		this._uiManager.root.showHotspots();
 	}
 
-	private _createHotspotsUI(): void {
-
-		if (this.player.isLive()) {
-			// TODO check what should happen in live
-			return;
-		}
-
-		// TODO check if it changes after media change
-		const playerViewId = this.player.getView().id;
-		const playerParentElement = this.player.getView(); //document.getElementById(`div#${playerViewId}`);
-
-		if (!playerParentElement) {
-			return;
-		}
-
-		this._rootParent = document.createElement('div');
-		this._rootParent.setAttribute("id", "hotspots-overlay");
-		playerParentElement.append(this._rootParent);
-
-
+	private _renderRoot = (): any => {
 		const props: StageProps = {
 			getCurrentTime: this._getCurrentTime.bind(this),
 			loadCuePoints: this._loadCuePoints.bind(this),
@@ -158,19 +127,19 @@ export class HotspotsPlugin extends KalturaPlayer.core.BasePlugin {
 			sendAnalytics: this._sendAnalytics.bind(this)
 		};
 
-		this._root = render(
-			<Stage {...props} ref={(ref: any) => (this._stage = ref)} />,
-			this._rootParent
-		);
+		return <Stage {...props} />;
 	}
 
 	private _addBindings() {
 		this.eventManager.listenOnce(this.player, this.player.Event.FIRST_PLAY, this._showHotspots.bind(this));
 		this.eventManager.listen(this.player, this.player.Event.SEEKED, this._showHotspots.bind(this));
 		this.eventManager.listen(this.player, this.player.Event.TIME_UPDATE, () => {
-			this._stage.notify({ type: NotifyEventTypes.TimeUpdated });
+			this._uiManager.root.notify({ type: NotifyEventTypes.TimeUpdated });
 		});
-		this.eventManager.listen(this.player, this.player.Event.MEDIA_LOADED, this._createHotspotsUI.bind(this));
+		this.eventManager.listen(this.player, this.player.Event.Core.RESIZE, () => {
+			this._uiManager.root.handleResize();
+		});
+
 	}
 }
 

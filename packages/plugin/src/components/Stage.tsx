@@ -2,7 +2,6 @@ import { h, Component } from "preact";
 import { RawLayoutHotspot, LayoutHotspot } from "../hotspot";
 import Hotspot from './Hotspot';
 import { CuepointLayoutEngine, RawLayoutCuepoint } from '@playkit-js/playkit-js-ovp/cuepointLayoutEngine';
-import { log } from "@playkit-js/playkit-js-ovp/logger";
 import { AnalyticsEvents } from "../analyticsEvents";
 
 export type PlayerSize = { width: number, height: number};
@@ -87,7 +86,7 @@ export default class Stage extends Component<Props, State> {
 		const {hotspots, error} = result;
 
 		if (error || !hotspots) {
-      log('error', '_handleCuepoints', 'failed to load cuepoints', { error: error ? error.message : 'missing hotspots array'});
+      this.logger.log('error', '_handleCuepoints', 'failed to load cuepoints', { error: error ? error.message : 'missing hotspots array'});
 			this.setState({
 				isLoading: false,
 				hasError: true,

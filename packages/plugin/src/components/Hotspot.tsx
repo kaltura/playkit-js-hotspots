@@ -107,7 +107,7 @@ export default class Hotspot extends Component<Props, State> {
           window.open(url, '_blank');
           this.props.sendAnalytics({ eventNumber: 47, target: url, hotspotId: hotspot.id});
         } catch(e) {
-          window.open(url, '_top');
+          // do nothing
         }
       }
         break;

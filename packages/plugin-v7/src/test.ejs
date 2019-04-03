@@ -84,15 +84,19 @@
 </div>
 
 <script>
+  var player;
   function changeMedia() {
-    // 1_4gs7ozgq
+    player.loadMedia({
+      entryId: '1_4gs7ozgq'
+    });
   }
 
   var config = {
     logLevel: "DEBUG",
     targetId: "player-div",
     provider: {
-      partnerId: "2052371"
+      partnerId: "2052371",
+      uiConfId: "43248661"
     },
     plugins: {
       hotspots: {
@@ -103,7 +107,7 @@
   document.getElementById("bundle").onload =  function(){
 
     var mediaInfo = {entryId: "1_qlrg9edk"};
-    var player = KalturaPlayer.setup(config);
+    player = KalturaPlayer.setup(config);
     player.loadMedia(mediaInfo).then(function() {
       player.play();
     });
