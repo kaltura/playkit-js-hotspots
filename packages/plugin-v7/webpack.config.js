@@ -16,7 +16,7 @@ module.exports = (env, options) => {
       path: distFolder,
       filename: "bundle.min.js"
     },
-    devtool: options.mode == "development" ? "source-map" : false,
+    devtool: options.mode == "development" ? "eval-source-map" : "source-map",
     module: {
       rules: [
         {
