@@ -6,58 +6,17 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Hotspots - Player V2</title>
 
-  <script src="https://cdnapisec.kaltura.com/p/2052371/sp/205237100/embedIframeJs/uiconf_id/XXXXXX/partner_id/YYYYYY"></script>
+  <!--
+      TODO add here a url to player v2 for relevant partner / uiconf
+      ie:  https://cdnapisec.kaltura.com/p/{partner_id}/embedIframeJs/uiconf_id/{uiconf_id}
+  -->
+  <script src=""></script>
 
-  <!-- Resize logic was taken from https://medium.com/the-z/making-a-resizable-div-in-js-is-not-easy-as-you-think-bda19a1bc53d -->
+
+  <link rel="stylesheet" href="resize.css">
+  <script src="resize.js"></script>
 
   <style>
-
-    .resizable {
-      background: white;
-      width: 500px;
-      height: 281px;
-      position: absolute;
-      top: 0;
-      left: 0;
-    }
-
-    .resizable .resizers{
-      width: 100%;
-      height: 100%;
-      border: 3px solid #4286f4;
-      box-sizing: border-box;
-    }
-
-    .resizable .resizers .resizer{
-      width: 10px;
-      height: 10px;
-      border-radius: 50%; /*magic to turn square into circle*/
-      background: white;
-      border: 3px solid #4286f4;
-      position: absolute;
-    }
-
-    .resizable .resizers .resizer.top-left {
-      left: -5px;
-      top: -5px;
-      cursor: nwse-resize; /*resizer cursor*/
-    }
-    .resizable .resizers .resizer.top-right {
-      right: -5px;
-      top: -5px;
-      cursor: nesw-resize;
-    }
-    .resizable .resizers .resizer.bottom-left {
-      left: -5px;
-      bottom: -5px;
-      cursor: nesw-resize;
-    }
-    .resizable .resizers .resizer.bottom-right {
-      right: -5px;
-      bottom: -5px;
-      cursor: nwse-resize;
-    }
-
     #kaltura_player_1545049605 {
       display: inline;
       position: absolute;
@@ -85,7 +44,7 @@
 <script>
 
   function changeMedia() {
-    kdp.sendNotification("changeMedia", { "entryId" : "1_k9mq3sk3" });
+    kdp.sendNotification("changeMedia", { "entryId" : "" }); <!-- TODO (optional) set here a second entry id to test change media -->
   }
   var kdp;
 
@@ -95,103 +54,20 @@
 
   kWidget.embed({
     "targetId": "kaltura_player_1545049605",
-    "wid": "_2052371",
-    "uiconf_id": 39149581,
+    "wid": "", <!-- TODO set here your widget id -->
+    "uiconf_id": "", <!-- TODO set here your uiconf id as set in the url above -->
     "flashvars": {
-      ks: '',
+      "autoPlay": false,
+      ks: '', <!-- TODO (optional) set here a valid ks -->
       hotspots: {
         plugin: true,
-        iframeHTML5Js: '/bundle.js',
+        <% for (var chunk in htmlWebpackPlugin.files.chunks) { %>iframeHTML5Js: "<%= htmlWebpackPlugin.files.chunks[chunk].entry %>",<% } %>
       },
     },
-    "cache_st": 1545049605,
-    "entry_id": "1_qlrg9edk" // omri "1_4gs7ozgq"
+    "entry_id": "" <!-- TODO set here the entry you want to play -->
   });
-</script>
 
-
-
-<script>
-  /*Make resizable div by Hung Nguyen*/
-  function makeResizableDiv(div) {
-    const element = document.querySelector(div);
-    const resizers = document.querySelectorAll(div + ' .resizer')
-    const minimum_size = 20;
-    let original_width = 0;
-    let original_height = 0;
-    let original_x = 0;
-    let original_y = 0;
-    let original_mouse_x = 0;
-    let original_mouse_y = 0;
-    for (let i = 0;i < resizers.length; i++) {
-      const currentResizer = resizers[i];
-      currentResizer.addEventListener('mousedown', function(e) {
-        e.preventDefault()
-        original_width = parseFloat(getComputedStyle(element, null).getPropertyValue('width').replace('px', ''));
-        original_height = parseFloat(getComputedStyle(element, null).getPropertyValue('height').replace('px', ''));
-        original_x = element.getBoundingClientRect().left;
-        original_y = element.getBoundingClientRect().top;
-        original_mouse_x = e.pageX;
-        original_mouse_y = e.pageY;
-        window.addEventListener('mousemove', resize)
-        window.addEventListener('mouseup', stopResize)
-      })
-
-      function resize(e) {
-        if (currentResizer.classList.contains('bottom-right')) {
-          const width = original_width + (e.pageX - original_mouse_x);
-          const height = original_height + (e.pageY - original_mouse_y)
-          if (width > minimum_size) {
-            element.style.width = width + 'px'
-          }
-          if (height > minimum_size) {
-            element.style.height = height + 'px'
-          }
-        }
-        else if (currentResizer.classList.contains('bottom-left')) {
-          const height = original_height + (e.pageY - original_mouse_y)
-          const width = original_width - (e.pageX - original_mouse_x)
-          if (height > minimum_size) {
-            element.style.height = height + 'px'
-          }
-          if (width > minimum_size) {
-            element.style.width = width + 'px'
-            element.style.left = original_x + (e.pageX - original_mouse_x) + 'px'
-          }
-        }
-        else if (currentResizer.classList.contains('top-right')) {
-          const width = original_width + (e.pageX - original_mouse_x)
-          const height = original_height - (e.pageY - original_mouse_y)
-          if (width > minimum_size) {
-            element.style.width = width + 'px'
-          }
-          if (height > minimum_size) {
-            element.style.height = height + 'px'
-            element.style.top = original_y + (e.pageY - original_mouse_y) + 'px'
-          }
-        }
-        else {
-          const width = original_width - (e.pageX - original_mouse_x)
-          const height = original_height - (e.pageY - original_mouse_y)
-          if (width > minimum_size) {
-            element.style.width = width + 'px'
-            element.style.left = original_x + (e.pageX - original_mouse_x) + 'px'
-          }
-          if (height > minimum_size) {
-            element.style.height = height + 'px'
-            element.style.top = original_y + (e.pageY - original_mouse_y) + 'px'
-          }
-        }
-      }
-
-      function stopResize() {
-        window.removeEventListener('mousemove', resize)
-      }
-    }
-  }
-
-  makeResizableDiv('.resizable')
+  makeResizableDiv('.resizable');
 </script>
 </body>
-
 </html>

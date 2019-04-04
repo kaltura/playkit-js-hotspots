@@ -1,3 +1,4 @@
+/* Resize logic was taken from https://medium.com/the-z/making-a-resizable-div-in-js-is-not-easy-as-you-think-bda19a1bc53d
 /*Make resizable div by Hung Nguyen*/
 function makeResizableDiv(div) {
   const element = document.querySelector(div);
