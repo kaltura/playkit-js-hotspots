@@ -2,7 +2,9 @@ const path = require("path");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const CopyPlugin = require("copy-webpack-plugin");
 
+const packageJson = require('./package.json');
 const distFolder = path.join(__dirname, "/dist");
+
 module.exports = (env, options) => {
   return {
     entry: "./src/index.ts",
@@ -14,7 +16,7 @@ module.exports = (env, options) => {
     },
     output: {
       path: distFolder,
-      filename: "bundle.min.js"
+      filename: `${packageJson.name}.min.js`
     },
     devtool: options.mode == "development" ? "eval-source-map" : "source-map",
     module: {
