@@ -8,7 +8,7 @@ module.exports = (env, options) => {
     entry: "./src/index.ts",
     resolve: {
       extensions: [".ts", ".tsx", ".js"],
-      alias: { "@plugin/core": path.resolve(__dirname, "../shared/") },
+      alias: { "@plugin/core": path.resolve(__dirname, "../../src/") },
       modules: [path.resolve(__dirname, "node_modules")],
       symlinks: false
     },
