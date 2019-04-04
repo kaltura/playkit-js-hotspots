@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/express-recorder.iml" filepath="$PROJECT_DIR$/.idea/express-recorder.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/playkit-js-hotspots.iml" filepath="$PROJECT_DIR$/.idea/playkit-js-hotspots.iml" />
     </modules>
   </component>
 </project>
