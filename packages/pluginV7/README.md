@@ -1,1 +1,2 @@
-# Playkit hotspots plugin
+# Hotspots plugin - Kaltura Player V7
+tbd
