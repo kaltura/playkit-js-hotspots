@@ -12,10 +12,10 @@
         "baseUrl": "./src",
         "paths": {
             "@plugin/core": [
-                "../../shared"
+                "../../../src"
             ],
             "@plugin/core/*": [
-                "../../shared/*"
+                "../../../src/*"
             ],
             "*": [
                 "../node_modules/*",

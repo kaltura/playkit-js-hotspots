@@ -166,7 +166,7 @@ mw.kalturaPluginWrapper(function() {
                     const parentElement = jQuery('[id="hotspotsOverlay"]')[0];
 
                     _this._root = render(
-                        <Stage {...props} ref={ref => (_this.stage = ref)} />,
+                        <Stage {...props} ref={(ref: any) => (_this.stage = ref)} />,
                       parentElement
                     );
 
