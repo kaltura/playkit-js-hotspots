@@ -1,0 +1,3 @@
+{
+  "extends": "../plugin-v7/tsconfig.json"
+}

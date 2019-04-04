@@ -1,2 +1,0 @@
-# Playkit OVP services plugin
-

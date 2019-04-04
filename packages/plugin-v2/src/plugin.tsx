@@ -1,20 +1,14 @@
 import { h, render } from "preact";
 import Stage, { LoadCallback, NotifyEventTypes, Props as StageProps } from "@plugin/core/components/Stage";
-import { log, enableLog } from "@playkit-js/playkit-js-ovp/logger";
+import { log, enableLogIfNeeded } from "@playkit-js/playkit-js-ovp/logger";
 import { RawLayoutHotspot } from "@plugin/core/hotspot";
 import { AnalyticsEvents } from "@plugin/core/analyticsEvents";
 import { convertToHotspots } from "@plugin/core/cuepoints";
 
+
 (function (mw, $) {
-(function shouldEnableLogs() {
-    try {
-        if (document.URL.indexOf("debugKalturaPlayer") !== -1) {
-            enableLog("hotspots");
-        }
-    } catch (e) {
-        // do nothing
-    }
-})();
+
+enableLogIfNeeded('hotspots');
 
 function isIpad() {
     return navigator.userAgent.indexOf("iPad") != -1;
