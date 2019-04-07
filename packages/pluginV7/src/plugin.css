@@ -117,7 +117,7 @@ compiled using http://lesscss.org/less-preview/
 .hotspotsOverlay blockquote:after,
 .hotspotsOverlay q:before,
 .hotspotsOverlay q:after {
-    content: '';
+    content: "";
     content: none;
 }
 .hotspotsOverlay table {

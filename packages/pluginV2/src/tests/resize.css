@@ -7,14 +7,14 @@
     left: 0;
 }
 
-.resizable .resizers{
+.resizable .resizers {
     width: 100%;
     height: 100%;
     border: 3px solid #4286f4;
     box-sizing: border-box;
 }
 
-.resizable .resizers .resizer{
+.resizable .resizers .resizer {
     width: 10px;
     height: 10px;
     border-radius: 50%; /*magic to turn square into circle*/
