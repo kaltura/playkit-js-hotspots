@@ -73,7 +73,6 @@ mw.kalturaPluginWrapper(function() {
             },
 
             loadCuePoints: function(callback: LoadCallback) {
-                var _this = this;
                 // do the api request
                 this.getKalturaClient().doRequest(
                     {
@@ -151,22 +150,20 @@ mw.kalturaPluginWrapper(function() {
             },
 
             addBindings: function() {
-                var _this = this;
-
-                this.bind("playerReady", function() {
+                this.bind("playerReady", () => {
                     const props: StageProps = {
-                        getCurrentTime: _this._getCurrentTime.bind(_this),
-                        loadCuePoints: _this.loadCuePoints.bind(_this),
-                        getPlayerSize: _this.getPlayerSize.bind(_this),
-                        getVideoSize: _this.getVideoSize.bind(_this),
-                        pauseVideo: _this.pauseVideo.bind(_this),
-                      sendAnalytics: _this.sendAnalytics.bind(_this)
+                        getCurrentTime: this._getCurrentTime.bind(this),
+                        loadCuePoints: this.loadCuePoints.bind(this),
+                        getPlayerSize: this.getPlayerSize.bind(this),
+                        getVideoSize: this.getVideoSize.bind(this),
+                        pauseVideo: this.pauseVideo.bind(this),
+                      sendAnalytics: this.sendAnalytics.bind(this)
                     };
 
                     const parentElement = jQuery('[id="hotspotsOverlay"]')[0];
 
-                    _this._root = render(
-                        <Stage {...props} ref={(ref: any) => (_this.stage = ref)} />,
+                    this._root = render(
+                        <Stage {...props} ref={(ref: any) => (this.stage = ref)} />,
                       parentElement
                     );
 
@@ -176,48 +173,48 @@ mw.kalturaPluginWrapper(function() {
                       "created root component",
                       {
                         parentElement,
-                        root: _this._root
+                        root: this._root
                       }
                     );
                 });
 
-                this.bind("updateLayout", function() {
+                this.bind("updateLayout", () => {
                   log(
                     "debug",
                     "plugin::bind(updateLayout)",
                     "invoked",
                   );
-                    _this.stage.handleResize();
+                    this.stage.handleResize();
                 });
 
-                this.bind("firstPlay", function() {
+                this.bind("firstPlay", () => {
                   log(
                     "debug",
                     "plugin::bind(firstPlay)",
                     "invoked",
                   );
 
-                    if (!_this._wasPlayed) {
-                        _this.stage.showHotspots();
-                        _this._wasPlayed = true;
+                    if (!this._wasPlayed) {
+                        this.stage.showHotspots();
+                        this._wasPlayed = true;
                     }
 
                 });
 
-                this.bind("seeked", function() {
+                this.bind("seeked", () => {
                   log(
                     "debug",
                     "plugin::bind(seeked)",
                     "invoked",
                   );
 
-                    if (!_this._wasPlayed) {
-                        _this.stage.showHotspots();
-                        _this._wasPlayed = true;
+                    if (!this._wasPlayed) {
+                        this.stage.showHotspots();
+                        this._wasPlayed = true;
                     }
                 });
 
-                this.bind("onChangeMedia", function() {
+                this.bind("onChangeMedia", () => {
 
                   log(
                     "debug",
@@ -226,8 +223,8 @@ mw.kalturaPluginWrapper(function() {
                   );
 
                     // DEVELOPER NOTICE: this is the destruction place.
-                    _this._wasPlayed = false;
-                    _this._videoSize = null;
+                    this._wasPlayed = false;
+                    this._videoSize = null;
 
 
                   const parentElement = jQuery('[id="hotspotsOverlay"]')[0];
@@ -236,23 +233,23 @@ mw.kalturaPluginWrapper(function() {
                         // @ts-ignore
                         h(null),
                         parentElement,
-                        _this._root
+                        this._root
                     );
 
-                    _this._root = null;
-                    _this.stage = null;
+                    this._root = null;
+                    this.stage = null;
                 });
 
-                this.bind("monitorEvent", function() {
-                    _this.stage.notify({ type: NotifyEventTypes.Monitor });
+                this.bind("monitorEvent", () => {
+                    this.stage.notify({ type: NotifyEventTypes.Monitor });
                 });
 
-                this.bind("mediaLoaded", function() {
-                    _this.handleVideoSizeChange();
+                this.bind("mediaLoaded", () => {
+                    this.handleVideoSizeChange();
                 });
 
-                this.bind("seeked", function() {
-                    _this.stage.notify({ type: NotifyEventTypes.Seeked });
+                this.bind("seeked", () => {
+                    this.stage.notify({ type: NotifyEventTypes.Seeked });
                 });
             },
 
