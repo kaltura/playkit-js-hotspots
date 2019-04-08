@@ -1,6 +1,6 @@
 {
   "name": "playkit-js-hotspots",
-  "public": false,
+  "private": true,
   "version": "1.0.0-rc.0",
   "description": "",
   "repository": {
