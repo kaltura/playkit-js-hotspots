@@ -155,7 +155,7 @@ export class HotspotsPlugin extends KalturaPlayer.core.BasePlugin {
         this.eventManager.listen(this.player, this.player.Event.TIME_UPDATE, () => {
             this._uiManager.root.notify({ type: NotifyEventTypes.TimeUpdated });
         });
-        this.eventManager.listen(this.player, this.player.Event.Core.RESIZE, () => {
+        this.eventManager.listen(this.player, this.player.Event.RESIZE, () => {
             this._uiManager.root.handleResize();
         });
     }
