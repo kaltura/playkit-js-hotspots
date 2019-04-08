@@ -3,7 +3,6 @@
   "version": "0.0.0",
   "description": "## Overview TBD",
   "scripts": {
-    "precommit": "lint-staged"
   },
   "repository": {
     "type": "git",
@@ -20,6 +19,11 @@
       "prettier --write",
       "git add"
     ]
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
   },
   "devDependencies": {
     "husky": "^1.3.1",
