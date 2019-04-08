@@ -15,7 +15,7 @@ import { KalturaCuePointType } from "kaltura-typescript-client/api/types/Kaltura
 import { RawLayoutHotspot } from "@plugin/shared/hotspot";
 import { convertToHotspots } from "@plugin/shared/cuepoints";
 import { KalturaAnnotation } from "kaltura-typescript-client/api/types/KalturaAnnotation";
-import { UIManager } from "@playkit-js/playkit-js-ovp/uiManager";
+import { UIManager } from "@playkit-js/playkit-js-ovp/pluginV7/uiManager";
 
 export class HotspotsPlugin extends KalturaPlayer.core.BasePlugin {
     static defaultConfig = {};
@@ -33,7 +33,7 @@ export class HotspotsPlugin extends KalturaPlayer.core.BasePlugin {
         super(name, player, config);
         this._addBindings();
 
-        this._uiManager = new UIManager(this, this._renderRoot);
+        this._uiManager = new UIManager(this, 'hotspots', this._renderRoot);
 
         this._kalturaClient = new KalturaClient({
             clientTag: "playkit-js-ovp-plugins",
