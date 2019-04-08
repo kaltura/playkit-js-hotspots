@@ -1,8 +1,12 @@
 {
   "name": "playkit-js-hotspots",
   "public": false,
-  "version": "0.5.0",
+  "version": "1.0.0-rc.0",
   "description": "",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/kaltura/playkit-js-hotspots"
+  },
   "scripts": {
     "build": "webpack --mode production",
     "start": "webpack-dev-server --mode development",
@@ -30,6 +34,7 @@
     "webpack-dev-server": "^3.2.1"
   },
   "dependencies": {
+    "@playkit-js/playkit-js-ovp": "^1.0.0-rc.0",
     "kaltura-typescript-client": "file:libs/kaltura-typescript-client-7.0.0-v20190324-101134.tgz",
     "preact": "^8.2.5"
   }
