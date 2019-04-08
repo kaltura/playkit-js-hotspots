@@ -1,9 +1,3 @@
-/node_modules
-build
-/.idea
-/.vscode
-.rpt2_cache
-dist
-
-.rpt2_cache
-.rpt2*
+node_modules
+.DS_Store
+.idea
