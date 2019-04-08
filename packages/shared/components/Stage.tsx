@@ -57,7 +57,7 @@ export default class Stage extends Component<Props, State> {
     engine: CuepointLayoutEngine<RawLayoutCuepoint, LayoutHotspot> | null = null;
 
     initialState = {
-        isLoading: false,
+        isLoading: true,
         playerSize: this.props.getPlayerSize(),
         videoSize: this.props.getVideoSize(),
         visibleHotspots: [],
