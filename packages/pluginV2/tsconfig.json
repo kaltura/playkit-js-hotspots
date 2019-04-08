@@ -11,24 +11,12 @@
         "moduleResolution": "node",
         "baseUrl": "./src",
         "paths": {
-            "@plugin/core": [
-                "../../../src"
-            ],
-            "@plugin/core/*": [
-                "../../../src/*"
-            ],
-            "*": [
-                "../node_modules/*",
-                "../node_modules/@types/*"
-            ]
+            "@plugin/shared": ["../../shared"],
+            "@plugin/shared/*": ["../../shared/*"],
+            "*": ["../node_modules/*", "../node_modules/@types/*"]
         },
         "preserveSymlinks": true
     },
-    "include": [
-        "src/**/*.tsx",
-        "src/**/*.ts"
-    ],
-    "exclude": [
-        "node_modules"
-    ]
+    "include": ["src/**/*.tsx", "src/**/*.ts"],
+    "exclude": ["node_modules"]
 }

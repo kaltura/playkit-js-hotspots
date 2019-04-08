@@ -3,11 +3,11 @@ import Stage, {
     LoadCallback,
     NotifyEventTypes,
     Props as StageProps
-} from "@plugin/core/components/Stage";
+} from "@plugin/shared/components/Stage";
 import { log, enableLogIfNeeded } from "@playkit-js/playkit-js-ovp/logger";
-import { RawLayoutHotspot } from "@plugin/core/hotspot";
-import { AnalyticsEvents } from "@plugin/core/analyticsEvents";
-import { convertToHotspots } from "@plugin/core/cuepoints";
+import { RawLayoutHotspot } from "@plugin/shared/hotspot";
+import { AnalyticsEvents } from "@plugin/shared/analyticsEvents";
+import { convertToHotspots } from "@plugin/shared/cuepoints";
 
 (function(mw, $) {
     enableLogIfNeeded("hotspots");

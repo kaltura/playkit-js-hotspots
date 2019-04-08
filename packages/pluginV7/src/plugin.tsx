@@ -5,15 +5,15 @@ import Stage, {
     PlayerSize,
     Props as StageProps,
     VideoSize
-} from "@plugin/core/components/Stage";
-import { AnalyticsEvents } from "@plugin/core/analyticsEvents";
+} from "@plugin/shared/components/Stage";
+import { AnalyticsEvents } from "@plugin/shared/analyticsEvents";
 import { PlayerCompat } from "@playkit-js/playkit-js-ovp/playerCompat";
 import { KalturaClient } from "kaltura-typescript-client";
 import { CuePointListAction } from "kaltura-typescript-client/api/types/CuePointListAction";
 import { KalturaCuePointFilter } from "kaltura-typescript-client/api/types/KalturaCuePointFilter";
 import { KalturaCuePointType } from "kaltura-typescript-client/api/types/KalturaCuePointType";
-import { RawLayoutHotspot } from "@plugin/core/hotspot";
-import { convertToHotspots } from "@plugin/core/cuepoints";
+import { RawLayoutHotspot } from "@plugin/shared/hotspot";
+import { convertToHotspots } from "@plugin/shared/cuepoints";
 import { KalturaAnnotation } from "kaltura-typescript-client/api/types/KalturaAnnotation";
 import { UIManager } from "@playkit-js/playkit-js-ovp/uiManager";
 

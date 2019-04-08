@@ -10,7 +10,7 @@ module.exports = (env, options) => {
     entry: "./src/index.ts",
     resolve: {
       extensions: [".ts", ".tsx", ".js"],
-      alias: { "@plugin/core": path.resolve(__dirname, "../../src/") },
+      alias: { "@plugin/shared": path.resolve(__dirname, "../shared/") },
       modules: [path.resolve(__dirname, "node_modules")],
       symlinks: false
     },
@@ -35,7 +35,7 @@ module.exports = (env, options) => {
         hash: true
       }),
       new CopyPlugin([
-        { from: "src/tests", to: distFolder }
+        { from: "src/public", to: distFolder }
       ])
     ],
     devServer: {
@@ -44,7 +44,7 @@ module.exports = (env, options) => {
       hot: false,
       inline: true,
       publicPath: "/",
-      index: "test.html",
+      index: "index.html",
       port: 8007
     }
 
