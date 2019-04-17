@@ -29,6 +29,7 @@ type Props = {
 	hotspot: VisualHotspot;
 	styles?: { [key:string]: any},
   pauseVideo(): void,
+  seekTo(time: number): void,
   sendAnalytics(event: AnalyticsEvents): void,
 }
 
@@ -67,14 +68,28 @@ export default class Hotspot extends Component<Props, State> {
       return;
     }
 
-    const { type, url } = hotspot.onClick;
-
-    const disableClick = (! type || ! url || type.length == 0 || url.length === 0);
-
     this.setState({
       isReady: true,
-      disableClick
+      disableClick: !this.isClickable()
     });
+  }
+
+  isClickable = (): boolean => {
+    const {hotspot: {onClick}} = this.props;
+
+    if (!onClick) {
+      return false;
+    }
+
+    switch (onClick.type) {
+      case 'jumpToTime':
+        return typeof onClick.jumpToTime !== 'undefined';
+      case 'openUrl':
+      case 'openUrlInNewTab':
+        return !!onClick.url;
+      default:
+        return false;
+    }
   }
 
   handleClick = () => {
@@ -86,6 +101,13 @@ export default class Hotspot extends Component<Props, State> {
     }
 
     switch (hotspot.onClick.type) {
+      case 'jumpToTime':
+        if (typeof hotspot.onClick.jumpToTime === 'undefined') {
+          return;
+        }
+
+        this.props.seekTo(hotspot.onClick.jumpToTime / 1000);
+      break;
       case 'openUrl': {
         if (!hotspot.onClick.url) {
           return;

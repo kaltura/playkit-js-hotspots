@@ -88,6 +88,10 @@ mw.kalturaPluginWrapper(function() {
                 this.addBindings();
             },
 
+            seekTo: function(time: number) {
+                this.getPlayer().seek(time);
+            },
+
             pauseVideo: function() {
                 this.getPlayer().sendNotification("doPause");
             },
@@ -223,6 +227,7 @@ mw.kalturaPluginWrapper(function() {
                         getPlayerSize: _this.getPlayerSize.bind(_this),
                         getVideoSize: _this.getVideoSize.bind(_this),
                         pauseVideo: _this.pauseVideo.bind(_this),
+                        seekTo: _this.seekTo.bind(_this),
                       sendAnalytics: _this.sendAnalytics.bind(_this)
                     };
 

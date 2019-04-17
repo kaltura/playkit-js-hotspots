@@ -8,8 +8,13 @@ export interface OpenUrlInNewTab {
   url: string
 }
 
+export interface JumpToTime {
+	type: 'jumpToTime',
+	jumpToTime: number
+}
 
-type OnClickAction = OpenUrl | OpenUrlInNewTab;
+
+type OnClickAction = OpenUrl | OpenUrlInNewTab | JumpToTime;
 
 export interface Layout {
   x: number, y: number, width: number, height: number
