@@ -28,6 +28,7 @@ type Props = {
     hotspot: LayoutHotspot;
     styles?: { [key: string]: any };
     pauseVideo(): void;
+    seekTo(time: number): void;
     sendAnalytics(event: AnalyticsEvents): void;
 };
 
@@ -71,9 +72,29 @@ export default class Hotspot extends Component<Props, State> {
 
         this.setState({
             isReady: true,
-            disableClick
+            disableClick: !this.isClickable()
         });
     }
+
+    isClickable = (): boolean => {
+        const {
+            hotspot: { onClick }
+        } = this.props;
+
+        if (!onClick) {
+            return false;
+        }
+
+        switch (onClick.type) {
+            case "jumpToTime":
+                return typeof onClick.jumpToTime !== "undefined";
+            case "openUrl":
+            case "openUrlInNewTab":
+                return !!onClick.url;
+            default:
+                return false;
+        }
+    };
 
     handleClick = () => {
         const { hotspot } = this.props;
@@ -84,6 +105,13 @@ export default class Hotspot extends Component<Props, State> {
         }
 
         switch (hotspot.onClick.type) {
+            case "jumpToTime":
+                if (typeof hotspot.onClick.jumpToTime === "undefined") {
+                    return;
+                }
+
+                this.props.seekTo(hotspot.onClick.jumpToTime / 1000);
+                break;
             case "openUrl":
                 {
                     if (!hotspot.onClick.url) {

@@ -9,7 +9,12 @@ export interface OpenUrlInNewTab {
     url: string;
 }
 
-type OnClickAction = OpenUrl | OpenUrlInNewTab;
+export interface JumpToTime {
+    type: "jumpToTime";
+    jumpToTime: number;
+}
+
+type OnClickAction = OpenUrl | OpenUrlInNewTab | JumpToTime;
 
 export type RawLayoutHotspot = RawLayoutCuepoint & {
     onClick?: OnClickAction;
