@@ -39,6 +39,7 @@ export interface Props {
     getPlayerSize(): PlayerSize;
     getVideoSize(): VideoSize;
     pauseVideo(): void;
+    seekTo(time: number): void;
     sendAnalytics(event: AnalyticsEvents): void;
 }
 
@@ -204,11 +205,12 @@ export default class Stage extends Component<Props, State> {
             return null;
         }
 
-        const { pauseVideo, sendAnalytics } = this.props;
+        const { seekTo, pauseVideo, sendAnalytics } = this.props;
 
         return visualHotspot.map(hotspotData => (
             <Hotspot
                 pauseVideo={pauseVideo}
+                seekTo={seekTo}
                 key={hotspotData.id}
                 visible={true}
                 hotspot={hotspotData}

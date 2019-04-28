@@ -64,6 +64,10 @@ import { convertToHotspots } from "@plugin/shared/cuepoints";
                     this.getPlayer().sendNotification("doPause");
                 },
 
+                seekTo: function(time: number) {
+                    this.getPlayer().seek(time);
+                },
+
                 getCuePoints: function() {
                     return this.cuePoints;
                 },
@@ -153,6 +157,7 @@ import { convertToHotspots } from "@plugin/shared/cuepoints";
                             getPlayerSize: this.getPlayerSize.bind(this),
                             getVideoSize: this.getVideoSize.bind(this),
                             pauseVideo: this.pauseVideo.bind(this),
+                            seekTo: this.seekTo.bind(this),
                             sendAnalytics: this.sendAnalytics.bind(this)
                         };
 

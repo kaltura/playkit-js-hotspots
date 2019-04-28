@@ -2,8 +2,7 @@
   "name": "playkit-js-hotspots",
   "private": true,
   "version": "0.0.0",
-  "scripts": {
-  },
+  "scripts": {},
   "repository": {
     "type": "git",
     "url": "git+https://github.com/kaltura/playkit-js-hotspots.git"
@@ -30,6 +29,5 @@
     "lint-staged": "^8.1.5",
     "prettier": "^1.16.4"
   },
-  "dependencies": {
-  }
+  "dependencies": {}
 }
