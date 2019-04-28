@@ -33,7 +33,7 @@ export class HotspotsPlugin extends KalturaPlayer.core.BasePlugin {
         super(name, player, config);
         this._addBindings();
 
-        this._uiManager = new UIManager(this, 'hotspots', this._renderRoot);
+        this._uiManager = new UIManager(this, "hotspots", this._renderRoot);
 
         this._kalturaClient = new KalturaClient({
             clientTag: "playkit-js-ovp-plugins",
@@ -128,6 +128,10 @@ export class HotspotsPlugin extends KalturaPlayer.core.BasePlugin {
         this._uiManager.root.showHotspots();
     }
 
+    private _seekTo(time: number) {
+        this.player.currentTime = time;
+    }
+
     private _renderRoot = (): any => {
         const props: StageProps = {
             getCurrentTime: this._getCurrentTime.bind(this),
@@ -135,6 +139,7 @@ export class HotspotsPlugin extends KalturaPlayer.core.BasePlugin {
             getPlayerSize: this._getPlayerSize.bind(this),
             getVideoSize: this._getVideoSize.bind(this),
             pauseVideo: this._pauseVideo.bind(this),
+            seekTo: this._seekTo.bind(this),
             sendAnalytics: this._sendAnalytics.bind(this)
         };
 
