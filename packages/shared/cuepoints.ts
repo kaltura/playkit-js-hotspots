@@ -1,5 +1,5 @@
 import { RawLayoutHotspot } from "./hotspot";
-import { log } from "@playkit-js/playkit-js-ovp/logger";
+import { log } from "@playkit-js/playkit-js-ovp/plugin-v2/logger";
 
 function toObject(
     jsonAsString: string,

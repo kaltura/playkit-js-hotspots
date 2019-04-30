@@ -4,7 +4,7 @@ import Stage, {
     NotifyEventTypes,
     Props as StageProps
 } from "@plugin/shared/components/Stage";
-import { log, enableLogIfNeeded } from "@playkit-js/playkit-js-ovp/logger";
+import { log, enableLogIfNeeded } from "@playkit-js/playkit-js-ovp/plugin-v2";
 import { RawLayoutHotspot } from "@plugin/shared/hotspot";
 import { AnalyticsEvents } from "@plugin/shared/analyticsEvents";
 import { convertToHotspots } from "@plugin/shared/cuepoints";

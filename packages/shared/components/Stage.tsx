@@ -35,7 +35,8 @@ type NotifyEvents = SeekedEvent | MonitorEvent | TimeUpdatedEvent;
 
 export interface Props {
     loadCuePoints(callback: LoadCallback): void;
-    getCurrentTime(): number;
+    currentTime: number;
+    shouldHandleResize: boolean;
     getPlayerSize(): PlayerSize;
     getVideoSize(): VideoSize;
     pauseVideo(): void;
@@ -123,7 +124,7 @@ export default class Stage extends Component<Props, State> {
     }
 
     private syncVisibleHotspots(forceSnapshot = false) {
-        const { getCurrentTime } = this.props;
+        const { currentTime } = this.props;
 
         this.setState((state: State) => {
             if (!this.engine) {
@@ -132,7 +133,7 @@ export default class Stage extends Component<Props, State> {
                 };
             }
 
-            const hotspotsUpdate = this.engine.updateTime(getCurrentTime(), forceSnapshot);
+            const hotspotsUpdate = this.engine.updateTime(currentTime, forceSnapshot);
             if (hotspotsUpdate.snapshot) {
                 return {
                     visibleHotspots: hotspotsUpdate.snapshot
