@@ -9,8 +9,9 @@
   },
   "scripts": {
     "build": "webpack --mode production",
+    "build:dev": "webpack --mode development",
     "start": "webpack-dev-server --mode development",
-    "analyze": "npm run build && npx source-map-explorer dist/bundle.min.js"
+    "analyze": "npm run build && npx source-map-explorer dist/playkit-js-hotspots.min.js"
   },
   "keywords": [],
   "author": "",

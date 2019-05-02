@@ -16,7 +16,7 @@ module.exports = (env, options) => {
     },
     output: {
       path: distFolder,
-      filename: `${packageJson.name}.min.js`
+      filename: `playkit-js-hotspots.min.js`
     },
     devtool: options.mode == "development" ? "eval-source-map" : "source-map",
     module: {
@@ -46,6 +46,14 @@ module.exports = (env, options) => {
       publicPath: "/",
       index: "index.html",
       port: 8007
+    },
+    externals: {
+      '@playkit-js/playkit-js': {
+        commonjs: '@playkit-js/playkit-js',
+        commonjs2: '@playkit-js/playkit-js',
+        amd: 'playkit-js',
+        root: ['KalturaPlayer', 'core']
+      }
     }
 
   };

@@ -1,10 +1,5 @@
 import { h, Ref } from "preact";
-import Stage, {
-    LoadCallback,
-    PlayerSize,
-    Props as StageProps,
-    VideoSize
-} from "@plugin/shared/components/Stage";
+import Stage, { PlayerSize, Props as StageProps, VideoSize } from "@plugin/shared/components/Stage";
 import { KalturaClient } from "kaltura-typescript-client";
 import { CuePointListAction } from "kaltura-typescript-client/api/types/CuePointListAction";
 import { KalturaCuePointFilter } from "kaltura-typescript-client/api/types/KalturaCuePointFilter";
@@ -15,48 +10,39 @@ import { KalturaAnnotation } from "kaltura-typescript-client/api/types/KalturaAn
 import {
     OverlayUI,
     OverlayUIProps,
-    OverlayVisibilities
-} from "@playkit-js/playkit-js-ovp/plugin-v7/overlayUI";
-import { OVPBasePlugin } from "@playkit-js/playkit-js-ovp/plugin-v7/ovpBasePlugin";
+    OverlayVisibilities,
+    OVPBasePlugin
+} from "@playkit-js/playkit-js-ovp-v7";
+import Hotspot from "@plugin/shared/components/Hotspot";
 
 export class HotspotsPlugin extends OVPBasePlugin {
     static defaultConfig = {};
 
-    private _root: any;
+    private _overlay: OverlayUI<Stage> | null = null;
+    private _hotspots: RawLayoutHotspot[] = [];
     private _kalturaClient = new KalturaClient({
         clientTag: "playkit-js-ovp-plugins",
         endpointUrl: this.getServiceUrl()
     });
-
-    private _renderRoot(setRef: Ref<Stage>, overlayUIProps: OverlayUIProps): any {
-        const props: StageProps = {
-            ...overlayUIProps,
-            loadCuePoints: this._loadCuePoints.bind(this),
-            getPlayerSize: this._getPlayerSize.bind(this),
-            getVideoSize: this._getVideoSize.bind(this),
-            pauseVideo: this._pauseVideo.bind(this),
-            seekTo: this._seekTo.bind(this),
-            sendAnalytics: this._sendAnalytics.bind(this)
-        };
-
-        return <Stage {...props} ref={setRef} />;
-    }
 
     constructor(name: any, player: any, config: any) {
         super(name, player, config);
     }
 
     setup() {
-        this.addUI(
-            new OverlayUI<Stage>(this, {
-                visibility: OverlayVisibilities.MediaLoaded,
-                renderer: this._renderRoot.bind(this)
-            })
-        );
+        // TODO consult about the setTimeout
+        setTimeout(() => {
+            this._overlay = this.addUI(
+                new OverlayUI<Stage>(this, {
+                    visibility: OverlayVisibilities.FirstPlay,
+                    renderer: this._renderRoot
+                })
+            );
+        });
 
-        this.eventManager.listenOnce(this.player, this.player.Event.FIRST_PLAY, this._showHotspots);
-
-        this.eventManager.listen(this.player, this.player.Event.SEEKED, this._showHotspots);
+        this.eventManager.listenOnce(this.player, this.player.Event.MEDIA_LOADED, () => {
+            this._loadCuePoints();
+        });
     }
 
     static isValid(player: any) {
@@ -76,18 +62,18 @@ export class HotspotsPlugin extends OVPBasePlugin {
         return this.player.dimensions;
     }
 
-    private _loadCuePoints(callback: LoadCallback) {
+    private _loadCuePoints = (): void => {
         this._kalturaClient
             .request(
                 new CuePointListAction({
                     filter: new KalturaCuePointFilter({
-                        entryIdEqual: this.player.config.sources.id,
+                        entryIdEqual: this.getEntryId(),
                         cuePointTypeEqual: KalturaCuePointType.annotation,
                         tagsLike: "hotspots"
                     })
                 }).setRequestOptions({
-                    ks: this.player.config.session.ks,
-                    partnerId: this.player.config.session.partnerId,
+                    ks: this.getKS(),
+                    partnerId: this.getPartnerId(),
                     acceptedTypes: [KalturaAnnotation]
                 })
             )
@@ -97,16 +83,16 @@ export class HotspotsPlugin extends OVPBasePlugin {
                         return;
                     }
 
-                    const hotspots: RawLayoutHotspot[] = convertToHotspots(response);
-                    callback({ hotspots });
+                    this._hotspots = convertToHotspots(response);
+                    if (this._overlay) {
+                        this._overlay.rebuild();
+                    }
                 },
                 reason => {
-                    callback({
-                        error: { message: reason.message || "failure" }
-                    });
+                    // TODO decide what to do in case of an error
                 }
             );
-    }
+    };
 
     // TODO move to overlayUI
     private _getVideoSize(): VideoSize {
@@ -126,13 +112,24 @@ export class HotspotsPlugin extends OVPBasePlugin {
         this.player.pause();
     }
 
-    private _showHotspots = () => {
-        this._uiManager.root.showHotspots();
-    };
-
     private _seekTo(time: number) {
         this.player.currentTime = time;
     }
+
+    private _renderRoot = (setRef: Ref<Stage>, overlayUIProps: OverlayUIProps): any => {
+        const props: StageProps = {
+            ...overlayUIProps,
+            hotspots: this._hotspots,
+            getPlayerSize: this._getPlayerSize.bind(this),
+            getVideoSize: this._getVideoSize.bind(this),
+            pauseVideo: this._pauseVideo.bind(this),
+            seekTo: this._seekTo.bind(this),
+            sendAnalytics: this._sendAnalytics.bind(this)
+        };
+
+        // NOTE: the key attribute here is
+        return <Stage {...props} ref={setRef} key={"stage"} />;
+    };
 }
 
 KalturaPlayer.core.registerPlugin("hotspots", HotspotsPlugin);

@@ -1,5 +1,5 @@
 import { RawLayoutHotspot } from "./hotspot";
-import { log } from "@playkit-js/playkit-js-ovp/plugin-v2/logger";
+//import { log } from "@playkit-js/playkit-js-ovp";
 
 function toObject(
     jsonAsString: string,
@@ -23,11 +23,11 @@ export function convertToHotspots(response: any): RawLayoutHotspot[] {
         const { result: partnerData, error } = toObject(cuepoint.partnerData);
 
         if (!partnerData || !partnerData.schemaVersion) {
-            log(
-                "warn",
-                "loadCuePoints",
-                `annotation '${cuepoint.id}' has no schema version, skip annotation`
-            );
+            // log(
+            //     "warn",
+            //     "loadCuePoints",
+            //     `annotation '${cuepoint.id}' has no schema version, skip annotation`
+            // );
             return;
         }
 
