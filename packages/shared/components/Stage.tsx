@@ -16,6 +16,7 @@ export interface Props {
     pauseVideo(): void;
     seekTo(time: number): void;
     sendAnalytics(event: AnalyticsEvents): void;
+    onResize(): void;
 }
 
 interface State {
@@ -123,7 +124,11 @@ export default class Stage extends Component<Props, State> {
     }
 
     handleResize = (): void => {
-        const { getPlayerSize, getVideoSize } = this.props;
+        const { getPlayerSize, getVideoSize, onResize } = this.props;
+
+        if (!this.props.shouldHandleResize) {
+            return;
+        }
 
         this.setState(
             {
@@ -135,6 +140,8 @@ export default class Stage extends Component<Props, State> {
                     this.engine.updateLayout(this.state.playerSize, this.state.videoSize);
                     this.syncVisibleHotspots(true);
                 }
+
+                onResize();
             }
         );
     };

@@ -1,11 +1,6 @@
 import { h, render } from "preact";
-import Stage, {
-    LoadCallback,
-    NotifyEventTypes,
-    Props as StageProps
-} from "@plugin/shared/components/Stage";
-import { log, enableLogIfNeeded } from "@playkit-js/playkit-js-ovp/plugin-v2";
-import { RawLayoutHotspot } from "@plugin/shared/hotspot";
+import Stage, { Props as StageProps } from "@plugin/shared/components/Stage";
+import { log, enableLogIfNeeded } from "@playkit-js/playkit-js-ovp";
 import { AnalyticsEvents } from "@plugin/shared/analyticsEvents";
 import { convertToHotspots } from "@plugin/shared/cuepoints";
 
@@ -24,6 +19,7 @@ import { convertToHotspots } from "@plugin/shared/cuepoints";
         mw.PluginManager.add(
             "hotspots",
             mw.KBaseComponent.extend({
+                _hotspots: [],
                 _root: null,
                 _videoSize: null,
                 _wasPlayed: false,
@@ -48,7 +44,7 @@ import { convertToHotspots } from "@plugin/shared/cuepoints";
                         this._videoSize = { width, height };
                     }
 
-                    this.stage.handleResize();
+                    this.renderRoot(true);
                 },
 
                 setup: function() {
@@ -72,7 +68,7 @@ import { convertToHotspots } from "@plugin/shared/cuepoints";
                     return this.cuePoints;
                 },
 
-                loadCuePoints: function(callback: LoadCallback) {
+                loadCuePoints: function() {
                     // do the api request
                     this.getKalturaClient().doRequest(
                         {
@@ -83,18 +79,19 @@ import { convertToHotspots } from "@plugin/shared/cuepoints";
                             "filter:cuePointTypeEqual": "annotation.Annotation",
                             "filter:tagsLike": "hotspots"
                         },
-                        function(data: any) {
+                        (data: any) => {
                             // if an error pop out:
                             const hasError = !data || data.code;
 
                             if (hasError) {
-                                callback({
-                                    error: { message: data.code || "failure" }
-                                });
-                            } else {
-                                const hotspots: RawLayoutHotspot[] = convertToHotspots(data);
-                                callback({ hotspots });
+                                console.warn(
+                                    `failed to load hotspots with code '${data.code || "failure"}'`
+                                );
+                                return;
                             }
+
+                            this._hotspots = convertToHotspots(data);
+                            this.renderRoot(false);
                         }
                     );
                 },
@@ -149,41 +146,50 @@ import { convertToHotspots } from "@plugin/shared/cuepoints";
                     };
                 },
 
-                addBindings: function() {
-                    this.bind("playerReady", () => {
-                        const props: StageProps = {
-                            getCurrentTime: this._getCurrentTime.bind(this),
-                            loadCuePoints: this.loadCuePoints.bind(this),
-                            getPlayerSize: this.getPlayerSize.bind(this),
-                            getVideoSize: this.getVideoSize.bind(this),
-                            pauseVideo: this.pauseVideo.bind(this),
-                            seekTo: this.seekTo.bind(this),
-                            sendAnalytics: this.sendAnalytics.bind(this)
-                        };
+                _onRootResized: function() {
+                    this.renderRoot(false);
+                },
 
-                        const parentElement = jQuery('[id="hotspotsOverlay"]')[0];
+                renderRoot: function(shouldHandleResize: boolean) {
+                    const props: StageProps = {
+                        hotspots: this._hotspots,
+                        currentTime: this._getCurrentTime(),
+                        shouldHandleResize,
+                        onResize: this._onRootResized.bind(this),
+                        getPlayerSize: this.getPlayerSize.bind(this),
+                        getVideoSize: this.getVideoSize.bind(this),
+                        pauseVideo: this.pauseVideo.bind(this),
+                        seekTo: this.seekTo.bind(this),
+                        sendAnalytics: this.sendAnalytics.bind(this)
+                    };
 
-                        this._root = render(
-                            <Stage {...props} ref={(ref: any) => (this.stage = ref)} />,
-                            parentElement
-                        );
+                    const parentElement = this.getComponent()[0];
 
-                        log("debug", "plugin::bind(playerReady)", "created root component", {
+                    if (!this._root) {
+                        log("debug", "plugin::renderStage", "create root component", {
                             parentElement,
                             root: this._root
                         });
-                    });
+                    }
 
+                    this._root = render(
+                        <Stage {...props} ref={(ref: any) => (this.stage = ref)} />,
+                        parentElement,
+                        this._root
+                    );
+                },
+
+                addBindings: function() {
                     this.bind("updateLayout", () => {
                         log("debug", "plugin::bind(updateLayout)", "invoked");
-                        this.stage.handleResize();
+                        this.renderRoot(true);
                     });
 
                     this.bind("firstPlay", () => {
                         log("debug", "plugin::bind(firstPlay)", "invoked");
 
                         if (!this._wasPlayed) {
-                            this.stage.showHotspots();
+                            this.renderRoot(false);
                             this._wasPlayed = true;
                         }
                     });
@@ -192,7 +198,7 @@ import { convertToHotspots } from "@plugin/shared/cuepoints";
                         log("debug", "plugin::bind(seeked)", "invoked");
 
                         if (!this._wasPlayed) {
-                            this.stage.showHotspots();
+                            this.renderRoot(false);
                             this._wasPlayed = true;
                         }
                     });
@@ -203,6 +209,7 @@ import { convertToHotspots } from "@plugin/shared/cuepoints";
                         // DEVELOPER NOTICE: this is the destruction place.
                         this._wasPlayed = false;
                         this._videoSize = null;
+                        this._hotspots = [];
 
                         const parentElement = jQuery('[id="hotspotsOverlay"]')[0];
 
@@ -218,15 +225,16 @@ import { convertToHotspots } from "@plugin/shared/cuepoints";
                     });
 
                     this.bind("monitorEvent", () => {
-                        this.stage.notify({ type: NotifyEventTypes.Monitor });
+                        this.renderRoot(false);
                     });
 
                     this.bind("mediaLoaded", () => {
+                        this.loadCuePoints();
                         this.handleVideoSizeChange();
                     });
 
                     this.bind("seeked", () => {
-                        this.stage.notify({ type: NotifyEventTypes.Seeked });
+                        this.renderRoot(false);
                     });
                 },
 

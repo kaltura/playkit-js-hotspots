@@ -34,7 +34,6 @@
     "webpack-dev-server": "^3.2.1"
   },
   "dependencies": {
-    "@playkit-js/playkit-js-ovp": "^1.0.0-rc.0",
     "preact": "^8.2.5"
   }
 }

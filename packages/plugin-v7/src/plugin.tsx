@@ -10,10 +10,10 @@ import { KalturaAnnotation } from "kaltura-typescript-client/api/types/KalturaAn
 import {
     OverlayUI,
     OverlayUIProps,
-    OverlayVisibilities,
-    OVPBasePlugin
+    OverlayUIModes,
+    OVPBasePlugin,
+    UIManager
 } from "@playkit-js/playkit-js-ovp-v7";
-import Hotspot from "@plugin/shared/components/Hotspot";
 
 export class HotspotsPlugin extends OVPBasePlugin {
     static defaultConfig = {};
@@ -25,36 +25,24 @@ export class HotspotsPlugin extends OVPBasePlugin {
         endpointUrl: this.getServiceUrl()
     });
 
-    constructor(name: any, player: any, config: any) {
-        super(name, player, config);
-    }
-
-    setup() {
-        // TODO consult about the setTimeout
-        setTimeout(() => {
-            this._overlay = this.addUI(
-                new OverlayUI<Stage>(this, {
-                    visibility: OverlayVisibilities.FirstPlay,
-                    renderer: this._renderRoot
-                })
-            );
-        });
-
+    protected _onAddBindings(eventManager: any): void {
         this.eventManager.listenOnce(this.player, this.player.Event.MEDIA_LOADED, () => {
             this._loadCuePoints();
         });
     }
 
-    static isValid(player: any) {
-        return true;
+    protected _onAddOverlays(uiManager: UIManager): void {
+        this._overlay = uiManager.add(
+            new OverlayUI<Stage>({
+                mode: OverlayUIModes.FirstPlay,
+                renderer: this._renderRoot
+            })
+        );
     }
 
-    destroy() {
-        // TODO unlisten to events on destroy
-    }
-
-    reset() {
-        // TODO cancel load request
+    protected _onInitMembers(): void {
+        this._overlay = null;
+        this._hotspots = [];
     }
 
     // TODO move to overlayUI
@@ -89,7 +77,7 @@ export class HotspotsPlugin extends OVPBasePlugin {
                     }
                 },
                 reason => {
-                    // TODO decide what to do in case of an error
+                    console.warn("failed to load hotspots", reason);
                 }
             );
     };
@@ -116,10 +104,18 @@ export class HotspotsPlugin extends OVPBasePlugin {
         this.player.currentTime = time;
     }
 
+    private _onRootResized() {
+        if (!this._overlay) {
+            return;
+        }
+        this._overlay.rebuild();
+    }
+
     private _renderRoot = (setRef: Ref<Stage>, overlayUIProps: OverlayUIProps): any => {
         const props: StageProps = {
             ...overlayUIProps,
             hotspots: this._hotspots,
+            onResize: this._onRootResized.bind(this),
             getPlayerSize: this._getPlayerSize.bind(this),
             getVideoSize: this._getVideoSize.bind(this),
             pauseVideo: this._pauseVideo.bind(this),
