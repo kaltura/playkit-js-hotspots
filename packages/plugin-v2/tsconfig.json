@@ -1,7 +1,7 @@
 {
     "compilerOptions": {
         "skipLibCheck": true,
-        "target": "ES5",
+        "target": "ES3",
         "module": "commonjs",
         "allowJs": false,
         "jsx": "react",
@@ -12,8 +12,7 @@
         "baseUrl": "./src",
         "paths": {
             "@plugin/shared": ["../../shared"],
-            "@plugin/shared/*": ["../../shared/*"],
-            "*": ["../node_modules/*", "../node_modules/@types/*"]
+            "@plugin/shared/*": ["../../shared/*"]
         },
         "preserveSymlinks": true
     },

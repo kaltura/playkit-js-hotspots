@@ -1,7 +1,6 @@
 {
-  "name": "playkit-js-hotspots",
+  "name": "root",
   "private": true,
-  "version": "0.0.0",
   "scripts": {},
   "repository": {
     "type": "git",
@@ -29,5 +28,8 @@
     "lint-staged": "^8.1.5",
     "prettier": "^1.16.4"
   },
-  "dependencies": {}
+  "dependencies": {
+    "@playkit-js/playkit-js-ovp": "^1.1.0",
+    "preact": "^8.4.2"
+  }
 }

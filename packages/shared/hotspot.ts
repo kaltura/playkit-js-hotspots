@@ -1,4 +1,4 @@
-import { RawLayoutCuepoint, LayoutCuepoint } from "@playkit-js/playkit-js-ovp/cuepointLayoutEngine";
+import { RawLayoutCuepoint, LayoutCuepoint } from "@playkit-js/playkit-js-ovp";
 export interface OpenUrl {
     type: "openUrl";
     url: string;

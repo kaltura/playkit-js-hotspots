@@ -11,12 +11,12 @@ module.exports = (env, options) => {
     resolve: {
       extensions: [".ts", ".tsx", ".js"],
       alias: { "@plugin/shared": path.resolve(__dirname, "../shared/") },
-      modules: [path.resolve(__dirname, "node_modules")],
+      modules: [path.resolve(__dirname, "../../node_modules"), path.resolve(__dirname, "node_modules")],
       symlinks: false
     },
     output: {
       path: distFolder,
-      filename: `${packageJson.name}.min.js`
+      filename: `playkit-js-hotspots.min.js`
     },
     devtool: options.mode == "development" ? "eval-source-map" : "source-map",
     module: {
@@ -45,7 +45,7 @@ module.exports = (env, options) => {
       inline: true,
       publicPath: "/",
       index: "index.html",
-      port: 8007
+      port: 8002
     }
 
   };
