@@ -3,11 +3,34 @@ const HtmlWebpackPlugin = require("html-webpack-plugin");
 const CopyPlugin = require("copy-webpack-plugin");
 
 const packageJson = require('./package.json');
+
+const isDevServer = process.argv.find(v => v.indexOf('webpack-dev-server') !== -1);
+const testFolder = path.join(__dirname, "/test");
 const distFolder = path.join(__dirname, "/dist");
+const pluginName = 'hotspots';
+
+const plugins = [];
+
+if (isDevServer) {
+  plugins.push(
+    new HtmlWebpackPlugin({
+      alwaysWriteToDisk: true,
+      filename: path.resolve(distFolder, "index.html"),
+      template: path.resolve(testFolder, "index.ejs"),
+      inject: false,
+      hash: true
+    }),
+    new CopyPlugin([
+      { from: testFolder, to: distFolder }
+    ])
+  );
+}
 
 module.exports = (env, options) => {
   return {
-    entry: "./src/index.ts",
+    entry: {
+      [`playkit-js-${pluginName}`]: "./src/index.ts"
+    },
     resolve: {
       extensions: [".ts", ".tsx", ".js"],
       alias: { "@plugin/shared": path.resolve(__dirname, "../shared/") },
@@ -16,7 +39,11 @@ module.exports = (env, options) => {
     },
     output: {
       path: distFolder,
-      filename: `playkit-js-hotspots.min.js`
+      filename: '[name].js',
+      library: ['KalturaPlayer', 'plugins', pluginName],
+      libraryTarget: 'umd',
+      umdNamedDefine: true,
+      devtoolModuleFilenameTemplate: `./${pluginName}/[resource-path]`
     },
     devtool: options.mode == "development" ? "eval-source-map" : "source-map",
     module: {
@@ -27,26 +54,13 @@ module.exports = (env, options) => {
         }
       ]
     },
-    plugins: [
-      new HtmlWebpackPlugin({
-        filename: path.resolve(distFolder, "index.html"),
-        template: path.resolve("src", "test.ejs"),
-        inject: false,
-        hash: true
-      }),
-      new CopyPlugin([
-        { from: "src/public", to: distFolder }
-      ])
-    ],
+    plugins,
     devServer: {
-      contentBase: distFolder,
       historyApiFallback: true,
       hot: false,
       inline: true,
-      publicPath: "/",
       index: "index.html",
       port: 8002
     }
-
   };
 }

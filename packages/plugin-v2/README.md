@@ -1,14 +1,14 @@
 # Hotspots plugin - Kaltura Player V2
 
 ### Test locally
-1. copy file `src/test.template.ejs` to `src/player-v2/test.ejs`
-2. optional, update the entry id, partner id and ks. You can keep the existing values to see an entry with hotspots defined.
+1. clone file `test/index.template.ejs` as `test/test.ejs`.
+2. in the cloned file replace all `TODO` comments with actual configuration.
 3. run `npm run start`
 
 ### Deploy plugin to production
 Hotspots plugin is deployed to production as part of [mwEmbed repo](https://github.com/kaltura/mwEmbed). To deploy it do the following:
 1. run `npm run build`
-2. copy `dist/bundle.min.js` into `modules/hotspots/resources/hotspots.js` in [mwEmbed repo](https://github.com/kaltura/mwEmbed).
+2. copy files from `dist` folder into `modules/hotspots/resources` in [mwEmbed repo](https://github.com/kaltura/mwEmbed).
 3. test it with the test page `modules/hotspots/tests/hotspots.test.html` (using xamp or mamp). for example `http://localhost:8888/html5.kaltura/mwEmbed/modules/hotspots/tests/hotspots.test.html` 
 
 	* if needed you can enable debug logs in console by using a query string `?debugKalturaPlayer` and filtering messages with `[hotspots]` in the console.

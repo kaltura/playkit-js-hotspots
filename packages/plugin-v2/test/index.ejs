@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hotspots - Player V2</title>
+
+  <script src="https://cdnapisec.kaltura.com/p/2052371/sp/205237100/embedIframeJs/uiconf_id/39149581/partner_id/2052371"></script>
+
+  <link rel="stylesheet" href="resize.css">
+  <script src="resize.js"></script>
+
+  <style>
+    #kaltura_player_1545049605 {
+      display: inline;
+      position: absolute;
+      width: 100%;
+      height: 100%;
+    }
+  </style>
+</head>
+
+<body>
+<h1>Hotspots - Player V2</h1>
+<button onclick="changeMedia()">test change media</button>
+<div style="position:relative;margin-top:10px">
+  <div class='resizable'>
+    <div id="kaltura_player_1545049605"></div>
+    <div class='resizers'>
+      <div class='resizer top-left'></div>
+      <div class='resizer top-right'></div>
+      <div class='resizer bottom-left'></div>
+      <div class='resizer bottom-right'></div>
+    </div>
+  </div>
+</div>
+
+<script>
+
+  function changeMedia() {
+    kdp.sendNotification("changeMedia", { "entryId" : "1_4gs7ozgq" });
+  }
+  var kdp;
+
+  kWidget.addReadyCallback(function( playerId ){
+    kdp = document.getElementById( playerId );
+  });
+
+  kWidget.embed({
+    "targetId": "kaltura_player_1545049605",
+    "wid": "_2052371",
+    "uiconf_id": 39149581,
+    "flashvars": {
+      "autoPlay": false,
+      ks: 'djJ8MjA1MjM3MXxZneMV32mCt5J0lYPunbK7BtEFhLZUyiQii7dbU1h_HuxqYYS_rzYrphnRxrE5aQxFzV59MVmVtrnGWUiKr0kQ0z1FlwWa-so-8Tv6hYsB404qfDgFLcGDeTj5WzQZi61Ro6Af7VvREPVtRD2DfeCm',
+      hotspots: {
+        plugin: true,
+  <% for (var chunk in htmlWebpackPlugin.files.chunks) { %>iframeHTML5Js: "<%= htmlWebpackPlugin.files.chunks[chunk].entry %>",<% } %>
+      },
+    },
+    "cache_st": 1545049605,
+    "entry_id": "1_qlrg9edk" // omri "1_4gs7ozgq"
+  });
+
+  makeResizableDiv('.resizable');
+</script>
+</body>
+</html>

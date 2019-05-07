@@ -1,5 +1,6 @@
 {
   "name": "hotspots",
+  "main": "dist/playkit-js-hotspots.js",
   "private": true,
   "version": "0.0.0",
   "description": "",
@@ -8,6 +9,8 @@
     "url": "https://github.com/kaltura/playkit-js-hotspots"
   },
   "scripts": {
+    "clean": "rm -rf dist",
+    "prebuild": "npm run clean",
     "build": "webpack --mode production",
     "start": "webpack-dev-server --mode development",
     "analyze": "npm run build && npx source-map-explorer dist/bundle.min.js"
@@ -35,5 +38,8 @@
   },
   "dependencies": {
     "preact": "^8.2.5"
-  }
+  },
+  "files": [
+    "dist"
+  ]
 }
