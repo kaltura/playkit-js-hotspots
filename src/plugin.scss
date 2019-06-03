@@ -1,0 +1,127 @@
+/* CSS Reset
+taken from https://meyerweb.com/eric/tools/css/reset/
+compiled using http://lesscss.org/less-preview/
+ */
+
+.hotspotsOverlay div,
+.hotspotsOverlay span,
+.hotspotsOverlay applet,
+.hotspotsOverlay object,
+.hotspotsOverlay iframe,
+.hotspotsOverlay h1,
+.hotspotsOverlay h2,
+.hotspotsOverlay h3,
+.hotspotsOverlay h4,
+.hotspotsOverlay h5,
+.hotspotsOverlay h6,
+.hotspotsOverlay p,
+.hotspotsOverlay blockquote,
+.hotspotsOverlay pre,
+.hotspotsOverlay a,
+.hotspotsOverlay abbr,
+.hotspotsOverlay acronym,
+.hotspotsOverlay address,
+.hotspotsOverlay big,
+.hotspotsOverlay cite,
+.hotspotsOverlay code,
+.hotspotsOverlay del,
+.hotspotsOverlay dfn,
+.hotspotsOverlay em,
+.hotspotsOverlay img,
+.hotspotsOverlay ins,
+.hotspotsOverlay kbd,
+.hotspotsOverlay q,
+.hotspotsOverlay s,
+.hotspotsOverlay samp,
+.hotspotsOverlay small,
+.hotspotsOverlay strike,
+.hotspotsOverlay strong,
+.hotspotsOverlay sub,
+.hotspotsOverlay sup,
+.hotspotsOverlay tt,
+.hotspotsOverlay var,
+.hotspotsOverlay b,
+.hotspotsOverlay u,
+.hotspotsOverlay i,
+.hotspotsOverlay center,
+.hotspotsOverlay dl,
+.hotspotsOverlay dt,
+.hotspotsOverlay dd,
+.hotspotsOverlay ol,
+.hotspotsOverlay ul,
+.hotspotsOverlay li,
+.hotspotsOverlay fieldset,
+.hotspotsOverlay form,
+.hotspotsOverlay label,
+.hotspotsOverlay legend,
+.hotspotsOverlay table,
+.hotspotsOverlay caption,
+.hotspotsOverlay tbody,
+.hotspotsOverlay tfoot,
+.hotspotsOverlay thead,
+.hotspotsOverlay tr,
+.hotspotsOverlay th,
+.hotspotsOverlay td,
+.hotspotsOverlay article,
+.hotspotsOverlay aside,
+.hotspotsOverlay canvas,
+.hotspotsOverlay details,
+.hotspotsOverlay embed,
+.hotspotsOverlay figure,
+.hotspotsOverlay figcaption,
+.hotspotsOverlay footer,
+.hotspotsOverlay header,
+.hotspotsOverlay hgroup,
+.hotspotsOverlay menu,
+.hotspotsOverlay nav,
+.hotspotsOverlay output,
+.hotspotsOverlay ruby,
+.hotspotsOverlay section,
+.hotspotsOverlay summary,
+.hotspotsOverlay time,
+.hotspotsOverlay mark,
+.hotspotsOverlay audio,
+.hotspotsOverlay video {
+    margin: 0;
+    padding: 0;
+    border: 0;
+    font-size: 100%;
+    font: inherit;
+    vertical-align: baseline;
+}
+.hotspotsOverlay article,
+.hotspotsOverlay aside,
+.hotspotsOverlay details,
+.hotspotsOverlay figcaption,
+.hotspotsOverlay figure,
+.hotspotsOverlay footer,
+.hotspotsOverlay header,
+.hotspotsOverlay hgroup,
+.hotspotsOverlay menu,
+.hotspotsOverlay nav,
+.hotspotsOverlay section {
+    display: block;
+}
+.hotspotsOverlay body {
+    line-height: 1;
+}
+.hotspotsOverlay ol,
+.hotspotsOverlay ul {
+    list-style: none;
+}
+.hotspotsOverlay blockquote,
+.hotspotsOverlay q {
+    quotes: none;
+}
+.hotspotsOverlay blockquote:before,
+.hotspotsOverlay blockquote:after,
+.hotspotsOverlay q:before,
+.hotspotsOverlay q:after {
+    content: "";
+    content: none;
+}
+.hotspotsOverlay table {
+    border-collapse: collapse;
+    border-spacing: 0;
+}
+/*********** end of CSS RESET */
