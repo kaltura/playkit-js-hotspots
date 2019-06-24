@@ -1,7 +1,7 @@
 {
   "name": "@playkit-js/playkit-js-hotspots",
   "private": false,
-  "version": "1.0.0-rc.1",
+  "version": "1.0.0-rc.2",
   "description": "",
   "main": "dist/playkit-js-hotspots.js",
   "repository": {
@@ -14,7 +14,7 @@
     "build": "webpack --mode production",
     "build:dev": "webpack --mode development",
     "start": "webpack-dev-server -d",
-    "analyze": "npm run build && npx source-map-explorer dist/playkit-js-hotspots.min.js"
+    "analyze": "npm run build && npx source-map-explorer dist/playkit-js-hotspots.js"
   },
   "keywords": [],
   "author": "",
