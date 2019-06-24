@@ -100,6 +100,9 @@ export class HotspotsPlugin extends OVPBasePlugin {
         this.player.pause();
     }
 
+    private _onResetState(): void {
+        // required, nothing to do
+    }
     private _seekTo(time: number) {
         this.player.currentTime = time;
     }
