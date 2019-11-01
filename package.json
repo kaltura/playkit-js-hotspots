@@ -30,6 +30,6 @@
   },
   "dependencies": {
     "@playkit-js/playkit-js-ovp": "^1.1.0",
-    "preact": "^8.4.2"
+    "preact": "^8.5.3"
   }
 }
