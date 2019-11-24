@@ -1,27 +1,32 @@
 import { h, Component } from "preact";
 import { LayoutHotspot } from "../hotspot";
 import { AnalyticsEvents } from "../analyticsEvents";
+import { StyleSheet, css } from "aphrodite/no-important";
 
-const defaultContainerStyles = {
-    position: "absolute",
-    display: "table",
-    boxSizing: "border-box",
-    outline: "none"
-};
-
-const defaultButtonsStyles = {
-    position: "relative",
-    width: "100%",
-    height: "100%",
-    appearance: "none",
-    border: "none",
-    display: "table-cell",
-    verticalAlign: "middle",
-    textAlign: "center",
-    cursor: "pointer",
-    wordBreak: "break-all",
-    textRendering: "geometricPrecision"
-};
+const styles = StyleSheet.create({
+    container: {
+        position: "absolute",
+        display: "table",
+        boxSizing: "border-box",
+        outline: "none",
+        ":focus": {
+            outline: "2px solid #00cbff"
+        }
+    },
+    buttons: {
+        position: "relative",
+        width: "100%",
+        height: "100%",
+        appearance: "none",
+        border: "none",
+        display: "table-cell",
+        verticalAlign: "middle",
+        textAlign: "center",
+        cursor: "pointer",
+        wordBreak: "break-all",
+        textRendering: "geometricPrecision"
+    }
+});
 
 type Props = {
     visible: boolean;
@@ -162,7 +167,6 @@ export default class Hotspot extends Component<Props, State> {
         }
 
         const containerStyles = {
-            ...defaultContainerStyles,
             top: layout.y,
             left: layout.x,
             height: layout.height,
@@ -170,14 +174,20 @@ export default class Hotspot extends Component<Props, State> {
         };
 
         const buttonStyles = {
-            ...defaultButtonsStyles,
             ...hotspot.styles,
             cursor: disableClick ? "default" : "pointer"
         };
 
         return (
-            <div onClick={this.handleClick} style={containerStyles}>
-                <div style={buttonStyles}>{label}</div>
+            <div
+                onClick={this.handleClick}
+                className={css(styles.container)}
+                style={containerStyles}
+                tabIndex={0}
+            >
+                <div className={css(styles.buttons)} style={buttonStyles}>
+                    {label}
+                </div>
             </div>
         );
     }
