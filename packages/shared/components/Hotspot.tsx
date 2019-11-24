@@ -184,6 +184,8 @@ export default class Hotspot extends Component<Props, State> {
                 className={css(styles.container)}
                 style={containerStyles}
                 tabIndex={0}
+                aria-label={label}
+                aria-disabled={disableClick}
             >
                 <div className={css(styles.buttons)} style={buttonStyles}>
                     {label}
