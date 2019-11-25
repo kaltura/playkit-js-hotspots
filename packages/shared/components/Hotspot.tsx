@@ -81,6 +81,12 @@ export default class Hotspot extends Component<Props, State> {
         });
     }
 
+    handleKeyUp = (event: any) => {
+        if (event.keyCode === 13) {
+            this.handleClick();
+        }
+    };
+
     isClickable = (): boolean => {
         const {
             hotspot: { onClick }
@@ -181,11 +187,13 @@ export default class Hotspot extends Component<Props, State> {
         return (
             <div
                 onClick={this.handleClick}
+                onKeyUp={this.handleKeyUp}
                 className={css(styles.container)}
                 style={containerStyles}
                 tabIndex={0}
                 aria-label={label}
                 aria-disabled={disableClick}
+                role="button"
             >
                 <div className={css(styles.buttons)} style={buttonStyles}>
                     {label}
