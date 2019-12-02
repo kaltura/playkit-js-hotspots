@@ -1,7 +1,6 @@
 import { h, Component } from "preact";
 import { LayoutHotspot } from "../hotspot";
 import { AnalyticsEvents } from "../analyticsEvents";
-import { StyleSheet, css } from "aphrodite/no-important";
 
 const defaultContainerStyles = {
     position: "absolute",
