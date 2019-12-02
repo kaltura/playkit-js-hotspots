@@ -1,12 +1,12 @@
 import { h, Component } from "preact";
 import { LayoutHotspot } from "../hotspot";
 import { AnalyticsEvents } from "../analyticsEvents";
+import { StyleSheet, css } from "aphrodite/no-important";
 
 const defaultContainerStyles = {
     position: "absolute",
     display: "table",
-    boxSizing: "border-box",
-    outline: "none"
+    boxSizing: "border-box"
 };
 
 const defaultButtonsStyles = {
@@ -75,6 +75,12 @@ export default class Hotspot extends Component<Props, State> {
             disableClick: !this.isClickable()
         });
     }
+
+    handleKeyUp = (event: any) => {
+        if (event.keyCode === 13) {
+            this.handleClick();
+        }
+    };
 
     isClickable = (): boolean => {
         const {
@@ -176,7 +182,15 @@ export default class Hotspot extends Component<Props, State> {
         };
 
         return (
-            <div onClick={this.handleClick} style={containerStyles}>
+            <div
+                onClick={this.handleClick}
+                onKeyUp={this.handleKeyUp}
+                tabIndex={0}
+                aria-label={label}
+                aria-disabled={disableClick}
+                role="button"
+                style={containerStyles}
+            >
                 <div style={buttonStyles}>{label}</div>
             </div>
         );
