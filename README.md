@@ -1,16 +1,12 @@
-# Hotspots plugin (player v2 & v7)
+# Kaltura Player V7 - PlaykitJsHotspots plugin
+
+[![Conventional Commits](https://img.shields.io/badge/Conventional%20Commits-1.0.0-yellow.svg)](https://conventionalcommits.org)
 
 ## Overview
-TBD
+> this section will be added soon
 
 ## Project structure
-TBD
+> this section will be added soon
 
-## Plugin for player v2
-TBD
-
-## Plugin for player v7
-TBD
-
-## Project devop notes
-TBD
+## Commands
+> this section will be added soon

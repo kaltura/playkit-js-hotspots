@@ -1,0 +1,1 @@
+import "./hotspots-plugin";
