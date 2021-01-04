@@ -51,7 +51,7 @@
                         const langOptions = options[2];
                         const env = envOptions.env[envOptions.modes.bundlerEnv];
 
-                        const bundlerUrl = "https://qa-apache-php7.dev.kaltura.com/p/6560/embedPlaykitJs/uiconf_id/15224252/versions/kaltura-ovp-player=0.53.4-vamb.1";
+                        const bundlerUrl = "https://cdnapisec.kaltura.com/p/6560/embedPlaykitJs/uiconf_id/43490281/versions/kaltura-ovp-player=1.2.1";
 
                         let loaderRunner = function() {
                             return callback(env, configOptions, langOptions);
@@ -130,7 +130,9 @@
         const data = conf.data;
         switchMediaEntryId = "1_qlrg9edk";
         let config = {
-            logLevel: "DEBUG",
+            log: {
+                logLevel: "DEBUG",
+            },
             targetId: "player-div",
             provider: {
                 env: {

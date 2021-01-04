@@ -5,7 +5,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>playkit-js-hotspots - Player V7</title>
 
-        <script src="https://qa-apache-php7.dev.kaltura.com/p/6222/embedPlaykitJs/uiconf_id/15225868/versions/kaltura-ovp-player=0.55.0,playkit-flash=1.4.4"></script>
+        <script src="https://qa-apache-php7.dev.kaltura.com/p/6222/embedPlaykitJs/uiconf_id/15225868/versions/kaltura-ovp-player=1.2.1"></script>
         <script src="playkit-js-hotspots.js"></script>
         <script src="../latest.js"></script>
         <script>
@@ -101,7 +101,7 @@
         <script type="text/javascript" src="assets/jsonform.js"></script>
 
         <script type="text/javascript">
-            var version = "2.0.2"; // TODO: automatically upgrade plugin version
+            var version = "2.1.0"; // TODO: automatically upgrade plugin version
 
             // schema documentation:
             // https://github.com/jsonform/jsonform/wiki#previous
@@ -263,7 +263,9 @@
                 };
 
                 var config = {
-                    logLevel: "DEBUG",
+                    log: {
+                        logLevel: "DEBUG"
+                    },
                     targetId: "player-div",
                     session: {},
                     contrib: contrib,
