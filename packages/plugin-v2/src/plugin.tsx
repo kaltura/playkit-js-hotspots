@@ -253,7 +253,7 @@ import { convertToHotspots } from "@plugin/shared/cuepoints";
                                 top: 0,
                                 left: 0,
                                 overflow: "visible",
-                                "z-index": "2"
+                                zIndex: 2
                             });
                     }
 
