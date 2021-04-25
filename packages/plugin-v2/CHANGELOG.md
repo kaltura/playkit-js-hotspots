@@ -2,11 +2,6 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-## 0.5.2 (2021-04-25)
-
-### Fix
-
-* v2: mobile Adnroid - hotspot is unclickable when mobile skin is used
 
 ## 0.5.1 (2019-03-31)
 
