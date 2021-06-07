@@ -1,5 +1,5 @@
 {
-  "name": "@playkit-js/hotspots-plugin",
+  "name": "@playkit-js/hotspots",
   "version": "2.1.0",
   "private": false,
   "bugs": {
@@ -53,8 +53,6 @@
     "husky:pre-commit": "lint-staged",
     "husky:commit-msg": "commitlint -E HUSKY_GIT_PARAMS",
     "deploy:prepare": "kcontrib deploy --prepare",
-    "deploy:publish-to-npm": "kcontrib deploy --publish",
-    "deploy:next:prepare": "kcontrib deploy --prepare --prerelease next",
     "copy-resources": "cp ./dist/* ./qa-standalone/ && cp -r ./translates ./qa-standalone/ && cp -r ./translates ./dist/",
     "contrib:latest": "kcontrib infra --type=latest",
     "infra:latest": "kcontrib infra --type=latest",
