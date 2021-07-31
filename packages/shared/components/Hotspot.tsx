@@ -186,7 +186,6 @@ export default class Hotspot extends Component<Props, State> {
                 onKeyUp={this.handleKeyUp}
                 tabIndex={0}
                 aria-label={label}
-                aria-disabled={disableClick}
                 role="button"
                 style={containerStyles}
             >
