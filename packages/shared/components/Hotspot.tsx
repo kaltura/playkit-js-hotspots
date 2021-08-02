@@ -187,6 +187,7 @@ export default class Hotspot extends Component<Props, State> {
                 tabIndex={0}
                 aria-label={label}
                 aria-disabled={disableClick}
+                aria-live="polite"
                 role="button"
                 style={containerStyles}
             >
