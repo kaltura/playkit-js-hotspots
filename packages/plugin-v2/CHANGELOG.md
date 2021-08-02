@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## 0.6.3 (2021-08-02)
+
+### Fix
+
+* v2: FEV-1050 - add aria-live for all hotspots (#263)
+
 ## 0.6.2 (2021-04-25)
 
 ### Fix
