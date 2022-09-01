@@ -1,5 +1,5 @@
 import {h, ComponentChildren} from 'preact';
-import {ContribServices, FloatingItem, FloatingItemProps, FloatingUIModes, FloatingPositions} from '@playkit-js/common';
+import {ContribServices, FloatingItem, FloatingItemProps, FloatingUIModes, FloatingPositions, CuePoint, TimedMetadataEvent} from '@playkit-js/common';
 import {RawLayoutHotspot, LayoutHotspot, Canvas, RawFloatingCuepoint, Layout} from './utils/hotspot';
 import HotspotWrapper from './components/HotspotWrapper';
 import {ScaleCalculation, scaleVideo} from './utils/scale-video';
@@ -24,22 +24,6 @@ export interface HotspotsMetadata {
 }
 
 type HotspotCuePoint = CuePoint<HotspotsMetadata>;
-
-// TODO: move to @playkit-js/common
-export interface CuePoint<T> {
-  startTime: number;
-  endTime?: number;
-  id: string;
-  type: string;
-  metadata: T;
-  text?: string;
-}
-// TODO: move to @playkit-js/common
-interface TimedMetadataEvent {
-  payload: {
-    cues: Array<CuePoint<any>>;
-  };
-}
 
 export class HotspotsPlugin extends KalturaPlayer.core.BasePlugin {
   static defaultConfig: HotspotsPluginConfig = {};
@@ -69,9 +53,9 @@ export class HotspotsPlugin extends KalturaPlayer.core.BasePlugin {
       this.logger.warn("kalturaCuepoints haven't registered or current entry is live");
       return;
     }
+    this._addHotspotsContainer();
     this.cuePointManager.registerTypes([this.cuePointManager.CuepointType.HOTSPOT]);
     this.eventManager.listen(this._player, this._player.Event.TIMED_METADATA_CHANGE, this._onTimedMetadataChange);
-    this.eventManager.listen(this._player, this._player.Event.TIMED_METADATA_ADDED, this._onTimedMetadataAdded);
   }
 
   private _isHotspotType = (cue: CuePoint<any>): boolean => {
@@ -141,13 +125,6 @@ export class HotspotsPlugin extends KalturaPlayer.core.BasePlugin {
       ...cuepoint,
       layout: this._calculateLayout(cuepoint as any, scaleCalculation)
     }));
-  };
-
-  private _onTimedMetadataAdded = ({payload}: TimedMetadataEvent) => {
-    const hotspotCues = this._filterHotspotCues(payload.cues);
-    if (hotspotCues.length) {
-      this._addHotspotsContainer();
-    }
   };
 
   private _onTimedMetadataChange = ({payload}: TimedMetadataEvent) => {
