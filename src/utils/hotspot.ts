@@ -54,3 +54,16 @@ export interface Canvas {
   playerSize: Size;
   videoSize: Size;
 }
+
+export const shallowCompareHotspots = (arrA: LayoutHotspot[], arrB: LayoutHotspot[]) => {
+  const len = arrA.length;
+  if (arrB.length !== len) {
+    return false;
+  }
+  for (let i = 0; i < len; i++) {
+    if (arrA[i] !== arrB[i]) {
+      return false;
+    }
+  }
+  return true;
+};

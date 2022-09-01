@@ -1,5 +1,5 @@
 import {h, Component} from 'preact';
-import {LayoutHotspot} from '../utils/hotspot';
+import {LayoutHotspot, shallowCompareHotspots} from '../utils/hotspot';
 import Hotspot from './Hotspot';
 import {AnalyticsEvents} from '../utils/analyticsEvents';
 
@@ -22,7 +22,7 @@ export interface Props {
 
 export default class HotspotWrapper extends Component<Props> {
   shouldComponentUpdate(nextProps: Props) {
-    return this.props.hotspots !== nextProps.hotspots;
+    return !shallowCompareHotspots(this.props.hotspots, nextProps.hotspots);
   }
 
   private renderHotspots = (visualHotspot: LayoutHotspot[]) => {

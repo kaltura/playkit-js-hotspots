@@ -130,7 +130,6 @@ export class HotspotsPlugin extends KalturaPlayer.core.BasePlugin {
   private _onTimedMetadataChange = ({payload}: TimedMetadataEvent) => {
     const hotspotCues = this._filterHotspotCues(payload.cues);
     if (hotspotCues.length) {
-      // TODO: memorize hotspots to avoid re-render
       const rawLayoutHotspots = this._prepareHotspots(hotspotCues);
       this._hotspots = this._recalculateCuepointLayout(rawLayoutHotspots);
       this._updateHotspotsContainer();
