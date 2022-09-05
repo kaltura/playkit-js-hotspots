@@ -1,4 +1,5 @@
-package.json
-package-lock.json
-dist
-build
+/dist
+CHANGELOG.md
+yarn.lock
+yarn-error.log
+LICENSE
