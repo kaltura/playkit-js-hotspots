@@ -48,6 +48,10 @@ export class HotspotsPlugin extends KalturaPlayer.core.BasePlugin {
     return this._player.getService('kalturaCuepoints') as any;
   }
 
+  getUIComponents(): any[] {
+    return this._contribServices.register();
+  }
+
   loadMedia(): void {
     if (!this.cuePointManager || this._player.isLive()) {
       this.logger.warn("kalturaCuepoints haven't registered or current entry is live");
