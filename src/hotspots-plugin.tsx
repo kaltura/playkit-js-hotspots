@@ -195,6 +195,8 @@ export class HotspotsPlugin extends KalturaPlayer.core.BasePlugin {
 
   reset(): void {
     this.eventManager.removeAll();
+    this._hotspots = [];
+    this._canvas = null;
     if (this._floatingItem) {
       this._contribServices.floatingManager.remove(this._floatingItem);
       this._floatingItem = null;
