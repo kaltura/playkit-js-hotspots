@@ -73,7 +73,10 @@
       "last 1 safari version"
     ]
   },
-  "kalturaDependencies" : [
-    "playkit-kaltura-cuepoints"
-  ]
+  "kaltura": {
+    "name": "playkit-js-hotspots",
+    "dependencies": {
+      "playkit-kaltura-cuepoints": "1.6.2"
+    }
+  }
 }
