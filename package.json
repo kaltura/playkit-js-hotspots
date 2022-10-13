@@ -11,7 +11,7 @@
     "url": "git+https://github.com/kaltura/playkit-js-hotspots.git"
   },
   "dependencies": {
-    "@playkit-js/common": "^1.0.7"
+    "@playkit-js/common": "^1.0.5"
   },
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^5.23.0",

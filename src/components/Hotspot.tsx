@@ -1,5 +1,4 @@
 import {h, Component} from 'preact';
-import {A11yWrapper} from '@playkit-js/common';
 import {LayoutHotspot} from '../utils/hotspot';
 import {AnalyticsEvents} from '../utils/analyticsEvents';
 
@@ -71,6 +70,12 @@ export default class Hotspot extends Component<Props, State> {
       disableClick: !this.isClickable()
     });
   }
+
+  handleKeyUp = (event: any) => {
+    if (event.keyCode === 13) {
+      this.handleClick();
+    }
+  };
 
   isClickable = (): boolean => {
     const {
@@ -172,11 +177,16 @@ export default class Hotspot extends Component<Props, State> {
     };
 
     return (
-      <A11yWrapper onClick={this.handleClick}>
-        <div tabIndex={0} aria-label={label} aria-disabled={disableClick} role="button" style={containerStyles}>
-          <div style={buttonStyles}>{label}</div>
-        </div>
-      </A11yWrapper>
+      <div
+        onClick={this.handleClick}
+        onKeyUp={this.handleKeyUp}
+        tabIndex={0}
+        aria-label={label}
+        aria-disabled={disableClick}
+        role="button"
+        style={containerStyles}>
+        <div style={buttonStyles}>{label}</div>
+      </div>
     );
   }
 }
