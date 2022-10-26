@@ -1,6 +1,6 @@
 {
   "name": "@playkit-js/hotspots",
-  "version": "3.0.0",
+  "version": "3.1.0",
   "private": false,
   "bugs": {
     "url": "https://github.com/kaltura/playkit-js-hotspots/issues"
@@ -76,7 +76,7 @@
   "kaltura": {
     "name": "playkit-js-hotspots",
     "dependencies": {
-      "playkit-kaltura-cuepoints": "1.6.2"
+      "playkit-kaltura-cuepoints": "3.0.0"
     }
   }
 }
