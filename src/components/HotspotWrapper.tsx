@@ -40,6 +40,6 @@ export default class HotspotWrapper extends Component<Props> {
     const {hotspots} = this.props;
     const hotspotsElements = this.renderHotspots(hotspots);
 
-    return <div style={hotspotsContainerStyles}>{hotspotsElements}</div>;
+    return <div style={hotspotsContainerStyles} aria-live="polite">{hotspotsElements}</div>;
   }
 }
