@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [3.1.1](https://github.com/kaltura/playkit-js-hotspots/compare/v3.1.0...v3.1.1) (2022-12-12)
+
+
+### Bug Fixes
+
+* **FEV-1590:** Hotspots are not readable on mac voice over ([#290](https://github.com/kaltura/playkit-js-hotspots/issues/290)) ([da81074](https://github.com/kaltura/playkit-js-hotspots/commit/da81074921fb9b9720d674cf09f298d956df347f))
+* **FEV-1590:** upd dependency ([#292](https://github.com/kaltura/playkit-js-hotspots/issues/292)) ([1ffc378](https://github.com/kaltura/playkit-js-hotspots/commit/1ffc378666ca8f9dfd71bdbcbefc7d115e175984))
+
 ## [3.1.0](https://github.com/kaltura/playkit-js-hotspots/compare/v2.1.4...v3.1.0) (2022-10-26)
 
 
