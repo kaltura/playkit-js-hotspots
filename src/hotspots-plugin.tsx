@@ -144,7 +144,7 @@ export class HotspotsPlugin extends KalturaPlayer.core.BasePlugin {
   private _addHotspotsContainer(): void {
     this._floatingItem = this._contribServices.floatingManager.add({
       label: 'Hotspots',
-      mode: FloatingUIModes.FirstPlay,
+      mode: FloatingUIModes.MediaLoaded,
       position: FloatingPositions.VideoArea,
       renderContent: this._renderRoot
     });
