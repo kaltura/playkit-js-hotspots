@@ -76,7 +76,7 @@
   "kaltura": {
     "name": "playkit-js-hotspots",
     "dependencies": {
-      "playkit-kaltura-cuepoints": "3.0.3"
+      "playkit-kaltura-cuepoints": "3.0.4"
     }
   }
 }
