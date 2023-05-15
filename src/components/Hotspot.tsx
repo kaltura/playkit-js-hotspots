@@ -173,7 +173,7 @@ export default class Hotspot extends Component<Props, State> {
 
     return (
       <A11yWrapper onClick={this.handleClick}>
-        <div tabIndex={0} aria-label={label} aria-disabled={disableClick} style={containerStyles}>
+        <div tabIndex={0} aria-label={label} aria-disabled={disableClick} style={containerStyles} data-testid="hotspots_hotspot">
           <div style={buttonStyles}>{label}</div>
         </div>
       </A11yWrapper>

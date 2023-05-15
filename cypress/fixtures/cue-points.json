@@ -1,0 +1,34 @@
+[
+  {
+    "partnerId": 1091,
+    "ks": "",
+    "userId": 0,
+    "objectType": "KalturaStartWidgetSessionResponse"
+  },
+  {
+    "objects": [
+      {
+        "text": "hotspot on 0:10-0:20",
+        "endTime": 20000,
+        "id": "1_1ng9a0jh",
+        "cuePointType": "annotation.Annotation",
+        "tags": "hotspots",
+        "startTime": 10000,
+        "partnerData": "{\"schemaVersion\":\"1\",\"onClick\":{\"type\":\"jumpToTime\",\"jumpToTime\":30000},\"createdAt\":\"2023-05-12T13:32:49.372Z\",\"layout\":{\"relativeX\":0.3160268539879209,\"relativeY\":0.6071697037248244,\"relativeWidth\":0.6843101169029784,\"relativeHeight\":0.10617175147100755,\"stageWidth\":401.8645833333333,\"stageHeight\":301.3984375},\"styles\":{\"background\":\"rgb(255, 255, 255)\",\"color\":\"rgb(255, 0, 0)\",\"border-radius\":\"3px\",\"font-weight\":\"normal\",\"font-size\":\"18px\",\"font-family\":\"Helvetica, Arial, Sans-Serif\"}}",
+        "objectType": "KalturaAnnotation"
+      },
+      {
+        "text": "Hotspot on 0:00-0:50",
+        "endTime": 50000,
+        "id": "1_6w5uxtb8",
+        "cuePointType": "annotation.Annotation",
+        "tags": "hotspots",
+        "startTime": 0,
+        "partnerData": "{\"schemaVersion\":\"1\",\"url\":\"https://google.com\",\"onClick\":{\"type\":\"openUrlInNewTab\",\"url\":\"https://google.com\"},\"createdAt\":\"2023-05-12T13:31:57.555Z\",\"layout\":{\"relativeX\":0,\"relativeY\":0.053085875735503774,\"relativeWidth\":0.6843101169029784,\"relativeHeight\":0.10617175147100755,\"stageWidth\":401.8645833333333,\"stageHeight\":301.3984375},\"styles\":{\"background\":\"rgba(27, 219, 85, 0.6)\",\"color\":\"rgb(0, 0, 0)\",\"border-radius\":\"3px\",\"font-weight\":\"bold\",\"font-size\":\"18px\",\"font-family\":\"Helvetica, Arial, Sans-Serif\"}}",
+        "objectType": "KalturaAnnotation"
+      }
+    ],
+    "totalCount": 2,
+    "objectType": "KalturaCuePointListResponse"
+  }
+]

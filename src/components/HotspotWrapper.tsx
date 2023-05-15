@@ -40,6 +40,10 @@ export default class HotspotWrapper extends Component<Props> {
     const {hotspots} = this.props;
     const hotspotsElements = this.renderHotspots(hotspots);
 
-    return <div style={hotspotsContainerStyles}>{hotspotsElements}</div>;
+    return (
+      <div style={hotspotsContainerStyles} data-testid="hotspots_hotspotsContainer">
+        {hotspotsElements}
+      </div>
+    );
   }
 }
