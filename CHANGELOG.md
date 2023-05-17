@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [3.1.5](https://github.com/kaltura/playkit-js-hotspots/compare/v3.1.4...v3.1.5) (2023-05-17)
+
+
+### Bug Fixes
+
+* **FEC-13145:** upd dependencies + cypress tests ([#300](https://github.com/kaltura/playkit-js-hotspots/issues/300)) ([ef2f812](https://github.com/kaltura/playkit-js-hotspots/commit/ef2f81218dee2bb82dd86ef692209d3d1e1755ab))
+* **FEC-13145:** upgrade dependancies for common and ui-managers etc ([#301](https://github.com/kaltura/playkit-js-hotspots/issues/301)) ([c2142fd](https://github.com/kaltura/playkit-js-hotspots/commit/c2142fdc794159d04f93026015f74e8c400e9599))
+
 ### [3.1.4](https://github.com/kaltura/playkit-js-hotspots/compare/v3.1.3...v3.1.4) (2023-03-22)
 
 
