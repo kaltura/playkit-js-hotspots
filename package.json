@@ -11,7 +11,7 @@
     "url": "git+https://github.com/kaltura/playkit-js-hotspots.git"
   },
   "dependencies": {
-    "@playkit-js/common": "^1.2.4"
+    "@playkit-js/common": "^1.2.9"
   },
   "devDependencies": {
     "@playkit-js/kaltura-player-js": "canary",
@@ -82,7 +82,7 @@
   "kaltura": {
     "name": "playkit-js-hotspots",
     "dependencies": {
-      "playkit-kaltura-cuepoints": "3.0.5"
+      "playkit-kaltura-cuepoints": "3.0.6"
     }
   }
 }
