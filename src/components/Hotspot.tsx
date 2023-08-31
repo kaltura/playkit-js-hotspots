@@ -152,22 +152,11 @@ export default class Hotspot extends Component<Props, State> {
   };
 
   getFontSize = (layout: any, hotspot: any, label: string): number => {
-    let textEl = document.createElement('div');
-    textEl.id = 'textDivTest';
-    textEl.style.position = 'absolute';
+    let textEl = this.createDivElement();
     textEl.style.top = `${layout.y}px`;
-    textEl.style.appearance = 'none';
-    textEl.style.border = 'none';
-    textEl.style.display = 'table-cell';
-    textEl.style.textAlign = 'center';
-    textEl.style.cursor = 'pointer';
-    textEl.style.wordBreak = 'break-all';
-    textEl.style.textRendering = 'geometricPrecision';
     textEl.style.fontSize = `${hotspot.styles['font-size']}px`;
     textEl.style.fontFamily = `${hotspot.styles['font-family']}`;
-    textEl.style.color = `${hotspot.styles['color']}`;
     textEl.textContent = label || '';
-
     document.body.appendChild(textEl);
 
     const textWidth = textEl.clientWidth;
@@ -186,6 +175,17 @@ export default class Hotspot extends Component<Props, State> {
 
     document.body.removeChild(textEl);
     return fontSizeToUse;
+  }
+
+  createDivElement = (): HTMLDivElement => {
+    let divEl = document.createElement('div');
+    divEl.id = 'textDivTest';
+    divEl.style.position = 'absolute';
+    divEl.style.display = 'table-cell';
+    divEl.style.textAlign = 'center';
+    divEl.style.wordBreak = 'break-all';
+    divEl.style.textRendering = 'geometricPrecision';
+    return divEl;
   }
 
   render() {
