@@ -51,6 +51,8 @@ function prepareUrl(url: string): string {
   return url;
 }
 
+const MINIMAL_FONT_SIZE = 10;
+
 export default class Hotspot extends Component<Props, State> {
   static defaultProps = defaultProps;
 
@@ -162,7 +164,6 @@ export default class Hotspot extends Component<Props, State> {
     const textWidth = textEl.clientWidth;
     let initialFontSize = parseInt(hotspot.styles['font-size']);
     let fontSizeToUse = initialFontSize;
-    const MINIMAL_FONT_SIZE = 10;
     if (textWidth > layout.width) {
       for (fontSizeToUse = initialFontSize - 1; fontSizeToUse >= MINIMAL_FONT_SIZE; fontSizeToUse--) {
         textEl.style.fontSize = `${fontSizeToUse}px`;
