@@ -152,15 +152,6 @@ export default class Hotspot extends Component<Props, State> {
   };
 
   getFontSize = (layout: any, hotspot: any, label: string): number => {
-    let container = document.createElement('div');
-    container.id = 'containerDivTest';
-    container.style.top = `${layout.y}px`;
-    container.style.height = `${layout.height}px`;
-    container.style.width = `${layout.width}px`;
-    container.style.position = 'absolute';
-    container.style.display = 'table';
-    container.style.boxSizing = 'border-box';
-
     let textEl = document.createElement('div');
     textEl.id = 'textDivTest';
     textEl.style.position = 'absolute';
@@ -177,7 +168,6 @@ export default class Hotspot extends Component<Props, State> {
     textEl.style.color = `${hotspot.styles['color']}`;
     textEl.textContent = label || '';
 
-    document.body.appendChild(container)
     document.body.appendChild(textEl);
 
     const textWidth = textEl.clientWidth;
@@ -185,24 +175,16 @@ export default class Hotspot extends Component<Props, State> {
     let fontSizeToUse = initialFontSize;
     const MINIMAL_FONT_SIZE = 10;
     if (textWidth > layout.width) {
-      for (let fontSizeToCheck = initialFontSize - 1; fontSizeToCheck >= MINIMAL_FONT_SIZE; fontSizeToCheck--) {
-        if (fontSizeToCheck === MINIMAL_FONT_SIZE) {
-          // if we reached the minimal font, then use it
-          fontSizeToUse = fontSizeToCheck;
-          break;
-        }
-        textEl.style.fontSize = `${fontSizeToCheck}px`;
+      for (fontSizeToUse = initialFontSize - 1; fontSizeToUse >= MINIMAL_FONT_SIZE; fontSizeToUse--) {
+        textEl.style.fontSize = `${fontSizeToUse}px`;
         const newTextWidth = textEl.clientWidth;
         if (newTextWidth <= layout.width) {
-          fontSizeToUse = fontSizeToCheck;
           break;
         }
       }
     }
 
     document.body.removeChild(textEl);
-    document.body.removeChild(container);
-
     return fontSizeToUse;
   }
 
