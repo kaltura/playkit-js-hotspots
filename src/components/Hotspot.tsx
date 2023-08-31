@@ -20,7 +20,10 @@ const defaultButtonsStyles = {
   textAlign: 'center',
   cursor: 'pointer',
   wordBreak: 'break-all',
-  textRendering: 'geometricPrecision'
+  textRendering: 'geometricPrecision',
+  overflow: 'hidden',
+  textOverflow: 'ellipsis',
+  whiteSpace: 'nowrap'
 };
 
 type Props = {
@@ -148,6 +151,61 @@ export default class Hotspot extends Component<Props, State> {
     }
   };
 
+  getFontSize = (layout: any, hotspot: any, label: string): number => {
+    let container = document.createElement('div');
+    container.id = 'containerDivTest';
+    container.style.top = `${layout.y}px`;
+    container.style.height = `${layout.height}px`;
+    container.style.width = `${layout.width}px`;
+    container.style.position = 'absolute';
+    container.style.display = 'table';
+    container.style.boxSizing = 'border-box';
+
+    let textEl = document.createElement('div');
+    textEl.id = 'textDivTest';
+    textEl.style.position = 'absolute';
+    textEl.style.top = `${layout.y}px`;
+    textEl.style.appearance = 'none';
+    textEl.style.border = 'none';
+    textEl.style.display = 'table-cell';
+    textEl.style.textAlign = 'center';
+    textEl.style.cursor = 'pointer';
+    textEl.style.wordBreak = 'break-all';
+    textEl.style.textRendering = 'geometricPrecision';
+    textEl.style.fontSize = `${hotspot.styles['font-size']}px`;
+    textEl.style.fontFamily = `${hotspot.styles['font-family']}`;
+    textEl.style.color = `${hotspot.styles['color']}`;
+    textEl.textContent = label || '';
+
+    document.body.appendChild(container)
+    document.body.appendChild(textEl);
+
+    const textWidth = textEl.clientWidth;
+    let initialFontSize = parseInt(hotspot.styles['font-size']);
+    let fontSizeToUse = initialFontSize;
+    const MINIMAL_FONT_SIZE = 10;
+    if (textWidth > layout.width) {
+      for (let fontSizeToCheck = initialFontSize - 1; fontSizeToCheck >= MINIMAL_FONT_SIZE; fontSizeToCheck--) {
+        if (fontSizeToCheck === MINIMAL_FONT_SIZE) {
+          // if we reached the minimal font, then use it
+          fontSizeToUse = fontSizeToCheck;
+          break;
+        }
+        textEl.style.fontSize = `${fontSizeToCheck}px`;
+        const newTextWidth = textEl.clientWidth;
+        if (newTextWidth <= layout.width) {
+          fontSizeToUse = fontSizeToCheck;
+          break;
+        }
+      }
+    }
+
+    document.body.removeChild(textEl);
+    document.body.removeChild(container);
+
+    return fontSizeToUse;
+  }
+
   render() {
     const {hotspot} = this.props;
     const {layout, label} = hotspot;
@@ -165,10 +223,14 @@ export default class Hotspot extends Component<Props, State> {
       width: layout.width
     };
 
+    const fontSizeToUse = `${this.getFontSize(layout, hotspot, label || '')}px`;
+
     const buttonStyles = {
       ...defaultButtonsStyles,
       ...hotspot.styles,
-      cursor: disableClick ? 'default' : 'pointer'
+      cursor: disableClick ? 'default' : 'pointer',
+      maxWidth: `${layout.width}px`,
+      fontSize: fontSizeToUse
     };
 
     return (
