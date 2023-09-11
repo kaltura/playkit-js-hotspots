@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### 3.1.7 (2023-09-11)
+
+
+### Bug Fixes
+
+* **FEC-13348:** dynamically adjust hotspot text with player size ([#307](https://github.com/kaltura/playkit-js-hotspots/issues/307)) ([c15c705](https://github.com/kaltura/playkit-js-hotspots/commit/c15c70548a71971dc4a166ce225788cab34d88e3))
+
 ### 3.1.6 (2023-06-07)
 
 ### [3.1.5](https://github.com/kaltura/playkit-js-hotspots/compare/v3.1.4...v3.1.5) (2023-05-17)
