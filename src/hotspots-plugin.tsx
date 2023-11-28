@@ -44,10 +44,6 @@ export class HotspotsPlugin extends KalturaPlayer.core.BasePlugin {
     return true;
   }
 
-  getUIComponents() {
-    return this.floatingManager.registerUIComponents();
-  }
-
   private get floatingManager(): FloatingManager {
     return (this.player.getService('floatingManager') as FloatingManager) || {};
   }
