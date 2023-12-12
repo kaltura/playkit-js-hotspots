@@ -1,5 +1,7 @@
 import {h, ComponentChildren} from 'preact';
-import {ContribServices, FloatingItem, FloatingItemProps, FloatingUIModes, FloatingPositions, CuePoint, TimedMetadataEvent} from '@playkit-js/common';
+import {FloatingItem, FloatingManager, FloatingItemProps} from '@playkit-js/ui-managers';
+
+import {ContribServices, CuePoint, TimedMetadataEvent} from '@playkit-js/common';
 import {RawLayoutHotspot, LayoutHotspot, Canvas, RawFloatingCuepoint, Layout} from './utils/hotspot';
 import HotspotWrapper from './components/HotspotWrapper';
 import {ScaleCalculation, scaleVideo} from './utils/scale-video';
@@ -29,7 +31,6 @@ export class HotspotsPlugin extends KalturaPlayer.core.BasePlugin {
   static defaultConfig: HotspotsPluginConfig = {};
 
   private _player: KalturaPlayerTypes.Player;
-  private _contribServices: ContribServices;
   private _hotspots: LayoutHotspot[] = [];
   private _floatingItem: FloatingItem | null = null;
   private _canvas: Canvas | null = null;
@@ -37,19 +38,18 @@ export class HotspotsPlugin extends KalturaPlayer.core.BasePlugin {
   constructor(name: string, player: KalturaPlayerTypes.Player, config: HotspotsPluginConfig) {
     super(name, player, config);
     this._player = player;
-    this._contribServices = ContribServices.get({kalturaPlayer: this._player});
   }
 
   static isValid(): boolean {
     return true;
   }
 
-  get cuePointManager() {
-    return this._player.getService('kalturaCuepoints') as any;
+  private get floatingManager(): FloatingManager {
+    return (this.player.getService('floatingManager') as FloatingManager) || {};
   }
 
-  getUIComponents(): any[] {
-    return this._contribServices.register();
+  get cuePointManager() {
+    return this._player.getService('kalturaCuepoints') as any;
   }
 
   loadMedia(): void {
@@ -142,10 +142,10 @@ export class HotspotsPlugin extends KalturaPlayer.core.BasePlugin {
   };
 
   private _addHotspotsContainer(): void {
-    this._floatingItem = this._contribServices.floatingManager.add({
+    this._floatingItem = this.floatingManager.add({
       label: 'Hotspots',
-      mode: FloatingUIModes.MediaLoaded,
-      position: FloatingPositions.VideoArea,
+      mode: 'MediaLoaded',
+      position: 'VideoArea',
       renderContent: this._renderRoot
     });
   }
@@ -199,7 +199,7 @@ export class HotspotsPlugin extends KalturaPlayer.core.BasePlugin {
     this._hotspots = [];
     this._canvas = null;
     if (this._floatingItem) {
-      this._contribServices.floatingManager.remove(this._floatingItem);
+      this.floatingManager.remove(this._floatingItem);
       this._floatingItem = null;
     }
   }
