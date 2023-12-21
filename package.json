@@ -84,7 +84,7 @@
     "name": "playkit-js-hotspots",
     "dependencies": {
       "playkit-kaltura-cuepoints": "3.0.6",
-      "playkit-ui-managers": "1.4.1"
+      "playkit-ui-managers": "1.5.0"
     }
   }
 }
