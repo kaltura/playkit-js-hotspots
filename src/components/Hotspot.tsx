@@ -45,6 +45,9 @@ const defaultProps = {
 };
 
 function prepareUrl(url: string): string {
+  if (url.startsWith('mailto:')) {
+    return url;
+  }
   if (!url.match(/^https?:\/\//i)) {
     url = 'http://' + url;
   }
@@ -176,7 +179,7 @@ export default class Hotspot extends Component<Props, State> {
 
     document.body.removeChild(textEl);
     return fontSizeToUse;
-  }
+  };
 
   createDivElement = (): HTMLDivElement => {
     let divEl = document.createElement('div');
@@ -187,7 +190,7 @@ export default class Hotspot extends Component<Props, State> {
     divEl.style.wordBreak = 'break-all';
     divEl.style.textRendering = 'geometricPrecision';
     return divEl;
-  }
+  };
 
   render() {
     const {hotspot} = this.props;
