@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### 3.1.11 (2024-02-01)
+
+
+### Bug Fixes
+
+* **FEC-13521:** Add support for mailto: in hotspots ([68815e4](https://github.com/kaltura/playkit-js-hotspots/commit/68815e4405236de80ddaa8dc7e62acf2d47b5e42))
+
 ### 3.1.10 (2024-01-07)
 
 ### 3.1.9 (2023-12-21)
