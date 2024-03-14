@@ -142,6 +142,7 @@ export class HotspotsPlugin extends KalturaPlayer.core.BasePlugin {
   };
 
   private _addHotspotsContainer(): void {
+    // TODO - fire on click
     this._floatingItem = this.floatingManager.add({
       label: 'Hotspots',
       mode: 'MediaLoaded',
@@ -190,7 +191,7 @@ export class HotspotsPlugin extends KalturaPlayer.core.BasePlugin {
     }
     return (
       // TODO: add 'sendAnalytics' method
-      <HotspotWrapper key={'hotspotWrapper'} hotspots={this._hotspots} pauseVideo={this._pauseVideo} seekTo={this._seekTo} sendAnalytics={() => {}} />
+      <HotspotWrapper  dispatcher={(eventType, payload) => this.dispatchEvent(eventType, payload)} key={'hotspotWrapper'} hotspots={this._hotspots} pauseVideo={this._pauseVideo} seekTo={this._seekTo} sendAnalytics={() => {}} />
     );
   };
 

@@ -8,6 +8,7 @@ const NAME = __NAME__;
 
 export {HotspotsPlugin as Plugin};
 export {VERSION, NAME};
+export {HotspotsEvents} from './events/events';
 
 const pluginName: string = 'playkit-js-hotspots';
 KalturaPlayer.core.registerPlugin(pluginName, HotspotsPlugin);
