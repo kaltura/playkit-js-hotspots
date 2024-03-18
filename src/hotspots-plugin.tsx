@@ -190,7 +190,6 @@ export class HotspotsPlugin extends KalturaPlayer.core.BasePlugin {
       this._hotspots = this._recalculateCuepointLayout(this._hotspots);
     }
     return (
-      // TODO: add 'sendAnalytics' method
       <HotspotWrapper  dispatcher={(eventType, payload) => this.dispatchEvent(eventType, payload)} key={'hotspotWrapper'} hotspots={this._hotspots} pauseVideo={this._pauseVideo} seekTo={this._seekTo} sendAnalytics={() => {}} />
     );
   };
