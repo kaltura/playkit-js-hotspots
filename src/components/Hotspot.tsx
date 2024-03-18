@@ -2,6 +2,7 @@ import {h, Component} from 'preact';
 import {A11yWrapper} from '@playkit-js/common';
 import {LayoutHotspot} from '../utils/hotspot';
 import {AnalyticsEvents} from '../utils/analyticsEvents';
+import {HotspotsEvents} from '../events/events';
 
 const defaultContainerStyles = {
   position: 'absolute',
@@ -33,6 +34,7 @@ type Props = {
   pauseVideo(): void;
   seekTo(time: number): void;
   sendAnalytics(event: AnalyticsEvents): void;
+  dispatcher(name: string, payload?: any): void
 };
 
 type State = {
@@ -65,7 +67,7 @@ export default class Hotspot extends Component<Props, State> {
   };
 
   componentDidMount() {
-    const {hotspot} = this.props;
+    const {hotspot, dispatcher} = this.props;
 
     if (!hotspot || !hotspot.onClick) {
       this.setState({
@@ -78,6 +80,9 @@ export default class Hotspot extends Component<Props, State> {
       isReady: true,
       disableClick: !this.isClickable()
     });
+
+    const {id, label} = hotspot;
+    dispatcher(HotspotsEvents.HOTSPOT_DISPLAYED, {id, label});
   }
 
   isClickable = (): boolean => {
@@ -101,8 +106,11 @@ export default class Hotspot extends Component<Props, State> {
   };
 
   handleClick = () => {
-    const {hotspot} = this.props;
+    const {hotspot, dispatcher} = this.props;
     const {disableClick} = this.state;
+
+    const {id, label} = hotspot;
+    dispatcher(HotspotsEvents.HOTSPOT_CLICK, {id, label});
 
     if (!hotspot.onClick || disableClick) {
       return;

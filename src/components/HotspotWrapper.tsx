@@ -18,6 +18,7 @@ export interface Props {
   pauseVideo(): void;
   seekTo(time: number): void;
   sendAnalytics(event: AnalyticsEvents): void;
+  dispatcher(name: string, payload?: any): void
 }
 
 export default class HotspotWrapper extends Component<Props> {
@@ -30,9 +31,9 @@ export default class HotspotWrapper extends Component<Props> {
       return null;
     }
 
-    const {seekTo, pauseVideo, sendAnalytics} = this.props;
+    const {seekTo, pauseVideo, sendAnalytics, dispatcher} = this.props;
     return visualHotspot.map(hotspotData => (
-      <Hotspot pauseVideo={pauseVideo} seekTo={seekTo} key={hotspotData.id} visible={true} hotspot={hotspotData} sendAnalytics={sendAnalytics} />
+      <Hotspot dispatcher={dispatcher} pauseVideo={pauseVideo} seekTo={seekTo} key={hotspotData.id} visible={true} hotspot={hotspotData} sendAnalytics={sendAnalytics} />
     ));
   };
 
