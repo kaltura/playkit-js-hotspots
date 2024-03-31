@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## 3.2.0 (2024-03-31)
+
+
+### Features
+
+* **FEC-13561:** Hotspots for simulive ([48305ba](https://github.com/kaltura/playkit-js-hotspots/commit/48305ba24bb608fb218de92ecbad2a28b1dbd679))
+
 ### 3.1.13 (2024-02-25)
 
 ### 3.1.12 (2024-02-04)
