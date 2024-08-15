@@ -2,7 +2,7 @@ import {h, ComponentChildren} from 'preact';
 import {FloatingItem, FloatingManager, FloatingItemProps} from '@playkit-js/ui-managers';
 
 import {ContribServices, CuePoint, TimedMetadataEvent} from '@playkit-js/common';
-import {RawLayoutHotspot, LayoutHotspot, Canvas, RawFloatingCuepoint, Layout} from './utils/hotspot';
+import {RawLayoutHotspot, LayoutHotspot, Canvas, RawFloatingCuepoint, Layout, Style} from './utils/hotspot';
 import HotspotWrapper from './components/HotspotWrapper';
 import {ScaleCalculation, scaleVideo} from './utils/scale-video';
 
@@ -105,6 +105,14 @@ export class HotspotsPlugin extends KalturaPlayer.core.BasePlugin {
     };
   }
 
+  private _calculateStyle(cuepoint: LayoutHotspot, scaleCalculation: ScaleCalculation): Style {
+    const {rawLayout, styles} = cuepoint;
+    return {
+      fontSize: (parseInt(styles['font-size']) / rawLayout.stageWidth) * scaleCalculation.width,
+      radiusBorder: (parseInt(styles['border-radius']) / rawLayout.stageWidth) * scaleCalculation.width
+    };
+  }
+
   private _recalculateCuepointLayout = (hotspots: RawLayoutHotspot[] | LayoutHotspot[]): LayoutHotspot[] => {
     this.logger.debug('calculating cuepoint layout based on video/player sizes');
 
@@ -127,7 +135,8 @@ export class HotspotsPlugin extends KalturaPlayer.core.BasePlugin {
     this.logger.debug('recalculate cuepoint layout based on new sizes');
     return hotspots.map(cuepoint => ({
       ...cuepoint,
-      layout: this._calculateLayout(cuepoint as any, scaleCalculation)
+      layout: this._calculateLayout(cuepoint as any, scaleCalculation),
+      relativeStyle: this._calculateStyle(cuepoint as any, scaleCalculation)
     }));
   };
 
@@ -190,7 +199,14 @@ export class HotspotsPlugin extends KalturaPlayer.core.BasePlugin {
       this._hotspots = this._recalculateCuepointLayout(this._hotspots);
     }
     return (
-      <HotspotWrapper  dispatcher={(eventType, payload) => this.dispatchEvent(eventType, payload)} key={'hotspotWrapper'} hotspots={this._hotspots} pauseVideo={this._pauseVideo} seekTo={this._seekTo} sendAnalytics={() => {}} />
+      <HotspotWrapper
+        dispatcher={(eventType, payload) => this.dispatchEvent(eventType, payload)}
+        key={'hotspotWrapper'}
+        hotspots={this._hotspots}
+        pauseVideo={this._pauseVideo}
+        seekTo={this._seekTo}
+        sendAnalytics={() => {}}
+      />
     );
   };
 
