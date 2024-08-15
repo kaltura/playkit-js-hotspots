@@ -5,6 +5,11 @@ export interface Layout {
   height: number;
 }
 
+export interface Style {
+  radiusBorder: number;
+  fontSize: number;
+}
+
 export interface RawFloatingCuepoint {
   id: string;
   startTime: number;
@@ -21,6 +26,7 @@ export interface RawFloatingCuepoint {
 
 export interface FloatingCuepoint extends RawFloatingCuepoint {
   layout: Layout;
+  relativeStyle : Style;
 }
 
 export interface OpenUrl {

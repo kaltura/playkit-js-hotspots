@@ -11,20 +11,21 @@ const defaultContainerStyles = {
 };
 
 const defaultButtonsStyles = {
-  position: 'relative',
+  position: 'absolute',
   width: '100%',
   height: '100%',
   appearance: 'none',
   border: 'none',
-  display: 'table-cell',
-  verticalAlign: 'middle',
-  textAlign: 'center',
+  display: 'flex',
   cursor: 'pointer',
   wordBreak: 'break-all',
   textRendering: 'geometricPrecision',
   overflow: 'hidden',
   textOverflow: 'ellipsis',
-  whiteSpace: 'nowrap'
+  padding: '3px',
+  alignItems: 'center',
+  justifyContent: 'center',
+  outline: 0,
 };
 
 type Props = {
@@ -164,42 +165,6 @@ export default class Hotspot extends Component<Props, State> {
     }
   };
 
-  getFontSize = (layout: any, hotspot: any, label: string): number => {
-    let textEl = this.createDivElement();
-    textEl.style.top = `${layout.y}px`;
-    textEl.style.fontSize = `${hotspot.styles['font-size']}px`;
-    textEl.style.fontFamily = `${hotspot.styles['font-family']}`;
-    textEl.textContent = label || '';
-    document.body.appendChild(textEl);
-
-    const textWidth = textEl.clientWidth;
-    let initialFontSize = parseInt(hotspot.styles['font-size']);
-    let fontSizeToUse = initialFontSize;
-    if (textWidth > layout.width) {
-      for (fontSizeToUse = initialFontSize - 1; fontSizeToUse >= MINIMAL_FONT_SIZE; fontSizeToUse--) {
-        textEl.style.fontSize = `${fontSizeToUse}px`;
-        const newTextWidth = textEl.clientWidth;
-        if (newTextWidth <= layout.width) {
-          break;
-        }
-      }
-    }
-
-    document.body.removeChild(textEl);
-    return fontSizeToUse;
-  };
-
-  createDivElement = (): HTMLDivElement => {
-    let divEl = document.createElement('div');
-    divEl.id = 'textDivTest';
-    divEl.style.position = 'absolute';
-    divEl.style.display = 'table-cell';
-    divEl.style.textAlign = 'center';
-    divEl.style.wordBreak = 'break-all';
-    divEl.style.textRendering = 'geometricPrecision';
-    return divEl;
-  };
-
   render() {
     const {hotspot} = this.props;
     const {layout, label} = hotspot;
@@ -217,14 +182,13 @@ export default class Hotspot extends Component<Props, State> {
       width: layout.width
     };
 
-    const fontSizeToUse = `${this.getFontSize(layout, hotspot, label || '')}px`;
-
     const buttonStyles = {
       ...defaultButtonsStyles,
       ...hotspot.styles,
       cursor: disableClick ? 'default' : 'pointer',
       maxWidth: `${layout.width}px`,
-      fontSize: fontSizeToUse
+      fontSize: `${hotspot.relativeStyle.fontSize}px`,
+      borderRadius: `${hotspot.relativeStyle.radiusBorder}px`,
     };
 
     return (
