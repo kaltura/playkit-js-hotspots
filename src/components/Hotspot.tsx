@@ -11,9 +11,9 @@ const defaultContainerStyles = {
 };
 
 const defaultButtonsStyles = {
-  position: 'absolute',
+  position: 'relative',
   width: '100%',
-  height: '100%',
+  height: 'inherit',
   appearance: 'none',
   border: 'none',
   display: 'flex',
