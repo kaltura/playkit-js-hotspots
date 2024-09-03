@@ -26,6 +26,7 @@ const defaultButtonsStyles = {
   alignItems: 'center',
   justifyContent: 'center',
   outline: 0,
+  lineHeight: 'normal'
 };
 
 type Props = {
