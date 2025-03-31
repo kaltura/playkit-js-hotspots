@@ -63,6 +63,8 @@ const MINIMAL_FONT_SIZE = 10;
 export default class Hotspot extends Component<Props, State> {
   static defaultProps = defaultProps;
 
+  hotspotRef: HTMLDivElement | null = null;
+
   state = {
     disableClick: true,
     isReady: false
@@ -72,20 +74,28 @@ export default class Hotspot extends Component<Props, State> {
     const {hotspot, dispatcher} = this.props;
 
     if (!hotspot || !hotspot.onClick) {
-      this.setState({
-        isReady: true
+      this.setState({ isReady: true }, () => {
+        this.setFocus();
       });
       return;
     }
 
-    this.setState({
-      isReady: true,
-      disableClick: !this.isClickable()
-    });
+    this.setState(
+      { isReady: true, disableClick: !this.isClickable() },
+      () => {
+        this.setFocus();
+      }
+    );
 
     const {id, label} = hotspot;
     dispatcher(HotspotsEvents.HOTSPOT_DISPLAYED, {id, label});
   }
+
+  setFocus = () => {
+    if (this.hotspotRef) {
+      setTimeout(() => this.hotspotRef?.focus(), 0);
+    }
+  };
 
   isClickable = (): boolean => {
     const {
@@ -193,8 +203,8 @@ export default class Hotspot extends Component<Props, State> {
     };
 
     return (
-      <A11yWrapper onClick={this.handleClick}>
-        <div tabIndex={0} aria-label={label} aria-disabled={disableClick} style={containerStyles} data-testid="hotspots_hotspot">
+      <A11yWrapper onClick={this.handleClick} aria-live="polite">
+        <div ref={(ref) => (this.hotspotRef = ref)} tabIndex={0} role="button" aria-label={label} aria-disabled={disableClick} style={containerStyles} data-testid="hotspots_hotspot">
           <div style={buttonStyles}>{label}</div>
         </div>
       </A11yWrapper>
