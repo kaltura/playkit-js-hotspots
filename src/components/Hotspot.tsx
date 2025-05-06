@@ -12,6 +12,7 @@ const defaultContainerStyles = {
 
 const defaultButtonsStyles = {
   position: 'relative',
+  zIndex: '2',
   width: '100%',
   height: 'inherit',
   appearance: 'none',
