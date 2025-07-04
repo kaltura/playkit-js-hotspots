@@ -147,6 +147,30 @@ export class HotspotsPlugin extends KalturaPlayer.core.BasePlugin {
     }));
   };
 
+  private _previousHotspotMap: Map<string, string> = new Map();
+
+  private _announceHotspotChange(message: string): void {
+    const regionId = 'hotspot-liveRegion';
+    let liveRegion = document.getElementById(regionId);
+    if (!liveRegion) {
+      liveRegion = document.createElement('div');
+      liveRegion.id = regionId;
+      liveRegion.setAttribute('aria-live', 'polite');
+      liveRegion.setAttribute('role', 'status');
+      liveRegion.style.position = 'absolute';
+      liveRegion.style.left = '-9999px';
+      liveRegion.style.width = '1px';
+      liveRegion.style.height = '1px';
+      liveRegion.style.overflow = 'hidden';
+      document.body.appendChild(liveRegion);
+    }
+    liveRegion.textContent = '';
+    //setTimeout ensures screen readers are not ignoring same string messages
+    setTimeout(() => {
+      liveRegion!.textContent = message;
+    }, 0);
+  }
+
   private _onTimedMetadataChange = ({payload}: TimedMetadataEvent) => {
     const hotspotCues = this._filterHotspotCues(payload.cues);
     // update HotspotsContainer to add or remove visible hotspots
@@ -154,6 +178,20 @@ export class HotspotsPlugin extends KalturaPlayer.core.BasePlugin {
       const rawLayoutHotspots = this._prepareHotspots(hotspotCues);
       this._hotspots = this._recalculateCuepointLayout(rawLayoutHotspots);
       this._updateHotspotsContainer();
+      const currentMap = new Map<string, string>(
+        this._hotspots
+          .filter(h => typeof h.label === 'string')
+          .map(h => [h.id, h.label!])
+      );
+      const previousMap = this._previousHotspotMap;
+      let announced = false;
+      previousMap.forEach((label, id) => {
+        if (!currentMap.has(id) && !announced) {
+          this._announceHotspotChange(`${label} hotspot removed`);
+          announced = true;
+        }
+      });
+      this._previousHotspotMap = currentMap;
     }
   };
 
