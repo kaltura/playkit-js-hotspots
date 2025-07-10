@@ -74,28 +74,18 @@ export default class Hotspot extends Component<Props, State> {
     const {hotspot, dispatcher} = this.props;
 
     if (!hotspot || !hotspot.onClick) {
-      this.setState({ isReady: true }, () => {
-        this.setFocus();
-      });
+      this.setState({ isReady: true });
       return;
     }
 
-    this.setState(
-      { isReady: true, disableClick: !this.isClickable() },
-      () => {
-        this.setFocus();
-      }
-    );
+    this.setState({
+      isReady: true,
+      disableClick: !this.isClickable()
+    });
 
     const {id, label} = hotspot;
     dispatcher(HotspotsEvents.HOTSPOT_DISPLAYED, {id, label});
   }
-
-  setFocus = () => {
-    if (this.hotspotRef) {
-      setTimeout(() => this.hotspotRef?.focus(), 0);
-    }
-  };
 
   isClickable = (): boolean => {
     const {
@@ -203,7 +193,7 @@ export default class Hotspot extends Component<Props, State> {
     };
 
     return (
-      <A11yWrapper onClick={this.handleClick} aria-live="polite">
+      <A11yWrapper onClick={this.handleClick} role='alert' aria-live="polite">
         <div ref={(ref) => (this.hotspotRef = ref)} tabIndex={0} role="button" aria-label={label} aria-disabled={disableClick} style={containerStyles} data-testid="hotspots_hotspot">
           <div style={buttonStyles}>{label}</div>
         </div>
