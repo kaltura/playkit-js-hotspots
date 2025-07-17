@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### 3.2.21 (2025-07-17)
+
+
+### Bug Fixes
+
+* **ADA-2781:** Stop focus jumping on hotspot ([#335](https://github.com/kaltura/playkit-js-hotspots/issues/335)) ([94f783d](https://github.com/kaltura/playkit-js-hotspots/commit/94f783d57ae70e6d15fb354c413535e5161310cf))
+
 ### 3.2.20 (2025-05-22)
 
 ### 3.2.19 (2025-04-24)
