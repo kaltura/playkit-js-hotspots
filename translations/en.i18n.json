@@ -1,5 +1,7 @@
 {
   "en": {
-    "hotspots": {}
+    "hotspots": {
+      "hotspot_removed": "hotspot removed"
+    }
   }
 }
