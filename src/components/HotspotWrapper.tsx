@@ -5,7 +5,13 @@ import {AnalyticsEvents} from '../utils/analyticsEvents';
 
 const { withPlayer } = KalturaPlayer.ui.components;
 const { withText, Text } = KalturaPlayer.ui.preacti18n;
-const translates = { hotspotRemoved: <Text id="hotspots.hotspot_removed">hotspot removed</Text> };
+const translates = {
+  hotspotRemoved: (
+    <Text id="hotspots.hotspot_removed" fields={{ hotspotLabel: '' }}>
+      {`{hotspotLabel} hotspot removed`}
+    </Text>
+  )
+};
 
 const hotspotsContainerStyles = {
   position: 'absolute',
@@ -47,7 +53,10 @@ export default class HotspotWrapper extends Component<Props> {
     let announced = false;
     this.previousHotspotMap.forEach((label, id) => {
       if (!currentMap.has(id) && !announced) {
-        this.announceHotspotChange(`${label} ${this.props.hotspotRemoved}`);
+        if (this.props.hotspotRemoved) {
+          const message = this.props.hotspotRemoved.replace('{hotspotLabel}', label);
+          this.announceHotspotChange(message);
+        }
         announced = true;
       }
     });
@@ -59,9 +68,7 @@ export default class HotspotWrapper extends Component<Props> {
     const liveRegion = this.liveRegionRef.current;
     if (!liveRegion) return;
     liveRegion.textContent = '';
-    setTimeout(() => {
-      liveRegion.textContent = message;
-    }, 0);
+    liveRegion.textContent = message;
   }
 
   private renderHotspots = (visualHotspot: LayoutHotspot[]) => {
