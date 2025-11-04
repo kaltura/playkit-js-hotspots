@@ -68,9 +68,11 @@ export default class HotspotWrapper extends Component<Props> {
     const liveRegion = this.liveRegionRef.current;
     if (!liveRegion) return;
     liveRegion.textContent = '';
+    //setTimeout ensures the DOM change happens in two separate cycles
+    // which solves the issue that the hotspot removal is announced only the first time.
     setTimeout(() => {
       liveRegion.textContent = message;
-    }, 30);
+    });
   }
 
   private renderHotspots = (visualHotspot: LayoutHotspot[]) => {
