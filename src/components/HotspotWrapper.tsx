@@ -68,7 +68,9 @@ export default class HotspotWrapper extends Component<Props> {
     const liveRegion = this.liveRegionRef.current;
     if (!liveRegion) return;
     liveRegion.textContent = '';
-    liveRegion.textContent = message;
+    setTimeout(() => {
+      liveRegion.textContent = message;
+    }, 30);
   }
 
   private renderHotspots = (visualHotspot: LayoutHotspot[]) => {
