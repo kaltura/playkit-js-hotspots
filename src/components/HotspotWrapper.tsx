@@ -70,7 +70,7 @@ export default class HotspotWrapper extends Component<Props> {
     liveRegion.textContent = '';
     setTimeout(() => {
       liveRegion.textContent = message;
-    }, 30);
+    });
   }
 
   private renderHotspots = (visualHotspot: LayoutHotspot[]) => {
