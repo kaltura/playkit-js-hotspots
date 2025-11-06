@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### 3.2.23 (2025-11-06)
+
+
+### Bug Fixes
+
+* **ADA-2982:** Make timeout 0 ([#339](https://github.com/kaltura/playkit-js-hotspots/issues/339)) ([00f45fc](https://github.com/kaltura/playkit-js-hotspots/commit/00f45fc5829f2f2ffd3c2e8063b66add01dceadb))
+
 ### 3.2.22 (2025-10-23)
 
 ### 3.2.21 (2025-07-17)
