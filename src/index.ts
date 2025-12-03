@@ -1,4 +1,5 @@
 import {HotspotsPlugin} from './hotspots-plugin';
+import {registerPlugin} from '@playkit-js/kaltura-player-js';
 
 declare var __VERSION__: string;
 declare var __NAME__: string;
@@ -11,4 +12,4 @@ export {VERSION, NAME};
 export {HotspotsEvents} from './events/events';
 
 const pluginName: string = 'playkit-js-hotspots';
-KalturaPlayer.core.registerPlugin(pluginName, HotspotsPlugin);
+registerPlugin(pluginName, HotspotsPlugin as any);
