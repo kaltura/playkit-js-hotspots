@@ -1,5 +1,7 @@
 {
   "ca_es": {
-    "hotspots": {}
+    "hotspots": {
+      "hotspot_removed": "Punt d’accés {{hotspotLabel}} eliminat"
+    }
   }
 }
