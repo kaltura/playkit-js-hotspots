@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### 3.2.26 (2025-12-18)
+
+
+### Bug Fixes
+
+* **FEC-14689:** Hotspot translations ([#342](https://github.com/kaltura/playkit-js-hotspots/issues/342)) ([4ec8105](https://github.com/kaltura/playkit-js-hotspots/commit/4ec81050f4e961d616d4d08a68e68d8416a074a0))
+
 ### 3.2.25 (2025-11-27)
 
 ### 3.2.24 (2025-11-06)
