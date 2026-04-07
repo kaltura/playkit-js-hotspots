@@ -193,7 +193,7 @@ export default class Hotspot extends Component<Props, State> {
     };
 
     return (
-      <A11yWrapper onClick={this.handleClick} role='alert' aria-live="polite">
+      <A11yWrapper onClick={this.handleClick}>
         <div ref={(ref) => (this.hotspotRef = ref)} tabIndex={0} role="button" aria-label={label} aria-disabled={disableClick} style={containerStyles} data-testid="hotspots_hotspot">
           <div style={buttonStyles}>{label}</div>
         </div>
