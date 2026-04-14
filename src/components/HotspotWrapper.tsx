@@ -10,6 +10,11 @@ const translates = {
     <Text id="hotspots.hotspot_removed" fields={{ hotspotLabel: '' }}>
       {`{hotspotLabel} hotspot removed`}
     </Text>
+  ),
+  hotspotAdded: (
+    <Text id="hotspots.hotspot_added" fields={{ hotspotLabel: '' }}>
+      {`{hotspotLabel} hotspot added`}
+    </Text>
   )
 };
 
@@ -30,6 +35,7 @@ export interface Props {
   sendAnalytics(event: AnalyticsEvents): void;
   dispatcher(name: string, payload?: any): void;
   hotspotRemoved?: string;
+  hotspotAdded?: string;
   player?: any;
 }
 
@@ -51,6 +57,8 @@ export default class HotspotWrapper extends Component<Props> {
     );
 
     let announced = false;
+    
+    // Announce removed hotspots
     this.previousHotspotMap.forEach((label, id) => {
       if (!currentMap.has(id) && !announced) {
         if (this.props.hotspotRemoved) {
@@ -60,6 +68,19 @@ export default class HotspotWrapper extends Component<Props> {
         announced = true;
       }
     });
+
+    // Announce added hotspots
+    if (!announced) {
+      currentMap.forEach((label, id) => {
+        if (!this.previousHotspotMap.has(id) && !announced) {
+          if (this.props.hotspotAdded) {
+            const message = this.props.hotspotAdded.replace('{hotspotLabel}', label);
+            this.announceHotspotChange(message);
+          }
+          announced = true;
+        }
+      });
+    }
 
     this.previousHotspotMap = currentMap;
   }
