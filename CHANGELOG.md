@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### 3.2.28 (2026-04-23)
+
+
+### Bug Fixes
+
+* **ADA-3333:** - Correct role and announcement for hotspots ([#344](https://github.com/kaltura/playkit-js-hotspots/issues/344)) ([0849252](https://github.com/kaltura/playkit-js-hotspots/commit/084925284454ada943451691be1d488956a5b2d8))
+
 ### 3.2.27 (2026-01-29)
 
 ### 3.2.26 (2025-12-18)
