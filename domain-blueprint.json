@@ -150,7 +150,8 @@
     "peer": {
       "@playkit-js/kaltura-player-js": "canary"
     },
-    "kaltura": {
+    "kalturaPluginDependencies": {
+      "description": "Kaltura plugin bundle names (as referenced in kaltura.dependencies in package.json)",
       "playkit-kaltura-cuepoints": "3.0.19",
       "playkit-ui-managers": "1.8.5"
     }
