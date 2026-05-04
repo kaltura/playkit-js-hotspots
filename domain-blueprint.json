@@ -1,0 +1,158 @@
+{
+  "repositoryName": "playkit-js-hotspots",
+  "packageName": "@playkit-js/hotspots",
+  "version": "3.2.28",
+  "coreResponsibility": {
+    "summary": "A Kaltura Player plugin that renders interactive clickable hotspots (overlay annotations) on video content, enabling user engagement through timed visual elements with configurable actions like URL navigation and video seek.",
+    "type": "plugin",
+    "category": "Interactive Overlay / Annotation Plugin"
+  },
+  "domainAndLogicOwnership": {
+    "featureOwnership": [
+      "Hotspot rendering and display on video playback",
+      "Timed hotspot visibility based on cue points (start/end times)",
+      "Hotspot click actions: jumpToTime, openUrl, openUrlInNewTab",
+      "Responsive hotspot positioning and scaling relative to video dimensions",
+      "Hotspot styling (background color, font, border-radius, font-size)",
+      "Accessibility support (ARIA labels, keyboard navigation, screen reader announcements)",
+      "Hotspot analytics event tracking (click events)",
+      "Multi-language/i18n support for hotspot notifications"
+    ],
+    "dataHandling": {
+      "inputData": [
+        "KalturaAnnotation cue points with cuePointType 'annotation.Annotation' and tags 'hotspots'",
+        "Hotspot partnerData containing layout (relativeX, relativeY, relativeWidth, relativeHeight, stageWidth, stageHeight)",
+        "Hotspot styles (background, color, border-radius, font-weight, font-size, font-family)",
+        "Hotspot onClick actions (type, url, jumpToTime)"
+      ],
+      "stateManaged": [
+        "Active/visible hotspots array (LayoutHotspot[])",
+        "Canvas dimensions (playerSize, videoSize)",
+        "Calculated hotspot layouts (x, y, width, height)",
+        "FloatingItem reference for UI management"
+      ],
+      "outputEvents": [
+        "HOTSPOT_CLICK - fired when user clicks a hotspot",
+        "HOTSPOT_DISPLAYED - fired when hotspot becomes visible",
+        "Analytics event 47 - URL click tracking"
+      ]
+    }
+  },
+  "integrationPoints": {
+    "upstream": {
+      "repositories": [
+        {
+          "name": "playkit-js-kaltura-cuepoints",
+          "relationship": "Required dependency - provides cue point data and TIMED_METADATA_CHANGE events"
+        },
+        {
+          "name": "playkit-js-ui-managers",
+          "relationship": "Required dependency - provides FloatingManager service for overlay positioning"
+        },
+        {
+          "name": "playkit-js-common",
+          "relationship": "Shared utilities - provides CuePoint, TimedMetadataEvent, A11yWrapper, ContribServices"
+        },
+        {
+          "name": "kaltura-player-js",
+          "relationship": "Core player - provides BasePlugin, event system, player services, preact UI components"
+        }
+      ],
+      "services": [
+        "Kaltura Backend API - cue points list endpoint (cuepoint.list)",
+        "Kaltura CMS/KMC - hotspot creation and configuration"
+      ]
+    },
+    "downstream": {
+      "consumers": [
+        "Kaltura Player V7 web embed",
+        "Kaltura Video Portal",
+        "Custom player integrations using Kaltura Player JS"
+      ]
+    },
+    "externalAPIs": [
+      {
+        "name": "Kaltura Cue Points API",
+        "usage": "Retrieves hotspot annotation data via kalturaCuepoints service"
+      }
+    ]
+  },
+  "technicalStack": {
+    "primaryLanguages": ["TypeScript", "TSX/JSX"],
+    "frameworks": ["Preact (via Kaltura Player UI)"],
+    "buildTools": ["Webpack", "TypeScript Compiler"],
+    "testingTools": ["Cypress (E2E testing)"],
+    "packageManager": "Yarn",
+    "entryPoints": {
+      "main": "src/index.ts",
+      "plugin": "src/hotspots-plugin.tsx",
+      "components": [
+        "src/components/Hotspot.tsx",
+        "src/components/HotspotWrapper.tsx"
+      ],
+      "utilities": [
+        "src/utils/hotspot.ts",
+        "src/utils/scale-video.ts",
+        "src/utils/analyticsEvents.ts"
+      ],
+      "events": "src/events/events.ts",
+      "buildOutput": "dist/playkit-hotspots.js"
+    },
+    "configFiles": [
+      "webpack.config.js",
+      "tsconfig.json",
+      "package.json"
+    ]
+  },
+  "triageKeywords": [
+    "hotspot",
+    "hotspots",
+    "playkit-js-hotspots",
+    "annotation overlay",
+    "clickable overlay",
+    "video annotation",
+    "cue point annotation",
+    "jumpToTime",
+    "openUrlInNewTab",
+    "HOTSPOT_CLICK",
+    "HOTSPOT_DISPLAYED",
+    "FloatingManager",
+    "relativeX",
+    "relativeY",
+    "hotspot positioning",
+    "hotspot scaling",
+    "hotspot styling",
+    "KalturaAnnotation hotspots",
+    "TIMED_METADATA_CHANGE hotspot",
+    "hotspot not visible",
+    "hotspot click not working",
+    "hotspot wrong position",
+    "hotspot accessibility",
+    "hotspot_added",
+    "hotspot_removed"
+  ],
+  "commonIssuePatterns": [
+    "Hotspot not appearing at correct time",
+    "Hotspot positioned incorrectly on resize",
+    "Hotspot click action not triggering",
+    "Hotspot URL not opening",
+    "Hotspot jumpToTime not seeking",
+    "Hotspot styling not applied",
+    "Hotspot z-index/layering issues",
+    "Hotspot accessibility/screen reader issues",
+    "kalturaCuepoints service not registered",
+    "FloatingManager service not available"
+  ],
+  "dependencies": {
+    "runtime": {
+      "@playkit-js/common": "^1.2.9"
+    },
+    "peer": {
+      "@playkit-js/kaltura-player-js": "canary"
+    },
+    "kaltura": {
+      "playkit-kaltura-cuepoints": "3.0.19",
+      "playkit-ui-managers": "1.8.5"
+    }
+  }
+}
