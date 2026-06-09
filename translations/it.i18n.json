@@ -1,7 +1,8 @@
 {
   "it": {
     "hotspots": {
-      "hotspot_removed": "Hotspot {{hotspotLabel}} rimosso"
+      "hotspot_removed": "Hotspot {{hotspotLabel}} rimosso",
+      "hotspot_added": "Hotspot {{hotspotLabel}} aggiunto"
     }
   }
 }

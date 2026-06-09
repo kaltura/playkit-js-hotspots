@@ -1,7 +1,8 @@
 {
   "zh_tw": {
     "hotspots": {
-      "hotspot_removed": "{{hotspotLabel}} 熱點已移除"
+      "hotspot_removed": "{{hotspotLabel}} 熱點已移除",
+      "hotspot_added": "已新增 {{hotspotLabel}} 熱點"
     }
   }
 }

@@ -1,7 +1,8 @@
 {
   "zh_cn": {
     "hotspots": {
-      "hotspot_removed": "移除热点 {{hotspotLabel}}"
+      "hotspot_removed": "移除热点 {{hotspotLabel}}",
+      "hotspot_added": "已添加 {{hotspotLabel}} 热点"
     }
   }
 }

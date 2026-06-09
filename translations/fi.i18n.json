@@ -1,7 +1,8 @@
 {
   "fi": {
     "hotspots": {
-      "hotspot_removed": "{{hotspotLabel}}-hotspot poistettu"
+      "hotspot_removed": "{{hotspotLabel}}-hotspot poistettu",
+      "hotspot_added": "Hotspot {{hotspotLabel}} lisätty"
     }
   }
 }

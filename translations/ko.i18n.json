@@ -1,7 +1,8 @@
 {
   "ko": {
     "hotspots": {
-      "hotspot_removed": "{{hotspotLabel}} 핫스팟이 제거됨"
+      "hotspot_removed": "{{hotspotLabel}} 핫스팟이 제거됨",
+      "hotspot_added": "{{hotspotLabel}} 핫스팟이 추가되었습니다"
     }
   }
 }

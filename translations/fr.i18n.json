@@ -1,7 +1,8 @@
 {
   "fr": {
     "hotspots": {
-      "hotspot_removed": "Zone d’accès sans fil {{hotspotLabel}} supprimée"
+      "hotspot_removed": "Zone d’accès sans fil {{hotspotLabel}} supprimée",
+      "hotspot_added": "{{hotspotLabel}} zone d’accès sans fil ajouté"
     }
   }
 }
