@@ -1,7 +1,8 @@
 {
   "ru": {
     "hotspots": {
-      "hotspot_removed": "Точка доступа {{hotspotLabel}} удалена"
+      "hotspot_removed": "Точка доступа {{hotspotLabel}} удалена",
+      "hotspot_added": "добавлена точка доступа {{hotspotLabel}}"
     }
   }
 }

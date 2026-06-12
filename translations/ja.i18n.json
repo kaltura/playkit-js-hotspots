@@ -1,7 +1,8 @@
 {
   "ja": {
     "hotspots": {
-      "hotspot_removed": "{{hotspotLabel}} ホットスポットが削除されました"
+      "hotspot_removed": "{{hotspotLabel}} ホットスポットが削除されました",
+      "hotspot_added": "{{hotspotLabel}} がホットスポットとして追加されました"
     }
   }
 }
