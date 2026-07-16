@@ -39,7 +39,6 @@ export class HotspotsPlugin extends KalturaPlayer.core.BasePlugin {
 
   private _player: KalturaPlayerTypes.Player;
   private _hotspots: LayoutHotspot[] = [];
-  private _pendingRawHotspots: RawLayoutHotspot[] = [];
   private _floatingItem: FloatingItem | null = null;
   private _canvas: Canvas | null = null;
 
@@ -152,8 +151,8 @@ export class HotspotsPlugin extends KalturaPlayer.core.BasePlugin {
     const hotspotCues = this._filterHotspotCues(payload.cues);
     // update HotspotsContainer to add or remove visible hotspots
     if (hotspotCues.length || this._hotspots.length) {
-      this._pendingRawHotspots = this._prepareHotspots(hotspotCues);
-      this._hotspots = this._recalculateCuepointLayout(this._pendingRawHotspots);
+      const rawLayoutHotspots = this._prepareHotspots(hotspotCues);
+      this._hotspots = this._recalculateCuepointLayout(rawLayoutHotspots);
       this._updateHotspotsContainer();
     }
   };
@@ -204,8 +203,7 @@ export class HotspotsPlugin extends KalturaPlayer.core.BasePlugin {
 
   private _renderRoot = (floatingItemProps: FloatingItemProps): ComponentChildren => {
     if (this._checkIfResizeHappened(floatingItemProps.canvas)) {
-      const source = this._pendingRawHotspots.length ? this._pendingRawHotspots : this._hotspots;
-      this._hotspots = this._recalculateCuepointLayout(source);
+      this._hotspots = this._recalculateCuepointLayout(this._hotspots);
     }
     return (
       <HotspotWrapper  dispatcher={(eventType, payload) => this.dispatchEvent(eventType, payload)} key={'hotspotWrapper'} hotspots={this._hotspots} pauseVideo={this._pauseVideo} seekTo={this._seekTo} sendAnalytics={() => {}} />
@@ -215,7 +213,6 @@ export class HotspotsPlugin extends KalturaPlayer.core.BasePlugin {
   reset(): void {
     this.eventManager.removeAll();
     this._hotspots = [];
-    this._pendingRawHotspots = [];
     this._canvas = null;
     if (this._floatingItem) {
       this.floatingManager.remove(this._floatingItem);
