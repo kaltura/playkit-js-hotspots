@@ -66,6 +66,7 @@ export default class HotspotWrapper extends Component<Props, State> {
   private containerRef = createRef<HTMLDivElement>();
   private previousHotspotMap: Map<string, string> = new Map();
   private lastFocusedHotspotId: string | null = null;
+  private previouslyFocusedElement: HTMLElement | null = null;
   private wasHotspotFocused: boolean = false;
   private focusTimers: number[] = [];
 
@@ -75,6 +76,11 @@ export default class HotspotWrapper extends Component<Props, State> {
       const endedEvent = this.props.player.Event?.ENDED || 'ended';
       this.props.player.addEventListener?.(endedEvent, this.onPlayerEnded);
     }
+    const container = this.containerRef.current;
+    if (container) {
+      container.addEventListener('focusin', this.handleContainerFocusIn);
+      container.addEventListener('focusout', this.handleContainerFocusOut);
+    }
   }
 
   componentWillUnmount() {
@@ -82,6 +88,11 @@ export default class HotspotWrapper extends Component<Props, State> {
     if (this.props.player) {
       const endedEvent = this.props.player.Event?.ENDED || 'ended';
       this.props.player.removeEventListener?.(endedEvent, this.onPlayerEnded);
+    }
+    const container = this.containerRef.current;
+    if (container) {
+      container.removeEventListener('focusin', this.handleContainerFocusIn);
+      container.removeEventListener('focusout', this.handleContainerFocusOut);
     }
     this.clearFocusTimers();
   }
@@ -106,7 +117,8 @@ export default class HotspotWrapper extends Component<Props, State> {
     if (this.wasHotspotFocused) {
       this.wasHotspotFocused = false;
       this.lastFocusedHotspotId = null;
-      this.returnFocusToPlayPause();
+      this.previouslyFocusedElement = null;
+      this.returnFocusToPlayPause(true);
     }
   };
 
@@ -147,11 +159,19 @@ export default class HotspotWrapper extends Component<Props, State> {
     }
 
     e.preventDefault();
+
+    try {
+      this.props.player?.ui?.store?.dispatch?.({type: 'shell/UPDATE_PLAYER_NAV_STATE', nav: true});
+      this.props.player?.ui?.store?.dispatch?.({type: 'shell/UPDATE_PLAYER_HOVER_STATE', hover: true});
+    } catch (err) {
+      // ignore if store is unavailable
+    }
+
     const targetIndex = this.state.activeIndex >= 0 && this.state.activeIndex < hotspots.length ? this.state.activeIndex : 0;
     this.focusHotspotByIndex(targetIndex);
   };
 
-  private focusHotspotByIndex(index: number) {
+  private focusHotspotByIndex(index: number, retryCount = 0) {
     const container = this.containerRef.current;
     if (!container) return;
     const hotspotElements = container.querySelectorAll<HTMLElement>('[data-testid="hotspots_hotspot"]');
@@ -159,10 +179,23 @@ export default class HotspotWrapper extends Component<Props, State> {
       this.setState({ activeIndex: index }, () => {
         hotspotElements[index].focus();
       });
+    } else if (retryCount < 5) {
+      // Hotspot components mount asynchronously before setting isReady: true.
+      // Retry in the next frames/tick if the replacement DOM element is not yet rendered.
+      const timer = window.setTimeout(() => {
+        this.focusHotspotByIndex(index, retryCount + 1);
+      }, 30);
+      this.focusTimers.push(timer);
     }
   }
 
   private handleContainerFocusIn = (e: FocusEvent) => {
+    const fromEl = e.relatedTarget as HTMLElement | null;
+    const container = this.containerRef.current;
+    if (fromEl && container && !container.contains(fromEl) && fromEl !== document.body) {
+      this.previouslyFocusedElement = fromEl;
+    }
+
     const target = e.target as HTMLElement | null;
     if (!target) return;
     const hotspotEl = target.closest<HTMLElement>('[data-testid="hotspots_hotspot"]');
@@ -182,12 +215,12 @@ export default class HotspotWrapper extends Component<Props, State> {
   private handleContainerFocusOut = (e: FocusEvent) => {
     const related = e.relatedTarget as HTMLElement | null;
     const container = this.containerRef.current;
-    const playerContainer = this.getPlayerContainer();
-    // Only reset wasHotspotFocused if focus intentionally moved to another control inside the player.
-    // If related is null or body because the hotspot was removed from DOM, keep wasHotspotFocused = true!
-    if (related && container && !container.contains(related) && playerContainer && playerContainer.contains(related)) {
+    // Clear stored focus state if focus intentionally moved to any real element outside the hotspot container.
+    // Retain wasHotspotFocused only when related is null or document.body (which happens on DOM removal).
+    if (related && related !== document.body && related !== document.documentElement && container && !container.contains(related)) {
       this.wasHotspotFocused = false;
       this.lastFocusedHotspotId = null;
+      this.previouslyFocusedElement = null;
     }
   };
 
@@ -234,7 +267,7 @@ export default class HotspotWrapper extends Component<Props, State> {
     const centerBtn = playerContainer.querySelector<HTMLElement>(
       '.playkit-pre-playback-play-button button, .playkit-pre-playback-play-button, [data-testid="pre_playback_play_button"]'
     );
-    if (centerBtn && centerBtn.offsetParent !== null) {
+    if (centerBtn) {
       return centerBtn;
     }
 
@@ -242,7 +275,7 @@ export default class HotspotWrapper extends Component<Props, State> {
     const playPauseBtn = playerContainer.querySelector<HTMLElement>(
       '.playkit-control-play-pause button, .playkit-control-play-pause [tabindex="0"]'
     );
-    if (playPauseBtn && playPauseBtn.offsetParent !== null) {
+    if (playPauseBtn) {
       return playPauseBtn;
     }
 
@@ -250,16 +283,40 @@ export default class HotspotWrapper extends Component<Props, State> {
     const fallback = playerContainer.querySelector<HTMLElement>(
       '.playkit-bottom-bar button, button'
     );
-    return fallback && fallback.offsetParent !== null ? fallback : (centerBtn || playPauseBtn || fallback);
+    return fallback;
   }
 
-  private returnFocusToPlayPause() {
+  private returnFocusToPlayPause(forceReplay = false) {
+    const isPlaybackEnded = forceReplay || !!this.props.player?.ended;
+    if (isPlaybackEnded) {
+      this.previouslyFocusedElement = null;
+    }
+
     const attemptFocus = () => {
       const playerContainer = this.getPlayerContainer();
+
+      // 1. If playback is NOT ended and we have a previously focused element still attached inside the player, restore focus to it
+      if (!isPlaybackEnded && this.previouslyFocusedElement && playerContainer?.contains(this.previouslyFocusedElement)) {
+        const prev = this.previouslyFocusedElement;
+        this.previouslyFocusedElement = null;
+        prev.focus();
+        if (document.activeElement === prev) {
+          return true;
+        }
+      }
+
+      // 2. Otherwise find the Replay / Play-Pause button in the player
       if (!playerContainer) return false;
 
       const btn = this.findReplayOrPlayButton(playerContainer);
       if (btn) {
+        // Trigger hover on player so control bar becomes visible if hidden
+        try {
+          this.props.player?.ui?.store?.dispatch?.({type: 'shell/UPDATE_PLAYER_HOVER_STATE', hover: true});
+        } catch (e) {
+          // ignore if store is unavailable
+        }
+
         btn.focus();
         return document.activeElement === btn;
       }
@@ -291,6 +348,7 @@ export default class HotspotWrapper extends Component<Props, State> {
         .filter(h => typeof h.label === 'string')
         .map(h => [h.id, h.label!])
     );
+    const currentIds = new Set<string>(currentHotspots.map(h => h.id));
 
     // Focus Return on Dismissal/Expiration
     const activeEl = document.activeElement as HTMLElement | null;
@@ -299,7 +357,7 @@ export default class HotspotWrapper extends Component<Props, State> {
 
     if (this.wasHotspotFocused || isFocusCurrentlyInHotspots) {
       const focusedId = this.lastFocusedHotspotId;
-      const isFocusedHotspotGone = focusedId ? !currentMap.has(focusedId) : false;
+      const isFocusedHotspotGone = focusedId ? !currentIds.has(focusedId) : false;
 
       if (isFocusedHotspotGone || currentHotspots.length === 0) {
         if (currentHotspots.length > 0) {
@@ -308,13 +366,24 @@ export default class HotspotWrapper extends Component<Props, State> {
         } else {
           this.lastFocusedHotspotId = null;
           this.wasHotspotFocused = false;
-          this.returnFocusToPlayPause();
+          const player = this.props.player;
+          const isPlaybackEnded = !!player?.ended || (typeof player?.duration === 'number' && player?.duration > 0 && player?.currentTime >= player?.duration - 0.5);
+          if (isPlaybackEnded) {
+            this.previouslyFocusedElement = null;
+          }
+          this.returnFocusToPlayPause(isPlaybackEnded);
         }
       }
     }
 
-    // Ensure activeIndex stays in valid bounds
-    if (currentHotspots.length > 0 && this.state.activeIndex >= currentHotspots.length) {
+    // Preserve the active hotspot by ID when the collection changes (e.g. earlier cue removed or inserted)
+    if (this.lastFocusedHotspotId && currentIds.has(this.lastFocusedHotspotId)) {
+      const newIndex = currentHotspots.findIndex(h => h.id === this.lastFocusedHotspotId);
+      if (newIndex !== -1 && newIndex !== this.state.activeIndex) {
+        this.setState({ activeIndex: newIndex });
+      }
+    } else if (currentHotspots.length > 0 && this.state.activeIndex >= currentHotspots.length) {
+      // Ensure activeIndex stays in valid bounds
       this.setState({ activeIndex: currentHotspots.length - 1 });
     }
 
@@ -380,7 +449,7 @@ export default class HotspotWrapper extends Component<Props, State> {
     const hasHotspots = hotspots && hotspots.length > 0;
 
     return (
-      <div ref={this.containerRef} style={hotspotsContainerStyles} data-testid="hotspots_hotspotsContainer" role={hasHotspots ? 'toolbar' : undefined} aria-label={hasHotspots ? this.props.toolbarLabel : undefined} onFocus={this.handleContainerFocusIn} onBlur={this.handleContainerFocusOut}>
+      <div ref={this.containerRef} style={hotspotsContainerStyles} data-testid="hotspots_hotspotsContainer" role={hasHotspots ? 'toolbar' : undefined} aria-label={hasHotspots ? this.props.toolbarLabel : undefined}>
         {hotspotsElements}
         <div
           ref={this.liveRegionRef}
