@@ -170,8 +170,8 @@ export default class Hotspot extends Component<Props, State> {
   };
 
   handleInnerKeyDown = (e: KeyboardEvent) => {
-    // A11yWrapper only intercepts Arrow keys, Enter, and Space.
-    // Handle Home and End here so they aren't lost, while avoiding double firing on arrow keys.
+    // A11yWrapper overwrites onKeyDown and only handles Arrow keys, Enter, and Space,
+    // so this is attached via onKeyDownCapture to keep Home and End working.
     if ((e.key === 'Home' || e.key === 'End') && this.props.onKeyDown) {
       this.props.onKeyDown(e);
     }
@@ -207,7 +207,7 @@ export default class Hotspot extends Component<Props, State> {
 
     return (
       <A11yWrapper onClick={this.handleClick} onUpKeyPressed={this.props.onKeyDown} onDownKeyPressed={this.props.onKeyDown} onLeftKeyPressed={this.props.onKeyDown} onRightKeyPressed={this.props.onKeyDown}>
-        <div ref={(ref) => (this.hotspotRef = ref)} tabIndex={tabIndex} role="button" aria-label={label} aria-disabled={disableClick} style={containerStyles} data-testid="hotspots_hotspot" onKeyDown={this.handleInnerKeyDown} onFocus={this.props.onFocus}>
+        <div ref={(ref) => (this.hotspotRef = ref)} tabIndex={tabIndex} role="button" aria-label={label} aria-disabled={disableClick} style={containerStyles} data-testid="hotspots_hotspot" data-hotspot-id={hotspot.id} onKeyDownCapture={this.handleInnerKeyDown} onFocus={this.props.onFocus}>
           <div style={buttonStyles}>{label}</div>
         </div>
       </A11yWrapper>

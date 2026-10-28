@@ -102,6 +102,14 @@ export default class HotspotWrapper extends Component<Props, State> {
     this.focusTimers = [];
   }
 
+  private scheduleFocusTimer(callback: () => void, delay: number) {
+    const id = window.setTimeout(() => {
+      this.focusTimers = this.focusTimers.filter(t => t !== id);
+      callback();
+    }, delay);
+    this.focusTimers.push(id);
+  }
+
   shouldComponentUpdate(nextProps: Props, nextState: State) {
     return (
       this.state.activeIndex !== nextState.activeIndex ||
@@ -174,18 +182,19 @@ export default class HotspotWrapper extends Component<Props, State> {
   private focusHotspotByIndex(index: number, retryCount = 0) {
     const container = this.containerRef.current;
     if (!container) return;
-    const hotspotElements = container.querySelectorAll<HTMLElement>('[data-testid="hotspots_hotspot"]');
-    if (hotspotElements && hotspotElements[index]) {
+    const targetId = this.props.hotspots?.[index]?.id;
+    if (!targetId) return;
+    const hotspotEl = Array.from(container.querySelectorAll<HTMLElement>('[data-testid="hotspots_hotspot"]')).find(
+      el => el.dataset.hotspotId === targetId
+    );
+    if (hotspotEl) {
       this.setState({ activeIndex: index }, () => {
-        hotspotElements[index].focus();
+        hotspotEl.focus();
       });
     } else if (retryCount < 5) {
       // Hotspot components mount asynchronously before setting isReady: true.
       // Retry in the next frames/tick if the replacement DOM element is not yet rendered.
-      const timer = window.setTimeout(() => {
-        this.focusHotspotByIndex(index, retryCount + 1);
-      }, 30);
-      this.focusTimers.push(timer);
+      this.scheduleFocusTimer(() => this.focusHotspotByIndex(index, retryCount + 1), 30);
     }
   }
 
@@ -200,10 +209,10 @@ export default class HotspotWrapper extends Component<Props, State> {
     if (!target) return;
     const hotspotEl = target.closest<HTMLElement>('[data-testid="hotspots_hotspot"]');
     if (hotspotEl && this.containerRef.current) {
-      const allHotspots = Array.from(this.containerRef.current.querySelectorAll<HTMLElement>('[data-testid="hotspots_hotspot"]'));
-      const index = allHotspots.indexOf(hotspotEl);
-      if (index !== -1 && this.props.hotspots && this.props.hotspots[index]) {
-        this.lastFocusedHotspotId = this.props.hotspots[index].id;
+      const id = hotspotEl.dataset.hotspotId;
+      const index = id && this.props.hotspots ? this.props.hotspots.findIndex(h => h.id === id) : -1;
+      if (index !== -1) {
+        this.lastFocusedHotspotId = id!;
         this.wasHotspotFocused = true;
         if (this.state.activeIndex !== index) {
           this.setState({ activeIndex: index });
@@ -324,18 +333,15 @@ export default class HotspotWrapper extends Component<Props, State> {
     };
 
     if (!attemptFocus()) {
-      const timer1 = window.setTimeout(() => {
+      this.scheduleFocusTimer(() => {
         if (!attemptFocus()) {
-          const timer2 = window.setTimeout(() => {
+          this.scheduleFocusTimer(() => {
             if (!attemptFocus()) {
-              const timer3 = window.setTimeout(attemptFocus, 150);
-              this.focusTimers.push(timer3);
+              this.scheduleFocusTimer(attemptFocus, 150);
             }
           }, 70);
-          this.focusTimers.push(timer2);
         }
       }, 30);
-      this.focusTimers.push(timer1);
     }
   }
 
