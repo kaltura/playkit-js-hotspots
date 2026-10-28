@@ -2,7 +2,9 @@
   "en": {
     "hotspots": {
       "hotspot_removed": "{{hotspotLabel}} hotspot removed",
-      "hotspot_added": "{{hotspotLabel}} hotspot added"
+      "hotspot_added": "{{hotspotLabel}} hotspot added",
+      "hotspots_shortcut_hint": "Press Shift+Alt+H to jump to hotspots",
+      "hotspots_toolbar_label": "Interactive hotspots"
     }
   }
 }
