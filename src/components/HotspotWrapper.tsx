@@ -69,6 +69,8 @@ export default class HotspotWrapper extends Component<Props, State> {
   private previouslyFocusedElement: HTMLElement | null = null;
   private wasHotspotFocused: boolean = false;
   private focusTimers: number[] = [];
+  private blurCheckTimer: number | null = null;
+  private focusRequestOrigin: Element | null = null;
 
   componentDidMount() {
     window.addEventListener('keydown', this.handleGlobalKeyDown);
@@ -95,11 +97,38 @@ export default class HotspotWrapper extends Component<Props, State> {
       container.removeEventListener('focusout', this.handleContainerFocusOut);
     }
     this.clearFocusTimers();
+    if (this.blurCheckTimer !== null) {
+      clearTimeout(this.blurCheckTimer);
+    }
   }
 
   private clearFocusTimers() {
     this.focusTimers.forEach(id => clearTimeout(id));
     this.focusTimers = [];
+  }
+
+  private beginFocusRequest() {
+    this.clearFocusTimers();
+    this.focusRequestOrigin = document.activeElement;
+  }
+
+  // Retries may only run while focus is where the request started, on body (element removed), or inside the hotspots.
+  private canContinueFocusRetry(): boolean {
+    const active = document.activeElement;
+    return (
+      !active ||
+      active === this.focusRequestOrigin ||
+      active === document.body ||
+      active === document.documentElement ||
+      !!this.containerRef.current?.contains(active)
+    );
+  }
+
+  private releaseFocusRestoration() {
+    this.wasHotspotFocused = false;
+    this.lastFocusedHotspotId = null;
+    this.previouslyFocusedElement = null;
+    this.clearFocusTimers();
   }
 
   private scheduleFocusTimer(callback: () => void, delay: number) {
@@ -180,6 +209,11 @@ export default class HotspotWrapper extends Component<Props, State> {
   };
 
   private focusHotspotByIndex(index: number, retryCount = 0) {
+    if (retryCount === 0) {
+      this.beginFocusRequest();
+    } else if (!this.canContinueFocusRetry()) {
+      return;
+    }
     const container = this.containerRef.current;
     if (!container) return;
     const targetId = this.props.hotspots?.[index]?.id;
@@ -227,9 +261,22 @@ export default class HotspotWrapper extends Component<Props, State> {
     // Clear stored focus state if focus intentionally moved to any real element outside the hotspot container.
     // Retain wasHotspotFocused only when related is null or document.body (which happens on DOM removal).
     if (related && related !== document.body && related !== document.documentElement && container && !container.contains(related)) {
-      this.wasHotspotFocused = false;
-      this.lastFocusedHotspotId = null;
-      this.previouslyFocusedElement = null;
+      this.releaseFocusRestoration();
+    } else if (!related || related === document.body || related === document.documentElement) {
+      // A null relatedTarget is also sent when a still-mounted hotspot is blurred by clicking non-focusable content.
+      // Defer so DOM removal (element detached) can be told apart from an intentional blur.
+      const target = e.target as Node;
+      if (this.blurCheckTimer !== null) {
+        clearTimeout(this.blurCheckTimer);
+      }
+      this.blurCheckTimer = window.setTimeout(() => {
+        this.blurCheckTimer = null;
+        const active = document.activeElement;
+        const focusInContainer = !!active && !!this.containerRef.current?.contains(active);
+        if (target.isConnected && !focusInContainer) {
+          this.releaseFocusRestoration();
+        }
+      }, 0);
     }
   };
 
@@ -296,6 +343,7 @@ export default class HotspotWrapper extends Component<Props, State> {
   }
 
   private returnFocusToPlayPause(forceReplay = false) {
+    this.beginFocusRequest();
     const isPlaybackEnded = forceReplay || !!this.props.player?.ended;
     if (isPlaybackEnded) {
       this.previouslyFocusedElement = null;
@@ -334,10 +382,14 @@ export default class HotspotWrapper extends Component<Props, State> {
 
     if (!attemptFocus()) {
       this.scheduleFocusTimer(() => {
+        if (!this.canContinueFocusRetry()) return;
         if (!attemptFocus()) {
           this.scheduleFocusTimer(() => {
+            if (!this.canContinueFocusRetry()) return;
             if (!attemptFocus()) {
-              this.scheduleFocusTimer(attemptFocus, 150);
+              this.scheduleFocusTimer(() => {
+                if (this.canContinueFocusRetry()) attemptFocus();
+              }, 150);
             }
           }, 70);
         }
